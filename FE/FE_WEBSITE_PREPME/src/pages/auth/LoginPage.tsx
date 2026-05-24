@@ -232,7 +232,7 @@ export const LoginPage = () => {
         <GoogleLogin
           onSuccess={handleGoogleSuccess}
           onError={() => toast.error('Hủy thao tác đăng nhập Google')}
-          locale="vi"
+          // locale="vi"
           shape="pill"
           size="large"
           type="standard"
