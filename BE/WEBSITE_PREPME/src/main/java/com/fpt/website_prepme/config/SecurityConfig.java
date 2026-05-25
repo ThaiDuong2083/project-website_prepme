@@ -2,6 +2,7 @@ package com.fpt.website_prepme.config;
 
 import com.fpt.website_prepme.security.JwtAuthenticationEntryPoint;
 import com.fpt.website_prepme.security.JwtAuthenticationFilter;
+import com.fpt.website_prepme.utils.AppConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -63,6 +64,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URLS).permitAll()
+                    .requestMatchers("/files/**").hasAnyRole(AppConstant.ROLE_USER)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())

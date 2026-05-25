@@ -24,12 +24,6 @@ const ExamsPage = lazy(() =>
 const LeaderboardPage = lazy(() =>
   import('@pages/user/LeaderboardPage').then((m) => ({ default: m.LeaderboardPage })),
 );
-const MissionsPage = lazy(() =>
-  import('@pages/user/MissionsPage').then((m) => ({ default: m.MissionsPage })),
-);
-const ProfilePage = lazy(() =>
-  import('@pages/user/ProfilePage').then((m) => ({ default: m.ProfilePage })),
-);
 const AdminDashboardPage = lazy(() =>
   import('@pages/admin/AdminDashboardPage').then((m) => ({ default: m.AdminDashboardPage })),
 );
@@ -80,9 +74,6 @@ const router = createBrowserRouter([
       { path: ROUTES.USER.DASHBOARD, element: withSuspense(DashboardPage) },
       { path: ROUTES.USER.EXAMS, element: withSuspense(ExamsPage) },
       { path: ROUTES.USER.LEADERBOARD, element: withSuspense(LeaderboardPage) },
-      { path: ROUTES.USER.MISSIONS, element: withSuspense(MissionsPage) },
-      { path: ROUTES.USER.PROFILE, element: withSuspense(ProfilePage) },
-      { path: ROUTES.USER.SETTINGS, element: withSuspense(ProfilePage) },
     ],
   },
 
@@ -94,9 +85,7 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     errorElement: <ServerErrorPage />,
-    children: [
-      { path: ROUTES.ADMIN.DASHBOARD, element: withSuspense(AdminDashboardPage) },
-    ],
+    children: [{ path: ROUTES.ADMIN.DASHBOARD, element: withSuspense(AdminDashboardPage) }],
   },
 
   // Error pages

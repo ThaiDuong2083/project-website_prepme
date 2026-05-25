@@ -86,9 +86,9 @@ app:
 
   # ─── Cloudinary ────────────────────────────────────────────────────────────
   cloudinary:
-    cloud-name: ${CLOUDINARY_CLOUD_NAME:your-cloud-name}
-    api-key: ${CLOUDINARY_API_KEY:your-api-key}
-    api-secret: ${CLOUDINARY_API_SECRET:your-api-secret}
+    cloud-name: ${CLOUDINARY_CLOUD_NAME:dilyyimrn}
+    api-key: ${CLOUDINARY_API_KEY:622376695845593}
+    api-secret: ${CLOUDINARY_API_SECRET:jmkTaFT6ZXoxqhEZ_slTs2y2XQs}
     folder: ${CLOUDINARY_FOLDER:prepme}
 
   # ─── CORS ──────────────────────────────────────────────────────────────────

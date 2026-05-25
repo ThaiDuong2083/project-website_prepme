@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Crown, X, ChevronUp, ChevronDown } from 'lucide-react';
+import { ChevronDown, Crown } from 'lucide-react';
 
 const BRAND = {
   50: '#fff1f2',
@@ -50,8 +50,8 @@ const getRankBg = (rank: number, isMe: boolean) => {
 };
 
 const RankMedal = ({ rank }: { rank: number }) => {
-  if (rank > 3) return <span style={{ color: '#64748b', fontWeight: 700, fontSize: '14px' }}>#{rank}</span>;
-  const color = getRankColor(rank);
+  if (rank > 3)
+    return <span style={{ color: '#64748b', fontWeight: 700, fontSize: '14px' }}>#{rank}</span>;
   const icons = ['🥇', '🥈', '🥉'];
   return <span style={{ fontSize: '20px' }}>{icons[rank - 1]}</span>;
 };
@@ -85,7 +85,15 @@ export const LeaderboardPage = () => {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Crown size={22} color={GOLD} fill={GOLD} />
-            <h1 style={{ fontSize: '18px', fontWeight: 900, color: '#1e293b', margin: 0, letterSpacing: '0.04em' }}>
+            <h1
+              style={{
+                fontSize: '18px',
+                fontWeight: 900,
+                color: '#1e293b',
+                margin: 0,
+                letterSpacing: '0.04em',
+              }}
+            >
               BẢNG VÀNG
             </h1>
           </div>
@@ -111,7 +119,8 @@ export const LeaderboardPage = () => {
                 fontSize: '12px',
                 fontWeight: activeTab === i ? 800 : 500,
                 color: activeTab === i ? BRAND[500] : '#64748b',
-                borderBottom: activeTab === i ? `2.5px solid ${BRAND[500]}` : '2.5px solid transparent',
+                borderBottom:
+                  activeTab === i ? `2.5px solid ${BRAND[500]}` : '2.5px solid transparent',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
                 fontFamily: 'inherit',
@@ -143,7 +152,9 @@ export const LeaderboardPage = () => {
               }}
             >
               {/* Rank */}
-              <div style={{ width: '32px', display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
+              <div
+                style={{ width: '32px', display: 'flex', justifyContent: 'center', flexShrink: 0 }}
+              >
                 <RankMedal rank={entry.rank} />
               </div>
 
@@ -153,13 +164,14 @@ export const LeaderboardPage = () => {
                   width: '36px',
                   height: '36px',
                   borderRadius: '50%',
-                  background: entry.rank === 1
-                    ? 'linear-gradient(135deg, #fbbf24, #f59e0b)'
-                    : entry.rank === 2
-                    ? 'linear-gradient(135deg, #94a3b8, #64748b)'
-                    : entry.rank === 3
-                    ? 'linear-gradient(135deg, #fb7185, #f43f5e)'
-                    : 'linear-gradient(135deg, #818cf8, #6366f1)',
+                  background:
+                    entry.rank === 1
+                      ? 'linear-gradient(135deg, #fbbf24, #f59e0b)'
+                      : entry.rank === 2
+                        ? 'linear-gradient(135deg, #94a3b8, #64748b)'
+                        : entry.rank === 3
+                          ? 'linear-gradient(135deg, #fb7185, #f43f5e)'
+                          : 'linear-gradient(135deg, #818cf8, #6366f1)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -175,10 +187,26 @@ export const LeaderboardPage = () => {
 
               {/* Info */}
               <div style={{ flex: 1 }}>
-                <p style={{ fontSize: '14px', fontWeight: 700, color: '#1e293b', margin: '0 0 2px 0' }}>
+                <p
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    color: '#1e293b',
+                    margin: '0 0 2px 0',
+                  }}
+                >
                   {entry.name}
                   {entry.isMe && (
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: BRAND[400], marginLeft: '6px' }}>(Bạn)</span>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: BRAND[400],
+                        marginLeft: '6px',
+                      }}
+                    >
+                      (PrepMe)
+                    </span>
                   )}
                 </p>
                 <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0 }}>
