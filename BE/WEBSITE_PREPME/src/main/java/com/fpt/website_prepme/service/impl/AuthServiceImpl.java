@@ -117,7 +117,7 @@ public class AuthServiceImpl implements AuthService {
             throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        return UserDTO.fromEntity(userDetails.user());
+        return UserDTO.toEntity(userDetails.user());
     }
 
 

@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import toast from 'react-hot-toast';
 import { Phone, Lock, Eye, EyeOff } from 'lucide-react';
@@ -378,6 +378,24 @@ export const LoginPage = () => {
           )}
         </button>
       </form>
+
+      {/* ── Footer Link ── */}
+      <div style={{ marginTop: '24px', textAlign: 'center' }}>
+        <p style={{ fontSize: '14px', color: '#64748b', margin: 0 }}>
+          Chưa có tài khoản?{' '}
+          <Link
+            to="/register"
+            style={{
+              color: BRAND[500],
+              fontWeight: 700,
+              textDecoration: 'none',
+              transition: 'color 0.15s',
+            }}
+          >
+            Đăng ký ngay
+          </Link>
+        </p>
+      </div>
 
       <style>{`
         @keyframes spin {

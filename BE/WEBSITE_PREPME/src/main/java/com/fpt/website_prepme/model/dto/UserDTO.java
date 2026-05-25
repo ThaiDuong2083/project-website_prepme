@@ -21,7 +21,7 @@ public class UserDTO {
     private AuthProvider provider;
     private String createdAt;
 
-    public static UserDTO fromEntity(UserEntity user) {
+    public static UserDTO toEntity(UserEntity user) {
         String role = user.getRoles().stream().findFirst().map(r -> r.getName()).orElse("USER");
         return UserDTO.builder()
                 .id(String.valueOf(user.getId()))

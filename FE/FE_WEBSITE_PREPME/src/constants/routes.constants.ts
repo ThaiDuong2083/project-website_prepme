@@ -17,8 +17,6 @@ export const ROUTES = {
     EXAM_TAKE: '/exams/:examId/take',
     EXAM_RESULT: '/exams/:examId/result/:attemptId',
     LEADERBOARD: '/leaderboard',
-    MISSIONS: '/missions',
-    PROFILE: '/profile',
     SETTINGS: '/settings',
     COURSES: '/courses',
     HISTORY: '/history',

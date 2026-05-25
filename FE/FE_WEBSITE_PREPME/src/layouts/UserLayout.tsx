@@ -1,6 +1,6 @@
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home, BookOpen, Trophy, CheckSquare, User, Settings, LogOut } from 'lucide-react';
+import { BookOpen, Home, LogOut, Settings, Trophy } from 'lucide-react';
 import { useAuth } from '@hooks/useAuth';
 import { ROUTES } from '@constants/routes.constants';
 import toast from 'react-hot-toast';
@@ -18,8 +18,6 @@ const navItems = [
   { label: 'Trang chủ', href: ROUTES.USER.DASHBOARD, icon: Home },
   { label: 'Luyện thi', href: ROUTES.USER.EXAMS, icon: BookOpen },
   { label: 'Xếp hạng', href: ROUTES.USER.LEADERBOARD, icon: Trophy },
-  { label: 'Nhiệm vụ', href: ROUTES.USER.MISSIONS, icon: CheckSquare },
-  { label: 'Hồ sơ', href: ROUTES.USER.PROFILE, icon: User },
   { label: 'Cài đặt', href: ROUTES.USER.SETTINGS, icon: Settings },
 ];
 
@@ -77,11 +75,7 @@ export const UserLayout = () => {
           }}
         >
           {navItems.map(({ label, href, icon: Icon }) => (
-            <NavLink
-              key={href}
-              to={href}
-              style={{ width: '100%', textDecoration: 'none' }}
-            >
+            <NavLink key={href} to={href} style={{ width: '100%', textDecoration: 'none' }}>
               {({ isActive }) => (
                 <div
                   style={{
@@ -101,7 +95,8 @@ export const UserLayout = () => {
                     if (!isActive) (e.currentTarget as HTMLElement).style.background = BRAND[50];
                   }}
                   onMouseLeave={(e) => {
-                    if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent';
+                    if (!isActive)
+                      (e.currentTarget as HTMLElement).style.background = 'transparent';
                   }}
                 >
                   <Icon

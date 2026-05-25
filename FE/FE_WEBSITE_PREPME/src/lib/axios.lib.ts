@@ -40,7 +40,6 @@ axiosInstance.interceptors.response.use(
     if (status === 401) {
       // Token expired — logout
       useAuthStore.getState().logout();
-      toast.error('Session expired. Please log in again.');
     } else if (status === 403) {
       toast.error('You do not have permission to perform this action.');
     } else if (status === 500) {

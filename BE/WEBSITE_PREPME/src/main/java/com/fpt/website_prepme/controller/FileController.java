@@ -1,11 +1,17 @@
 package com.fpt.website_prepme.controller;
 
+import com.fpt.website_prepme.model.dto.FileDTO;
+import com.fpt.website_prepme.model.request.FileCreateRequest;
+import com.fpt.website_prepme.model.request.FileUpdateRequest;
 import com.fpt.website_prepme.model.response.ApiResponse;
+import com.fpt.website_prepme.model.response.PageResponse;
 import com.fpt.website_prepme.service.FileService;
+import com.fpt.website_prepme.service.UploadService;
 import com.fpt.website_prepme.model.request.FileUploadResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,39 +29,43 @@ public class FileController {
 
     private final FileService fileService;
 
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Upload a single file (image / video / document)")
-    public ResponseEntity<ApiResponse<FileUploadResult>> upload(
-            @RequestPart("file") MultipartFile file,
-            @RequestParam(required = false) String folder) {
-
-        FileUploadResult result = folder != null && !folder.isBlank()
-                ? fileService.upload(file, folder)
-                : fileService.upload(file);
-
-        return ResponseEntity.ok(ApiResponse.success("File uploaded successfully", result));
+    @GetMapping
+    @Operation(summary = "Get list of files with pagination and optional filters")
+    public ResponseEntity<ApiResponse<PageResponse<FileDTO>>> getFiles(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String category) {
+        
+        return ResponseEntity.ok(ApiResponse.success("success", fileService.getFiles(page, size, category)));
     }
 
-    @PostMapping(value = "/upload/multiple", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Upload multiple files at once")
-    public ResponseEntity<ApiResponse<List<FileUploadResult>>> uploadMultiple(
-            @RequestPart("files") List<MultipartFile> files,
-            @RequestParam(required = false) String folder) {
-
-        List<FileUploadResult> results = folder != null && !folder.isBlank()
-                ? fileService.uploadMultiple(files, folder)
-                : fileService.uploadMultiple(files);
-
-        return ResponseEntity.ok(ApiResponse.success(
-                "%d file(s) uploaded successfully".formatted(results.size()), results));
+    @GetMapping("/{id}")
+    @Operation(summary = "Get file details by ID")
+    public ResponseEntity<ApiResponse<FileDTO>> getFile(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("success", fileService.getFile(id)));
     }
 
-    @DeleteMapping
-    @Operation(summary = "Delete a file from Cloudinary by publicId")
-    public ResponseEntity<ApiResponse<Void>> delete(
-            @RequestParam String publicId,
-            @RequestParam(defaultValue = "image") String resourceType) {
-        fileService.delete(publicId, resourceType);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Create file record in database and upload file to Cloudinary")
+    public ResponseEntity<ApiResponse<FileDTO>> createFile(
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart(value = "data") @Valid FileCreateRequest request) {
+        return ResponseEntity.ok(ApiResponse.success("success", fileService.createFile(file, request)));
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Update file record and optionally upload new file")
+    public ResponseEntity<ApiResponse<FileDTO>> updateFile(
+            @PathVariable Long id,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @ModelAttribute FileUpdateRequest request) {
+        return ResponseEntity.ok(ApiResponse.success("success", fileService.updateFile(id, file, request)));
+    }
+
+    @DeleteMapping("/{id}/record")
+    @Operation(summary = "Delete file record from DB and Cloudinary")
+    public ResponseEntity<ApiResponse<Void>> deleteFileRecord(@PathVariable Long id) {
+        fileService.deleteFile(id);
         return ResponseEntity.ok(ApiResponse.noContent());
     }
 }

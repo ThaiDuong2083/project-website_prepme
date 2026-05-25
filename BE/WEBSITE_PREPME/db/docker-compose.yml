@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine # Sử dụng bản alpine cho nhẹ và bảo mật
+    container_name: prepme_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres      # Tên tài khoản admin
+      POSTGRES_PASSWORD: postgres  # Mật khẩu (bạn nên đổi lại nhé)
+      POSTGRES_DB: prepme_db            # Khởi tạo sẵn database prepme_db
+    ports:
+      - "5432:5432"                     # Map port từ container ra máy thật
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:                        # Volume để lưu dữ liệu lâu dài

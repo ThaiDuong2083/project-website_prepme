@@ -26,6 +26,13 @@ export interface LoginWithGooglePayload {
   idToken: string;
 }
 
+export interface RegisterPayload {
+  fullName: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export interface AuthState {
   user: User | null;
   accessToken: string | null;

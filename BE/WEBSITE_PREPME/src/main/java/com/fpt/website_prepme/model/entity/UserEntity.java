@@ -1,9 +1,12 @@
 package com.fpt.website_prepme.model.entity;
 
 import com.fpt.website_prepme.enums.AuthProvider;
+import com.fpt.website_prepme.enums.MembershipType;
+import com.fpt.website_prepme.enums.SkillType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +44,39 @@ public class UserEntity extends BaseEntity {
 
     @Column(name = "google_id", unique = true)
     private String googleId;
+
+    @Column(name = "ielts_target")
+    private Double ieltsTarget;
+
+    @Column(name = "country_target")
+    private String countryTarget;
+
+    @Column(name = "school_target")
+    private String schoolTarget;
+
+    @Column(name = "major")
+    private String major;
+
+    @Column(name = "current_level")
+    private Double currentLevel;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "weakest_skill", length = 20)
+    private SkillType weakestSkill;
+
+    @Column(name = "readiness")
+    private Double readiness;
+
+    @Column(name = "study_hours_per_day")
+    private Double studyHoursPerDay;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "membership_type", nullable = false, length = 20)
+    @Builder.Default
+    private MembershipType membershipType = MembershipType.FREE;
+
+    @Column(name = "subscription_expires_at")
+    private LocalDateTime subscriptionExpiresAt;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

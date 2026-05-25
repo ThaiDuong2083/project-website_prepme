@@ -9,9 +9,5 @@ public class FileUploadResult {
     private String url;
     private String publicId;
     private String originalName;
-    private String format;
-    private long sizeBytes;
-    private int width;
-    private int height;
-    private String resourceType;
+    private String type;
 }

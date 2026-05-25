@@ -5,9 +5,15 @@ import type {
   User,
   LoginWithPhonePayload,
   LoginWithGooglePayload,
+  RegisterPayload,
 } from '@types';
 
 export const authApi = {
+  register: async (payload: RegisterPayload): Promise<ApiResponse<AuthTokens>> => {
+    const response = await axiosInstance.post<ApiResponse<AuthTokens>>('/auth/register', payload);
+    return response.data;
+  },
+
   loginWithPhone: async (payload: LoginWithPhonePayload): Promise<ApiResponse<AuthTokens>> => {
     const response = await axiosInstance.post<ApiResponse<AuthTokens>>('/auth/login', payload);
     return response.data;
