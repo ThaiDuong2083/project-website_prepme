@@ -1,55 +1,32 @@
 import axiosInstance from '@lib/axios.lib';
-import type { ApiResponse, Exam, ExamAttempt, PaginatedResponse, PaginationParams } from '@types';
+import type { ApiResponse, PageResponse, TestListDTO, TestDetailDTO, TestSubmitRequest, PracticeHistoryDTO } from '@types';
 
 export const examsApi = {
-  getAll: async (params?: PaginationParams): Promise<ApiResponse<PaginatedResponse<Exam>>> => {
-    const response = await axiosInstance.get<ApiResponse<PaginatedResponse<Exam>>>('/exams', {
+  getAll: async (params?: { type?: string; search?: string; page?: number; size?: number }): Promise<ApiResponse<PageResponse<TestListDTO>>> => {
+    const response = await axiosInstance.get<ApiResponse<PageResponse<TestListDTO>>>('/exams', {
       params,
     });
     return response.data;
   },
 
-  getById: async (id: string): Promise<ApiResponse<Exam>> => {
-    const response = await axiosInstance.get<ApiResponse<Exam>>(`/exams/${id}`);
+  getById: async (id: string | number): Promise<ApiResponse<TestDetailDTO>> => {
+    const response = await axiosInstance.get<ApiResponse<TestDetailDTO>>(`/exams/${id}`);
     return response.data;
   },
 
-  startAttempt: async (examId: string): Promise<ApiResponse<ExamAttempt>> => {
-    const response = await axiosInstance.post<ApiResponse<ExamAttempt>>(
-      `/exams/${examId}/attempts`,
+  submit: async (
+    id: string | number,
+    request: TestSubmitRequest
+  ): Promise<ApiResponse<PracticeHistoryDTO>> => {
+    const response = await axiosInstance.post<ApiResponse<PracticeHistoryDTO>>(
+      `/exams/${id}/submit`,
+      request
     );
     return response.data;
   },
 
-  submitAttempt: async (
-    examId: string,
-    attemptId: string,
-    answers: Record<string, string>,
-  ): Promise<ApiResponse<ExamAttempt>> => {
-    const response = await axiosInstance.post<ApiResponse<ExamAttempt>>(
-      `/exams/${examId}/attempts/${attemptId}/submit`,
-      { answers },
-    );
-    return response.data;
-  },
-
-  getAttemptResult: async (
-    examId: string,
-    attemptId: string,
-  ): Promise<ApiResponse<ExamAttempt>> => {
-    const response = await axiosInstance.get<ApiResponse<ExamAttempt>>(
-      `/exams/${examId}/attempts/${attemptId}`,
-    );
-    return response.data;
-  },
-
-  getHistory: async (
-    params?: PaginationParams,
-  ): Promise<ApiResponse<PaginatedResponse<ExamAttempt>>> => {
-    const response = await axiosInstance.get<ApiResponse<PaginatedResponse<ExamAttempt>>>(
-      '/exams/history',
-      { params },
-    );
+  seedDemoExams: async (): Promise<ApiResponse<string>> => {
+    const response = await axiosInstance.post<ApiResponse<string>>('/exams/seed');
     return response.data;
   },
 };

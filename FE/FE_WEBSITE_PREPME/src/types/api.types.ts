@@ -1,5 +1,6 @@
 export interface ApiResponse<T = unknown> {
-  success: boolean;
+  code: number;
+  success?: boolean;
   message: string;
   data: T;
   timestamp: string;
@@ -30,3 +31,16 @@ export interface PaginationParams {
   direction?: 'asc' | 'desc';
   search?: string;
 }
+
+export interface PageResponse<T> {
+  content: T[];
+  pagination: {
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
+    first: boolean;
+    last: boolean;
+  };
+}
+

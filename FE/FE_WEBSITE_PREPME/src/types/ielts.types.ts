@@ -93,3 +93,86 @@ export interface LeaderboardEntry {
   band: number;
   examsCompleted: number;
 }
+
+// ─── Backend DTO mappings ───────────────────────────────────────────────────
+export type BEExamType = 'LISTENING' | 'READING' | 'WRITING' | 'SPEAKING' | 'IELTS';
+
+export type BEQuestionType =
+  | 'TRUE_FALSE_NOT_GIVEN'
+  | 'MATCHING_HEADINGS'
+  | 'MULTIPLE_CHOICE'
+  | 'FILL_IN_THE_BLANK'
+  | 'SHORT_ANSWER';
+
+export interface TestListDTO {
+  id: number;
+  title: string;
+  examType: BEExamType;
+  duration: number; // in seconds
+  description?: string;
+  sectionCount: number;
+  createdAt: string;
+}
+
+export interface TestQuestionDTO {
+  id: number;
+  questionNumber: number;
+  questionType: BEQuestionType;
+  questionText: string;
+  options?: string[];
+  correctAnswer?: string;
+  explanation?: string;
+}
+
+export interface TestSectionDTO {
+  id: number;
+  sectionNumber: number;
+  title?: string;
+  passage?: string;
+  cueCard?: string;
+  audioUrl?: string;
+  questions: TestQuestionDTO[];
+}
+
+export interface TestDetailDTO {
+  id: number;
+  title: string;
+  examType: BEExamType;
+  duration: number; // in seconds
+  audioUrl?: string;
+  description?: string;
+  sections: TestSectionDTO[];
+  childTests?: TestDetailDTO[];
+}
+
+export interface TestSubmitRequest {
+  answers: Record<string, string>;
+  submissionContent?: string;
+  recordingUrl?: string;
+  completionTime: number; // in seconds
+  status?: 'DRAFT' | 'COMPLETED';
+}
+
+export interface PracticeHistoryDTO {
+  id: number;
+  userId: number;
+  testId?: number;
+  testTitle?: string;
+  skillType: BEExamType;
+  score?: number;
+  completionTime?: number; // in seconds
+  answers?: Record<string, string>;
+  submissionContent?: string;
+  recordingUrl?: string;
+  aiAnalysis?: string;
+  status: 'DRAFT' | 'COMPLETED';
+  createdAt: string;
+}
+
+export interface PracticeStatisticsDTO {
+  totalPracticeCount: number;
+  averageScore?: number;
+  skillAverages?: Record<string, number>;
+  dailyHistory?: Record<string, number>;
+}
+
