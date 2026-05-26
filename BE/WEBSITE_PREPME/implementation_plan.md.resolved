@@ -1,0 +1,161 @@
+# Implementation Plan - Listening, Reading, Writing, Speaking, and IELTS Exam System
+
+This plan outlines the architecture and implementation details for the Prepme IELTS exam system. It supports five exam types (LISTENING, READING, WRITING, SPEAKING, and IELTS full test), section-based test structures (passages, audio sections, speaking cue cards, etc.), question-level configurations (Multiple Choice, True/False/Not Given, Matching Headings, etc.), auto-scoring for receptive skills, draft/final submissions, and practice history with analytics.
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> - **Test/Exam Entity Hierarchy**: We will introduce a self-referencing relationship on `TestEntity`. When a test represents an `IELTS` full exam, it acts as a container pointing to its 4 child tests (Listening, Reading, Writing, Speaking). This avoids duplicate structures and allows clean modular practice or full mock testing.
+> - **Omission of Answer Keys during Practice**: When fetching test details via `/api/exams/{id}`, correct answers and explanations will be withheld from students to prevent client-side cheating. They are only disclosed after submission or when fetching completed practice history.
+> - **Auto-scoring for Receptive Skills**: Auto-scoring maps correct answer counts to standard IELTS Band Scores (0.0 to 9.0) using pre-defined academic mapping grids for Listening and Reading.
+> - **Speaking Audio Upload**: The front-end will upload Speaking recordings using the existing `/api/upload` endpoint, then pass the uploaded Cloudinary URL when submitting the practice.
+
+---
+
+## Proposed Changes
+
+### 1. Enums
+We will add two new enums to represent the type of exam and the specific types of questions.
+
+#### [NEW] [ExamType.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/enums/ExamType.java)
+- `LISTENING`, `READING`, `WRITING`, `SPEAKING`, `IELTS`
+
+#### [NEW] [QuestionType.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/enums/QuestionType.java)
+- `TRUE_FALSE_NOT_GIVEN`, `MATCHING_HEADINGS`, `MULTIPLE_CHOICE`, `FILL_IN_THE_BLANK`, `SHORT_ANSWER`
+
+---
+
+### 2. Database Entities
+
+#### [NEW] [TestEntity.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/model/entity/TestEntity.java)
+Holds general metadata for an exam or a single skill test.
+- `title` (String, nullable = false)
+- `examType` (ExamType, enum, nullable = false)
+- `duration` (Integer) - allocated time in seconds
+- `audioUrl` (String, length = 512) - audio file for Listening (or skill subtest)
+- `description` (TEXT)
+- `parentTest` (ManyToOne -> TestEntity, nullable) - Reference to IELTS package if this is a subtest
+- `childTests` (OneToMany -> TestEntity) - Subtests of an IELTS package
+- `sections` (OneToMany -> TestSectionEntity) - Sections/Passages in this test
+
+#### [NEW] [TestSectionEntity.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/model/entity/TestSectionEntity.java)
+Divides the test into structural parts.
+- `test` (ManyToOne -> TestEntity, nullable = false)
+- `sectionNumber` (Integer, nullable = false) - e.g. 1, 2, 3, 4
+- `title` (String) - e.g. "Passage 1", "Cue Card Topic"
+- `passage` (TEXT) - HTML content for Reading passages or instructions
+- `cueCard` (TEXT) - Prompt details for Speaking cue cards
+- `audioUrl` (String, length = 512) - Optional section-specific audio URL
+- `questions` (OneToMany -> TestQuestionEntity)
+
+#### [NEW] [TestQuestionEntity.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/model/entity/TestQuestionEntity.java)
+Stores question details.
+- `section` (ManyToOne -> TestSectionEntity, nullable = false)
+- `questionNumber` (Integer, nullable = false) - 1 to 40
+- `questionType` (QuestionType, enum, nullable = false)
+- `questionText` (TEXT)
+- `options` (TEXT) - JSON string containing choices (e.g. `["A. Choice 1", "B. Choice 2"]`)
+- `correctAnswer` (String) - Answer key for auto-checking
+- `explanation` (TEXT) - Rationale for the answer
+
+#### [MODIFY] [PracticeHistoryEntity.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/model/entity/PracticeHistoryEntity.java)
+- Add a nullable reference: `test` (ManyToOne -> `TestEntity`) to trace the history directly to its exam source.
+
+---
+
+### 3. Data Transfer Objects (DTOs)
+
+#### [NEW] [TestListDTO.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/model/dto/TestListDTO.java)
+List view metadata. Includes ID, title, type, duration, section count, and created timestamp.
+
+#### [NEW] [TestDetailDTO.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/model/dto/TestDetailDTO.java)
+Complete structure including sections and questions (optionally masking `correctAnswer` depending on request context). Supports composite `IELTS` exams by nesting child tests.
+
+#### [NEW] [TestSectionDTO.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/model/dto/TestSectionDTO.java)
+Metadata, passage, cueCard, and questions inside a section.
+
+#### [NEW] [TestQuestionDTO.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/model/dto/TestQuestionDTO.java)
+Individual questions (hides answer key when used in the exam viewer).
+
+#### [NEW] [TestSubmitRequest.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/model/dto/TestSubmitRequest.java)
+- `answers` (Map<Long, String> - Maps questionId/questionNumber to user answer string)
+- `submissionContent` (String - Essay contents for Writing, or transcript for Speaking)
+- `recordingUrl` (String - Audio recording URL for Speaking)
+- `completionTime` (Integer - duration in seconds)
+- `status` (PracticeStatus - DRAFT or COMPLETED)
+
+#### [NEW] [PracticeHistoryDTO.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/model/dto/PracticeHistoryDTO.java)
+Response for a completed practice run, including answers, correct answers, auto-score results, and AI feedback.
+
+#### [NEW] [PracticeStatisticsDTO.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/model/dto/PracticeStatisticsDTO.java)
+Aggregated practice count, average score, and calendar frequencies for charts.
+
+---
+
+### 4. Repositories
+- `TestRepository`: standard paging and filtering by `ExamType`.
+- `TestSectionRepository`: standard CRUD.
+- `TestQuestionRepository`: standard CRUD.
+- `PracticeHistoryRepository`: Query methods for fetching history by current user, status, skill type, and statistics aggregates.
+
+---
+
+### 5. Services & Utilities
+
+#### [NEW] [IeltsScoringUtils.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/utils/IeltsScoringUtils.java)
+Stateless utility to map raw correct answers (0 - 40) into official Academic IELTS Band Scores (0.0 - 9.0) for LISTENING and READING.
+
+#### [NEW] [TestService.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/service/TestService.java)
+Declares methods:
+- Get list of exams (paginated, filtered by `ExamType`).
+- Get exam details by ID (with answers stripped for practice mode).
+- Submit test responses (scoring, history mapping).
+- Get practice histories and detailed reviews.
+- Get practice dashboard statistics.
+- Seed demo exams (mock data loader helper).
+
+#### [NEW] [TestServiceImpl.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/service/impl/TestServiceImpl.java)
+Implementation details:
+- Validates the exam and user context.
+- For Listening/Reading: Iterates through submitted answers, matches them against `correctAnswer`, determines correct count, maps to IELTS band score using `IeltsScoringUtils`, and saves to `PracticeHistoryEntity` with `status = COMPLETED`.
+- For Writing: Saves user submission text, word counts, and tracks time. Allows drafts.
+- For Speaking: Saves speaking recording audio URL and optional transcripts.
+- For IELTS (Composite): Combines score results or generates practice history entries.
+
+---
+
+### 6. Controllers
+
+#### [NEW] [TestController.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/controller/TestController.java)
+Exposes endpoint paths:
+- `GET /api/exams` - List tests (pages, filters, keyword searches).
+- `GET /api/exams/{id}` - Details of the exam (answers hidden).
+- `POST /api/exams/{id}/submit` - Submit practice answers.
+- `POST /api/exams/seed` - Optional admin/dev helper to seed standard mock exams.
+
+#### [NEW] [PracticeHistoryController.java](file:///d:/prepme/project-website_prepme/BE/WEBSITE_PREPME/src/main/java/com/fpt/website_prepme/controller/PracticeHistoryController.java)
+Exposes endpoint paths:
+- `GET /api/practice-histories` - Get history of practice logs.
+- `GET /api/practice-histories/{id}` - Detailed review of a past practice, showing answers, correct markers, and keys.
+- `GET /api/practice-histories/statistics` - Practice frequency, average bands, and weekly completion metrics.
+
+---
+
+## Verification Plan
+
+### Automated Compilation Check
+We will build the codebase using Gradle:
+```bash
+./gradlew compileJava
+```
+
+### Manual API Tests
+We will seed mock exams and perform endpoint testing (using curl or Postman equivalent check) to ensure correct responses:
+1. Verify `GET /api/exams` returns the list of tests (including Listening, Reading, Writing, Speaking, and IELTS).
+2. Verify `GET /api/exams/{id}` returns correct sections and questions without leaking the `correctAnswer`.
+3. Verify submission of Listening/Reading exams automatically checks answers, awards correct scores, and computes IELTS band scores.
+4. Verify Writing draft saving and submittal records the written text.
+5. Verify Speaking submissions accept a recording URL and save appropriately.
+6. Verify practice history reviews retrieve complete details (with answer keys) and statistics reports function correctly.
