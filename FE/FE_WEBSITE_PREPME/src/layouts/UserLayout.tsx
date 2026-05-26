@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BookOpen, Home, LogOut, Settings, Trophy } from 'lucide-react';
 import { useAuth } from '@hooks/useAuth';
+import { useAppStore } from '@store/app.store';
 import { ROUTES } from '@constants/routes.constants';
 import toast from 'react-hot-toast';
 
@@ -24,6 +25,7 @@ const navItems = [
 export const UserLayout = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const { theme } = useAppStore();
 
   const handleLogout = () => {
     logout();
@@ -31,14 +33,21 @@ export const UserLayout = () => {
     navigate(ROUTES.LOGIN);
   };
 
+  const isDark = theme === 'dark';
+  const mainBg = isDark ? '#0f172a' : '#fff5f5';
+  const sidebarBg = isDark ? 'rgba(30, 41, 59, 0.85)' : 'rgba(255,255,255,0.85)';
+  const sidebarBorder = isDark ? '#334155' : BRAND[100];
+  const bgPatternStroke = isDark ? '%23334155' : '%23fecdd3';
+
   return (
     <div
       style={{
         display: 'flex',
         minHeight: '100vh',
-        backgroundColor: '#fff5f5',
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cg fill='none' stroke='%23fecdd3' stroke-width='1' stroke-opacity='0.3'%3E%3Cellipse cx='100' cy='100' rx='80' ry='40'/%3E%3Cellipse cx='100' cy='100' rx='55' ry='27'/%3E%3Cellipse cx='100' cy='100' rx='30' ry='14'/%3E%3C/g%3E%3C/svg%3E")`,
+        backgroundColor: mainBg,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cg fill='none' stroke='${bgPatternStroke}' stroke-width='1' stroke-opacity='0.3'%3E%3Cellipse cx='100' cy='100' rx='80' ry='40'/%3E%3Cellipse cx='100' cy='100' rx='55' ry='27'/%3E%3Cellipse cx='100' cy='100' rx='30' ry='14'/%3E%3C/g%3E%3C/svg%3E")`,
         backgroundSize: '180px 180px',
+        transition: 'background-color 0.3s ease',
       }}
     >
       {/* ── Sidebar ── */}
@@ -46,9 +55,9 @@ export const UserLayout = () => {
         style={{
           width: '80px',
           minHeight: '100vh',
-          background: 'rgba(255,255,255,0.85)',
+          background: sidebarBg,
           backdropFilter: 'blur(12px)',
-          borderRight: `1.5px solid ${BRAND[100]}`,
+          borderRight: `1.5px solid ${sidebarBorder}`,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -108,7 +117,7 @@ export const UserLayout = () => {
                     style={{
                       fontSize: '10px',
                       fontWeight: isActive ? 700 : 500,
-                      color: isActive ? BRAND[500] : '#94a3b8',
+                      color: isActive ? BRAND[500] : (isDark ? '#64748b' : '#94a3b8'),
                       textAlign: 'center',
                       lineHeight: 1.2,
                     }}
