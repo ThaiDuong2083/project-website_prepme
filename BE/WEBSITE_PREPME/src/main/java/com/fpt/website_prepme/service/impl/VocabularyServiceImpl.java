@@ -49,20 +49,28 @@ public class VocabularyServiceImpl implements VocabularyService {
             .map(CategoryEntity::getId)
             .toList();
         if (categoryIds.isEmpty()) return Collections.emptyList();
-        List<CategoryCountDTO> counts = wordRepository.countWordsGroupByParentCategory(categoryIds);
-        Map<Long, Long> countMap = counts.stream()
-            .collect(Collectors.toMap(
-                CategoryCountDTO::getCategoryId,
-                CategoryCountDTO::getCount
-            ));
+        List<CategoryCountDTO> totalCounts = wordRepository.countWordsGroupByParentCategory(categoryIds);
+        Map<Long, Long> totalMap = totalCounts.stream()
+            .collect(Collectors.toMap(CategoryCountDTO::getCategoryId, CategoryCountDTO::getCount));
         UserEntity currentUser = getCurrentUser();
+        List<CategoryCountDTO> learnedCounts = progressRepository.countLearnedWordsGroupByParentCategory(currentUser.getId(), categoryIds);
+        Map<Long, Long> learnedMap = learnedCounts.stream()
+            .collect(Collectors.toMap(CategoryCountDTO::getCategoryId, CategoryCountDTO::getCount));
         Set<Long> learningSetIds = new HashSet<>(
             progressRepository.findSetIdsWithLearningStatus(currentUser.getId(), categoryIds)
         );
         return entities.stream().map(e -> {
             CategoryDTO dto = CategoryDTO.toDto(e);
-            dto.setWordCount(countMap.getOrDefault(e.getId(), 0L).intValue());
-            dto.setStatus(learningSetIds.contains(e.getId()) ? "LEARNING" : "NOT_LEARNED");
+            long total = totalMap.getOrDefault(e.getId(), 0L);
+            long learned = learnedMap.getOrDefault(e.getId(), 0L);
+            dto.setWordCount((int) total);
+            if (total > 0 && learned == total) {
+                dto.setStatus("LEARNED");
+            } else if (learned > 0 || learningSetIds.contains(e.getId())) {
+                dto.setStatus("LEARNING");
+            } else {
+                dto.setStatus("NOT_LEARNED");
+            }
             return dto;
         }).toList();
     }
@@ -75,13 +83,32 @@ public class VocabularyServiceImpl implements VocabularyService {
             return Collections.emptyList();
         }
         List<Long> topicIds = topics.stream().map(CategoryEntity::getId).toList();
+        
+        List<CategoryCountDTO> totalCounts = wordRepository.countWordsGroupByCategory(topicIds);
+        Map<Long, Long> totalMap = totalCounts.stream()
+            .collect(Collectors.toMap(CategoryCountDTO::getCategoryId, CategoryCountDTO::getCount));
+
         UserEntity currentUser = getCurrentUser();
+        
+        List<CategoryCountDTO> learnedCounts = progressRepository.countLearnedWordsGroupByCategory(currentUser.getId(), topicIds);
+        Map<Long, Long> learnedMap = learnedCounts.stream()
+            .collect(Collectors.toMap(CategoryCountDTO::getCategoryId, CategoryCountDTO::getCount));
+
         Set<Long> learningTopicIds = new HashSet<>(
             progressRepository.findTopicIdsWithLearningStatus(currentUser.getId(), topicIds)
         );
         return topics.stream().map(e -> {
             CategoryDTO dto = CategoryDTO.toDto(e);
-            dto.setStatus(learningTopicIds.contains(e.getId()) ? "LEARNING" : "NOT_LEARNED");
+            long total = totalMap.getOrDefault(e.getId(), 0L);
+            long learned = learnedMap.getOrDefault(e.getId(), 0L);
+            dto.setWordCount((int) total);
+            if (total > 0 && learned == total) {
+                dto.setStatus("LEARNED");
+            } else if (learned > 0 || learningTopicIds.contains(e.getId())) {
+                dto.setStatus("LEARNING");
+            } else {
+                dto.setStatus("NOT_LEARNED");
+            }
             return dto;
         }).toList();
     }
@@ -154,6 +181,37 @@ public class VocabularyServiceImpl implements VocabularyService {
             }
         }
         progressRepository.saveAll(toSave);
+        return toSave.size();
+    }
+
+    @Override
+    @Transactional
+    public int completeTopics(List<Long> topicIds) {
+        UserEntity currentUser = getCurrentUser();
+        List<VocabularyWordEntity> words = wordRepository.findAllByTopicIdsForFlashcard(topicIds);
+        if (words.isEmpty()) return 0;
+        List<Long> wordIds = words.stream().map(VocabularyWordEntity::getId).toList();
+        Map<Long, VocabularyProgressEntity> existingMap = progressRepository
+                .findByUserIdAndWordIdIn(currentUser.getId(), wordIds)
+                .stream()
+                .collect(Collectors.toMap(p -> p.getWord().getId(), p -> p));
+        List<VocabularyProgressEntity> toSave = new java.util.ArrayList<>();
+        for (VocabularyWordEntity word : words) {
+            VocabularyProgressEntity progress = existingMap.get(word.getId());
+            if (progress == null) {
+                toSave.add(VocabularyProgressEntity.builder()
+                        .user(currentUser)
+                        .word(word)
+                        .status(VocabularyStatus.LEARNED)
+                        .build());
+            } else if (progress.getStatus() != VocabularyStatus.LEARNED) {
+                progress.setStatus(VocabularyStatus.LEARNED);
+                toSave.add(progress);
+            }
+        }
+        progressRepository.saveAll(toSave);
+        log.info("[Complete] Marked {} words as LEARNED for topicIds={} userId={}",
+                toSave.size(), topicIds, currentUser.getId());
         return toSave.size();
     }
 

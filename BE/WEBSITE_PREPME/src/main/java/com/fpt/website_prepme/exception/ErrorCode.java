@@ -39,7 +39,11 @@ public enum ErrorCode {
     INVALID_FILE_TYPE(3004, "Invalid file type", HttpStatus.BAD_REQUEST),
 
     EXAMPLE_NOT_FOUND(4001, "Example not found", HttpStatus.NOT_FOUND),
-    EXAMPLE_ALREADY_EXISTS(4002, "Example already exists", HttpStatus.CONFLICT);
+    EXAMPLE_ALREADY_EXISTS(4002, "Example already exists", HttpStatus.CONFLICT),
+
+    WORD_NOT_FOUND(5001, "Vocabulary word not found", HttpStatus.NOT_FOUND),
+    FAVORITE_ALREADY_EXISTS(5002, "Word already in favorites", HttpStatus.CONFLICT),
+    FAVORITE_NOT_FOUND(5003, "Favorite not found", HttpStatus.NOT_FOUND);
 
     private final int code;
     private final String message;

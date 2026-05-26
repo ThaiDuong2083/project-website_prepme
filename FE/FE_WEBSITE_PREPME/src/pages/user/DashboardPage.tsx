@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Flame } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@constants/routes.constants';
-import { GrammarModal, VocabMenuModal } from './DashboardModals';
+import { GrammarModal, VocabMenuModal, FavoriteWordsModal } from './DashboardModals';
 import { vocabularyApi, type VocabularyWordDTO } from '@api/vocabulary.api.ts';
+
 
 const BRAND = {
   50: '#fff1f2',
@@ -25,13 +26,32 @@ export const DashboardPage = () => {
   const [annIdx, setAnnIdx] = useState(0);
   const [showVocabMenu, setShowVocabMenu] = useState(false);
   const [showGrammarMenu, setShowGrammarMenu] = useState(false);
+  const [showSavedWords, setShowSavedWords] = useState(false);
   const [results, setResults] = useState<VocabularyWordDTO[]>([]);
   const [loading, setLoading] = useState(false);
+  const [favCount, setFavCount] = useState(0);
   const streak = 3;
+
+
+  useEffect(() => {
+    vocabularyApi
+      .countFavorites()
+      .then((res) => setFavCount(res.data?.count ?? 0))
+      .catch(() => {});
+  }, []);
+
+  const handleCloseSaved = () => {
+    setShowSavedWords(false);
+    vocabularyApi
+      .countFavorites()
+      .then((res) => setFavCount(res.data?.count ?? 0))
+      .catch(() => {});
+  };
 
   const handleCard = (id: string) => {
     if (id === 'vocab') setShowVocabMenu(true);
     if (id === 'grammar') setShowGrammarMenu(true);
+    if (id === 'saved') setShowSavedWords(true);
   };
 
   const handleSearch = async () => {
@@ -143,7 +163,6 @@ export const DashboardPage = () => {
         {/* SEARCH RESULTS */}
         {results.length > 0 && (
           <div className="absolute z-50 mt-3 max-h-[520px] w-full overflow-y-auto rounded-2xl border border-pink-200 bg-white shadow-xl">
-            {/* Header */}
             <div className="flex items-center justify-between border-b border-dashed border-pink-200 px-5 py-4 text-sm font-semibold text-pink-500">
               <div>
                 Kết quả cho "<span className="font-medium text-slate-800">{search}</span>"
@@ -152,7 +171,7 @@ export const DashboardPage = () => {
                 className="cursor-pointer text-2xl leading-none hover:text-pink-600"
                 onClick={() => {
                   setSearch('');
-                  setResults([]); // Đảm bảo xóa kết quả
+                  setResults([]);
                 }}
               >
                 ×
@@ -191,6 +210,7 @@ export const DashboardPage = () => {
           </div>
         )}
       </div>
+
       {/* ── Module Grid ── */}
       <div
         style={{
@@ -234,7 +254,12 @@ export const DashboardPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
         >
-          <ModuleCard emoji="💛" title="Đã lưu" subtitle="0 từ, 0 câu, 0 note" />
+          <ModuleCard
+            emoji="💛"
+            title="Đã lưu"
+            subtitle={`${favCount} từ đã lưu`}
+            onClick={() => handleCard('saved')}
+          />
         </motion.div>
 
         {/* Luyện Thi – link */}
@@ -282,70 +307,10 @@ export const DashboardPage = () => {
         </motion.div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.28 }}
-        style={{
-          background: 'rgba(255,255,255,0.85)',
-          border: `1.5px solid ${BRAND[100]}`,
-          borderRadius: '18px',
-          padding: '16px 20px',
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: '14px',
-        }}
-      >
-        <span style={{ fontSize: '22px' }}>🎵</span>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: BRAND[500] }}>
-              Act My Age – One Direction
-            </span>
-            <span
-              style={{
-                background: BRAND[400],
-                color: '#fff',
-                fontSize: '10px',
-                fontWeight: 700,
-                padding: '2px 7px',
-                borderRadius: '20px',
-              }}
-            >
-              User Rec
-            </span>
-          </div>
-          <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.7 }}>
-            "When I'm fat and old and my kids think I'm a joke
-            <br />
-            ~ 'Cause I move a little slow when I dance
-            <br />
-            ~ I can count on you after all that we've been through
-            <br />~ 'Cause I know that you'll always understand"
-          </p>
-        </div>
-        <button
-          style={{
-            background: BRAND[50],
-            border: `1.5px solid ${BRAND[200]}`,
-            borderRadius: '50%',
-            width: '36px',
-            height: '36px',
-            cursor: 'pointer',
-            fontSize: '18px',
-            flexShrink: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          +
-        </button>
-      </motion.div>
-
       <AnimatePresence>
         {showVocabMenu && <VocabMenuModal onClose={() => setShowVocabMenu(false)} />}
         {showGrammarMenu && <GrammarModal onClose={() => setShowGrammarMenu(false)} />}
+        {showSavedWords && <FavoriteWordsModal onClose={handleCloseSaved} />}
       </AnimatePresence>
     </div>
   );
@@ -355,11 +320,13 @@ const ModuleCard = ({
   emoji,
   title,
   subtitle,
+  accent = false,
   onClick,
 }: {
   emoji: string;
   title: string;
   subtitle: string;
+  accent?: boolean;
   onClick?: () => void;
 }) => (
   <button
@@ -367,8 +334,10 @@ const ModuleCard = ({
     style={{
       width: '100%',
       height: '100%',
-      background: 'rgba(255,255,255,0.85)',
-      border: '1.5px solid #ffe4e6',
+      background: accent
+        ? 'linear-gradient(135deg, #fb7185 0%, #fda4af 100%)'
+        : 'rgba(255,255,255,0.85)',
+      border: accent ? 'none' : '1.5px solid #ffe4e6',
       borderRadius: '18px',
       padding: '26px 20px',
       cursor: 'pointer',
@@ -379,18 +348,34 @@ const ModuleCard = ({
       backdropFilter: 'blur(8px)',
       transition: 'all 0.15s ease',
       fontFamily: 'inherit',
+      boxShadow: accent ? '0 6px 20px rgba(251,113,133,0.30)' : 'none',
     }}
     onMouseEnter={(e) => {
       (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)';
-      (e.currentTarget as HTMLElement).style.boxShadow = '0 10px 28px rgba(244,63,94,0.12)';
+      (e.currentTarget as HTMLElement).style.boxShadow = accent
+        ? '0 14px 32px rgba(251,113,133,0.40)'
+        : '0 10px 28px rgba(244,63,94,0.12)';
     }}
     onMouseLeave={(e) => {
       (e.currentTarget as HTMLElement).style.transform = 'none';
-      (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+      (e.currentTarget as HTMLElement).style.boxShadow = accent
+        ? '0 6px 20px rgba(251,113,133,0.30)'
+        : 'none';
     }}
   >
     <span style={{ fontSize: '34px' }}>{emoji}</span>
-    <p style={{ fontSize: '15px', fontWeight: 700, color: '#1e293b', margin: 0 }}>{title}</p>
-    <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0 }}>{subtitle}</p>
+    <p
+      style={{
+        fontSize: '15px',
+        fontWeight: 700,
+        color: accent ? '#fff' : '#1e293b',
+        margin: 0,
+      }}
+    >
+      {title}
+    </p>
+    <p style={{ fontSize: '12px', color: accent ? 'rgba(255,255,255,0.85)' : '#94a3b8', margin: 0 }}>
+      {subtitle}
+    </p>
   </button>
 );

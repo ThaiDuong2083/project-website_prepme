@@ -45,6 +45,18 @@ public interface VocabularyWordRepository extends JpaRepository<VocabularyWordEn
   List<CategoryCountDTO> countWordsGroupByParentCategory(@Param("setIds") List<Long> setIds);
 
   @Query("""
+          SELECT new com.fpt.website_prepme.model.dto.CategoryCountDTO(
+              w.category.id,
+              COUNT(w)
+          )
+          FROM VocabularyWordEntity w
+          WHERE w.category.id IN :topicIds
+            AND w.isDeleted = false
+          GROUP BY w.category.id
+      """)
+  List<CategoryCountDTO> countWordsGroupByCategory(@Param("topicIds") List<Long> topicIds);
+
+  @Query("""
     SELECT w FROM VocabularyWordEntity w
     WHERE w.isDeleted = false
       AND (LOWER(w.word) LIKE LOWER(CONCAT('%', :keyword, '%'))

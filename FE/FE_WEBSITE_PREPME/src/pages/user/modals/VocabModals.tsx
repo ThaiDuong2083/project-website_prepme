@@ -4,7 +4,7 @@ import { ChevronLeft, Heart, RefreshCw, Shuffle, Volume2 } from 'lucide-react';
 import type { CategoryDTO, VocabularyWordDTO } from '@api/vocabulary.api';
 import { vocabularyApi } from '@api/vocabulary.api';
 import { B } from './colors';
-import { Overlay, ModalBox, ModalHeader } from './shared';
+import { Overlay, ModalBox, ModalHeader, ToastContainer, type ToastState } from './shared';
 
 export const VocabMenuModal = ({ onClose }: { onClose: () => void }) => {
   const [selectedSet, setSelectedSet] = useState<CategoryDTO | null>(null);
@@ -20,7 +20,14 @@ export const VocabMenuModal = ({ onClose }: { onClose: () => void }) => {
   if (selectedSet) {
     return (
       <AnimatePresence>
-        <TopicListModal set={selectedSet} onClose={onClose} onBack={() => setSelectedSet(null)} />
+        <TopicListModal 
+          set={selectedSet} 
+          onClose={onClose} 
+          onBack={() => {
+            setSelectedSet(null);
+            vocabularyApi.getVocabSets().then((res) => setSets(res.data)).catch(console.error);
+          }} 
+        />
       </AnimatePresence>
     );
   }
@@ -150,6 +157,46 @@ const TopicListModal = ({
   const [showFlashcard, setShowFlashcard] = useState(false);
   const [showVocabList, setShowVocabList] = useState(false);
   const [startingLearn, setStartingLearn] = useState(false);
+  const [toast, setToast] = useState<ToastState | null>(null);
+
+  const showToast = useCallback((msg: string, type: ToastState['type'] = 'success') => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 2500);
+  }, []);
+
+  useEffect(() => {
+    vocabularyApi
+      .getFavoriteWordIds()
+      .then((res) => setSavedIds(new Set(res.data ?? [])))
+      .catch(console.error);
+  }, []);
+
+  const handleToggleSave = useCallback(async (wordId: number) => {
+    const isSaved = savedIds.has(wordId);
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      if (isSaved) next.delete(wordId);
+      else next.add(wordId);
+      return next;
+    });
+    try {
+      if (isSaved) {
+        await vocabularyApi.removeFavorite(wordId);
+        showToast('Đã xóa khỏi yêu thích 💔', 'info');
+      } else {
+        await vocabularyApi.addFavorite(wordId);
+        showToast('Đã thêm vào yêu thích ❤️', 'success');
+      }
+    } catch {
+      setSavedIds((prev) => {
+        const next = new Set(prev);
+        if (isSaved) next.add(wordId);
+        else next.delete(wordId);
+        return next;
+      });
+      showToast('Có lỗi xảy ra, thử lại nhé!', 'error');
+    }
+  }, [savedIds, showToast]);
 
   useEffect(() => {
     vocabularyApi
@@ -221,7 +268,15 @@ const TopicListModal = ({
         <FlashcardModal
           topicIds={selectedTopics}
           topicTitle={`${set.name} – ${topicHeading}`}
-          onClose={() => setShowFlashcard(false)}
+          onClose={() => {
+            setShowFlashcard(false);
+            // Refresh topics list to ensure "Hoàn thành" status is rendered if updated
+            vocabularyApi.getTopics(set.id)
+              .then((res) => setTopics(res.data))
+              .catch(console.error);
+          }}
+          savedIds={savedIds}
+          onToggleSave={handleToggleSave}
         />
       </AnimatePresence>
     );
@@ -237,7 +292,8 @@ const TopicListModal = ({
         : 'Tất cả';
 
     return (
-      <Overlay onClick={onClose}>
+      <>
+        <Overlay onClick={onClose}>
         <ModalBox maxWidth={720} height="88vh" onClick={(e) => e.stopPropagation()}>
           <ModalHeader name="PrepMe" streak={3} onBack={() => setShowVocabList(false)} />
           <hr style={{ border: 'none', borderTop: `1px solid ${B[100]}`, marginBottom: '18px' }} />
@@ -356,17 +412,7 @@ const TopicListModal = ({
                 word={w}
                 index={idx}
                 saved={savedIds.has(w.id)}
-                onToggleSave={() =>
-                  setSavedIds((s) => {
-                    const next = new Set(s);
-                    if (next.has(w.id)) {
-                      next.delete(w.id);
-                    } else {
-                      next.add(w.id);
-                    }
-                    return next;
-                  })
-                }
+                onToggleSave={() => handleToggleSave(w.id)}
               />
             ))}
             {words.length === 0 && (
@@ -377,7 +423,9 @@ const TopicListModal = ({
           </div>
         </ModalBox>
       </Overlay>
-    );
+      <ToastContainer toast={toast} />
+    </>
+  );
   }
 
   return (
@@ -622,28 +670,40 @@ const VocabCard = ({
   </motion.div>
 );
 
-const FlashcardModal = ({
+export const FlashcardModal = ({
   topicIds,
   topicTitle,
   onClose,
+  savedIds,
+  onToggleSave,
+  customWords,
 }: {
-  topicIds: number[];
+  topicIds?: number[];
   topicTitle: string;
   onClose: () => void;
+  savedIds: Set<number>;
+  onToggleSave: (id: number) => void;
+  customWords?: VocabularyWordDTO[];
 }) => {
   const [words, setWords] = useState<VocabularyWordDTO[]>([]);
   const [index, setIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [direction, setDirection] = useState(0); // -1 prev, 1 next
   const [flipped, setFlipped] = useState(false); // EN↔VI toggle
-  const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
+  const completedRef = useRef(false); // prevent double API call
 
   useEffect(() => {
-    vocabularyApi
-      .getFlashcardSession(topicIds, false)
-      .then((res) => setWords(res.data))
-      .catch(console.error);
-  }, [topicIds]);
+    if (customWords) {
+      setWords(customWords);
+      return;
+    }
+    if (topicIds && topicIds.length > 0) {
+      vocabularyApi
+        .getFlashcardSession(topicIds, false)
+        .then((res) => setWords(res.data))
+        .catch(console.error);
+    }
+  }, [topicIds, customWords]);
 
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-15, 15]);
@@ -659,9 +719,19 @@ const FlashcardModal = ({
     (dir = 1) => {
       setDirection(dir);
       setShowAnswer(false);
-      setIndex((i) => Math.min(i + 1, total - 1));
+      setIndex((i) => {
+        const next = Math.min(i + 1, total - 1);
+        // Khi lướt đến từ cuối cùng: gọi API hoàn thành ngầm
+        if (next === total - 1 && i < total - 1 && !completedRef.current) {
+          completedRef.current = true;
+          if (topicIds && topicIds.length > 0 && !customWords) {
+            vocabularyApi.completeTopics(topicIds).catch(console.error);
+          }
+        }
+        return next;
+      });
     },
-    [total],
+    [total, topicIds, customWords],
   );
   const goPrev = useCallback(() => {
     setDirection(-1);
@@ -821,15 +891,7 @@ const FlashcardModal = ({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSavedIds((s) => {
-                      const n = new Set(s);
-                      if (n.has(current.id)) {
-                        n.delete(current.id);
-                      } else {
-                        n.add(current.id);
-                      }
-                      return n;
-                    });
+                    onToggleSave(current.id);
                   }}
                   style={{
                     position: 'absolute',
@@ -898,15 +960,7 @@ const FlashcardModal = ({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setSavedIds((s) => {
-                      const n = new Set(s);
-                      if (n.has(current.id)) {
-                        n.delete(current.id);
-                      } else {
-                        n.add(current.id);
-                      }
-                      return n;
-                    });
+                    onToggleSave(current.id);
                   }}
                   style={{
                     position: 'absolute',
@@ -1034,7 +1088,7 @@ const FlashcardModal = ({
   );
 };
 
-const FlashcardIcon = ({
+export const FlashcardIcon = ({
   size = 20,
   color = 'currentColor',
 }: {

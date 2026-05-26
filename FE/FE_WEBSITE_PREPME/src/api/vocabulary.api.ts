@@ -26,6 +26,21 @@ export interface VocabularyWordDTO {
   categoryPath: string;
 }
 
+export interface FavoriteVocabDTO {
+  favoriteId: number;
+  wordId: number;
+  word: string;
+  wordType: string;
+  pronunciation: string;
+  meaning: string;
+  exampleEn: string;
+  exampleVi: string;
+  level: string;
+  categoryId: number;
+  categoryName: string;
+  categoryPath: string;
+}
+
 export interface PageResponse<T> {
   content: T[];
   pagination: {
@@ -79,6 +94,15 @@ export const vocabularyApi = {
     return res.data;
   },
 
+  completeTopics: async (topicIds: number[]) => {
+    const res = await axiosInstance.post<ApiResponse<{ updatedCount: number; topicIds: number[]; status: string }>>(
+      '/vocabulary/topics/complete',
+      null,
+      { params: { topicIds: topicIds.join(',') } }
+    );
+    return res.data;
+  },
+
   searchByKeyword: async (keyword: string) => {
     const res = await axiosInstance.get<ApiResponse<VocabularyWordDTO[]>>(
       '/vocabulary/search',
@@ -87,5 +111,31 @@ export const vocabularyApi = {
       }
     );
     return res.data;
-  }
+  },
+
+  // ── Favorites ──────────────────────────────────────────
+  getFavorites: async () => {
+    const res = await axiosInstance.get<ApiResponse<FavoriteVocabDTO[]>>('/vocabulary/favorites');
+    return res.data;
+  },
+
+  countFavorites: async () => {
+    const res = await axiosInstance.get<ApiResponse<{ count: number }>>('/vocabulary/favorites/count');
+    return res.data;
+  },
+
+  getFavoriteWordIds: async () => {
+    const res = await axiosInstance.get<ApiResponse<number[]>>('/vocabulary/favorites/ids');
+    return res.data;
+  },
+
+  addFavorite: async (wordId: number) => {
+    const res = await axiosInstance.post<ApiResponse<FavoriteVocabDTO>>(`/vocabulary/favorites/${wordId}`);
+    return res.data;
+  },
+
+  removeFavorite: async (wordId: number) => {
+    const res = await axiosInstance.delete<ApiResponse<void>>(`/vocabulary/favorites/${wordId}`);
+    return res.data;
+  },
 };

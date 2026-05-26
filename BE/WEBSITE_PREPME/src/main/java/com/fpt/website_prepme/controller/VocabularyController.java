@@ -68,6 +68,18 @@ public class VocabularyController {
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
+    @PostMapping("/topics/complete")
+    @Operation(summary = "Mark topics as LEARNED – called when user finishes a full flashcard session")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> completeTopics(@RequestParam List<Long> topicIds) {
+        int updated = vocabularyService.completeTopics(topicIds);
+        Map<String, Object> result = Map.of(
+            "updatedCount", updated,
+            "topicIds", topicIds,
+            "status", "LEARNED"
+        );
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
     @GetMapping("/search")
     @Operation(summary = "Search vocabulary words by keyword across all topics")
     public ResponseEntity<ApiResponse<List<VocabWordDTO>>> searchWords(@RequestParam String keyword) {

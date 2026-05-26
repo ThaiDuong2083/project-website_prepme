@@ -1,6 +1,48 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
+
+// ─── Toast ──────────────────────────────────────────────────────────────────
+export type ToastType = 'success' | 'error' | 'info';
+
+export interface ToastState {
+  msg: string;
+  type: ToastType;
+}
+
+export const Toast = ({ message, type = 'info' }: { message: string; type?: ToastType }) => {
+  const bg = type === 'success' ? '#22c55e' : type === 'error' ? '#f43f5e' : '#f59e0b';
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -40, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.9 }}
+      style={{
+        position: 'fixed',
+        top: '100px',
+        left: '42%',
+        transform: 'translateX(-50%)',
+        background: bg,
+        color: '#fff',
+        padding: '12px 24px',
+        borderRadius: '16px',
+        fontWeight: 700,
+        fontSize: '14px',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
+        zIndex: 9999,
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {message}
+    </motion.div>
+  );
+};
+
+export const ToastContainer = ({ toast }: { toast: ToastState | null }) => (
+  <AnimatePresence>
+    {toast && <Toast key="toast" message={toast.msg} type={toast.type} />}
+  </AnimatePresence>
+);
 
 import { B } from './colors';
 

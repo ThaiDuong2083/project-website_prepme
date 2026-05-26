@@ -13,5 +13,6 @@ public interface VocabularyService {
     PageResponse<VocabWordDTO> getWords(List<Long> topicIds, String level, Pageable pageable);
     List<VocabWordDTO> getFlashcardSession(List<Long> topicIds, boolean shuffle);
     int startLearningTopics(List<Long> topicIds);
+    int completeTopics(List<Long> topicIds);
     List<VocabWordDTO> searchWords(String keyword);
 }
