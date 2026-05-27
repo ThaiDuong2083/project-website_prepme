@@ -5,14 +5,23 @@ import type { FileDTO } from '@api/files.api';
 import { filesApi } from '@api/files.api';
 import { B } from './colors';
 import { Overlay, ModalBox } from './shared';
+import { GrammarPracticeModal } from './grammar-practice';
 
 export const GrammarModal = ({ onClose }: { onClose: () => void }) => {
-  const [activeTab, setActiveTab] = useState<'menu' | 'theory'>('menu');
+  const [activeTab, setActiveTab] = useState<'menu' | 'theory' | 'practice'>('menu');
 
   if (activeTab === 'theory') {
     return (
       <AnimatePresence>
         <GrammarTheoryModal onClose={() => setActiveTab('menu')} />
+      </AnimatePresence>
+    );
+  }
+
+  if (activeTab === 'practice') {
+    return (
+      <AnimatePresence>
+        <GrammarPracticeModal onClose={() => setActiveTab('menu')} />
       </AnimatePresence>
     );
   }
@@ -87,6 +96,7 @@ export const GrammarModal = ({ onClose }: { onClose: () => void }) => {
               }}
               onClick={() => {
                 if (item.id === 'theory') setActiveTab('theory');
+                if (item.id === 'practice') setActiveTab('practice');
               }}
             >
               <span style={{ fontSize: '32px', flexShrink: 0 }}>{item.icon}</span>

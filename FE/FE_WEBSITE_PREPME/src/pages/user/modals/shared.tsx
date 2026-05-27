@@ -1,6 +1,7 @@
 import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
+import { useAppStore } from '@store/app.store';
 
 // ─── Toast ──────────────────────────────────────────────────────────────────
 export type ToastType = 'success' | 'error' | 'info';
@@ -77,7 +78,10 @@ export const ModalBox = ({
   maxWidth?: number;
   height?: string;
   onClick?: (e: React.MouseEvent) => void;
-}) => (
+}) => {
+  const { theme } = useAppStore();
+  const isDark = theme === 'dark';
+  return (
   <motion.div
     initial={{ y: 60, opacity: 0 }}
     animate={{ y: 0, opacity: 1 }}
@@ -88,12 +92,13 @@ export const ModalBox = ({
       onClick?.(e);
     }}
     style={{
-      background: '#fff',
+      background: isDark ? '#1e293b' : '#fff',
+      color: isDark ? '#f8fafc' : 'inherit',
       borderRadius: '24px',
       width: '100%',
       maxWidth: `${maxWidth}px`,
       padding: '28px 24px',
-      boxShadow: '0 24px 60px rgba(0,0,0,0.15)',
+      boxShadow: isDark ? '0 24px 60px rgba(0,0,0,0.45)' : '0 24px 60px rgba(0,0,0,0.15)',
       maxHeight: '92vh',
       display: 'flex',
       flexDirection: 'column',
@@ -103,7 +108,8 @@ export const ModalBox = ({
   >
     {children}
   </motion.div>
-);
+  );
+};
 
 export const ModalHeader = ({
   name,

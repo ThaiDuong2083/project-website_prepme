@@ -24,6 +24,7 @@ import {
  RefreshCw,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAppStore } from '@store/app.store';
 import { examsApi } from '@api/exams.api';
 import { practiceHistoryApi } from '@api/practice-history.api';
 import { filesApi } from '@api/files.api';
@@ -59,8 +60,11 @@ const EXAM_TYPES: { value: BEExamType | 'ALL'; label: string; emoji: string }[] 
 ];
 
 export const ExamsPage = () => {
- // Navigation View State
- const [view, setView] = useState<'LIST' | 'TAKING' | 'RESULT'>('LIST');
+  const { theme } = useAppStore();
+  const isDark = theme === 'dark';
+
+  // Navigation View State
+  const [view, setView] = useState<'LIST' | 'TAKING' | 'RESULT'>('LIST');
 
  // Exam List & Stats State
  const [exams, setExams] = useState<TestListDTO[]>([]);
@@ -394,26 +398,26 @@ export const ExamsPage = () => {
  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
  };
 
- return (
- <div className="min-h-screen bg-gradient-to-br from-[#fff5f6] via-white to-[#fff9fa] px-4 py-12 ">
- <div className="mx-auto max-w-[1200px]">
- <AnimatePresence mode="wait">
- {/* ────────────────── VIEW 1: EXAM LIST & STATS ────────────────── */}
- {view === 'LIST' && (
- <motion.div
- initial={{ opacity: 0, y: 15 }}
- animate={{ opacity: 1, y: 0 }}
- exit={{ opacity: 0, y: -15 }}
- className="w-full max-w-[950px] mx-auto bg-white border border-rose-100/70 rounded-[32px] shadow-xl p-8 space-y-6 "
- >
- {/* Header */}
- <div className="relative flex flex-col items-center pb-4 border-b border-rose-50 ">
- <button
- onClick={() => window.history.back()}
- className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-rose-50/50 text-rose-500 hover:bg-rose-100 transition active:scale-95"
- >
- <ChevronLeft size={20} />
- </button>
+  return (
+    <div className={`min-h-screen px-4 py-12 ${isDark ? '' : 'bg-gradient-to-br from-[#fff5f6] via-white to-[#fff9fa]'}`}>
+      <div className="mx-auto max-w-[1200px]">
+        <AnimatePresence mode="wait">
+          {/* ────────────────── VIEW 1: EXAM LIST & STATS ────────────────── */}
+          {view === 'LIST' && (
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className={`w-full max-w-[950px] mx-auto border rounded-[32px] shadow-xl p-8 space-y-6 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-rose-100/70'}`}
+            >
+              {/* Header */}
+              <div className={`relative flex flex-col items-center pb-4 border-b ${isDark ? 'border-slate-700' : 'border-rose-50'}`}>
+                <button
+                  onClick={() => window.history.back()}
+                  className={`absolute left-0 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full transition active:scale-95 ${isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-rose-50/50 text-rose-500 hover:bg-rose-100'}`}
+                >
+                  <ChevronLeft size={20} />
+                </button>
  <h2 className="text-2xl font-black text-rose-500 tracking-tight ">
  Chinh phục IELTS Full Test
  </h2>
@@ -422,17 +426,17 @@ export const ExamsPage = () => {
  </p>
 
  {/* Seed Helper on Right */}
- <button
- onClick={handleSeed}
- title="Khởi tạo bộ đề mẫu"
- className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full bg-rose-50/50 text-rose-500 hover:bg-rose-100 transition active:scale-95"
- >
- <Database size={16} />
- </button>
- </div>
+                <button
+                  onClick={handleSeed}
+                  title="Khởi tạo bộ đề mẫu"
+                  className={`absolute right-0 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full transition active:scale-95 ${isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-rose-50/50 text-rose-500 hover:bg-rose-100'}`}
+                >
+                  <Database size={16} />
+                </button>
+              </div>
 
- {/* Tab Selector: Exams vs History */}
- <div className="flex justify-center gap-8 border-b border-rose-50 pb-3 ">
+              {/* Tab Selector: Exams vs History */}
+              <div className={`flex justify-center gap-8 border-b pb-3 ${isDark ? 'border-slate-700' : 'border-rose-50'}`}>
  <button
  onClick={() => setListTab('EXAMS')}
  className={`pb-1 text-sm font-black transition-all relative ${
@@ -485,22 +489,22 @@ export const ExamsPage = () => {
  setCurrentPage(1);
  }
  }}
- className="w-full rounded-full border border-rose-100 bg-[#fffdfb] py-3 pl-11 pr-4 text-sm text-slate-700 placeholder-rose-200 outline-none focus:border-rose-300 shadow-inner "
- />
- </div>
- <button
- onClick={() => {
- setSearch(localSearch);
- setCurrentPage(1);
- }}
- className="rounded-full border border-rose-200 bg-white hover:bg-rose-50/50 px-8 text-sm font-extrabold text-rose-500 transition active:scale-95 shadow-sm "
- >
+                      className={`w-full rounded-full border py-3 pl-11 pr-4 text-sm outline-none shadow-inner ${isDark ? 'bg-slate-700 border-slate-600 text-slate-200 placeholder-slate-400 focus:border-rose-500' : 'bg-[#fffdfb] border-rose-100 text-slate-700 placeholder-rose-200 focus:border-rose-300'}`}
+                    />
+                  </div>
+                  <button
+                    onClick={() => {
+                      setSearch(localSearch);
+                      setCurrentPage(1);
+                    }}
+                    className={`rounded-full border px-8 text-sm font-extrabold transition active:scale-95 shadow-sm ${isDark ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' : 'bg-white border-rose-200 text-rose-500 hover:bg-rose-50/50'}`}
+                  >
  Tìm
  </button>
  </div>
 
- {/* Skill Sub-tabs / Categories */}
- <div className="relative border-b border-rose-100 pb-2 ">
+                {/* Skill Sub-tabs / Categories */}
+                <div className={`relative border-b pb-2 ${isDark ? 'border-slate-700' : 'border-rose-100'}`}>
  <div className="flex gap-6 overflow-x-auto no-scrollbar pb-1">
  {EXAM_TYPES.map((type) => {
  const isActive = activeType === type.value;
@@ -542,18 +546,18 @@ export const ExamsPage = () => {
  {Array.from({ length: 4 }).map((_, i) => (
  <div
  key={i}
- className="h-44 rounded-[24px] border border-rose-100/50 bg-white p-6 shadow-sm animate-pulse "
- >
- <div className="h-5 w-2/3 bg-rose-50/50 rounded-full " />
- <div className="mt-3 h-4 w-1/3 bg-rose-50/30 rounded-full " />
- <div className="mt-6 h-9 w-full bg-rose-50/20 rounded-xl " />
- </div>
- ))}
- </div>
- ) : exams.length === 0 ? (
- <div className="rounded-[24px] border border-dashed border-rose-200 py-16 text-center bg-rose-50/10 ">
- <FileText size={40} className="mx-auto text-rose-300" />
- <h3 className="mt-4 text-sm font-bold text-rose-600">
+                      className={`h-44 rounded-[24px] border p-6 shadow-sm animate-pulse ${isDark ? 'bg-slate-700/50 border-slate-700' : 'bg-white border-rose-100/50'}`}
+                    >
+                      <div className={`h-5 w-2/3 rounded-full ${isDark ? 'bg-slate-600' : 'bg-rose-50/50'}`} />
+                      <div className={`mt-3 h-4 w-1/3 rounded-full ${isDark ? 'bg-slate-600/50' : 'bg-rose-50/30'}`} />
+                      <div className={`mt-6 h-9 w-full rounded-xl ${isDark ? 'bg-slate-600/30' : 'bg-rose-50/20'}`} />
+                    </div>
+                  ))}
+                </div>
+              ) : exams.length === 0 ? (
+                <div className={`rounded-[24px] border border-dashed py-16 text-center ${isDark ? 'border-slate-600 bg-slate-800/50' : 'border-rose-200 bg-rose-50/10'}`}>
+                  <FileText size={40} className={`mx-auto ${isDark ? 'text-slate-500' : 'text-rose-300'}`} />
+                  <h3 className={`mt-4 text-sm font-bold ${isDark ? 'text-slate-300' : 'text-rose-600'}`}>
  Không tìm thấy đề thi
  </h3>
  <p className="mt-1 text-xs text-slate-400">
@@ -568,19 +572,19 @@ export const ExamsPage = () => {
  const maxScore = hasAttempted ? Math.max(...attempts.map((a) => a.score ?? 0)) : 0;
  const questionCount = exam.examType === 'LISTENING' || exam.examType === 'READING' ? 40 : exam.examType === 'WRITING' ? 2 : 3;
 
- return (
- <motion.div
- key={exam.id}
- whileHover={{ y: -2, boxShadow: '0 8px 30px rgba(244,63,94,0.06)' }}
- className="flex flex-col justify-between rounded-[24px] border border-rose-100/70 bg-white p-6 shadow-sm "
- >
- <div>
- <h3 className="text-base font-black text-slate-800 leading-snug">
- Test {index + 1}
- </h3>
- <p className="text-xs text-slate-400 font-semibold mt-0.5 line-clamp-1 ">
- {exam.title}
- </p>
+                      return (
+                        <motion.div
+                          key={exam.id}
+                          whileHover={{ y: -2, boxShadow: '0 8px 30px rgba(244,63,94,0.06)' }}
+                          className={`flex flex-col justify-between rounded-[24px] border p-6 shadow-sm ${isDark ? 'bg-slate-700/30 border-slate-700' : 'bg-white border-rose-100/70'}`}
+                        >
+                          <div>
+                            <h3 className={`text-base font-black leading-snug ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
+                              Test {index + 1}
+                            </h3>
+                            <p className="text-xs text-slate-400 font-semibold mt-0.5 line-clamp-1 ">
+                              {exam.title}
+                            </p>
 
  <div className="mt-4 flex items-center gap-6 text-xs text-slate-400 font-semibold ">
  <div className="flex items-center gap-1.5">
@@ -593,33 +597,33 @@ export const ExamsPage = () => {
  </div>
  </div>
 
- <div className="mt-3 text-xs font-semibold text-slate-400 ">
- {hasAttempted ? (
- <span className="text-emerald-500 font-bold ">
- Đã làm (Band {maxScore.toFixed(1)})
- </span>
- ) : (
- <span>Chưa làm</span>
- )}
- </div>
- </div>
+                              <div className="mt-3 text-xs font-semibold text-slate-400 ">
+                                {hasAttempted ? (
+                                  <span className="text-emerald-500 font-bold ">
+                                    Đã làm (Band {maxScore.toFixed(1)})
+                                  </span>
+                                ) : (
+                                  <span>Chưa làm</span>
+                                )}
+                              </div>
+                            </div>
 
- <div className="mt-6 flex gap-3">
- <button
- onClick={() => handleStartExam(exam.id)}
- className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-200 bg-white hover:bg-rose-50/50 text-rose-500 py-2.5 text-xs font-bold transition flex-1 active:scale-95 "
- >
- <Play size={12} className="text-rose-500 " />
- Luyện thi
- </button>
- <button
- onClick={() => handleStartExam(exam.id)}
- className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-200 bg-white hover:bg-rose-50/50 text-rose-500 py-2.5 text-xs font-bold transition flex-1 active:scale-95 "
- >
- <BookOpen size={12} className="text-rose-500 " />
- Luyện tập
- </button>
- </div>
+                            <div className="mt-6 flex gap-3">
+                              <button
+                                onClick={() => handleStartExam(exam.id)}
+                                className={`flex items-center justify-center gap-1.5 rounded-xl border py-2.5 text-xs font-bold transition flex-1 active:scale-95 ${isDark ? 'bg-slate-800 border-slate-600 text-rose-400 hover:bg-slate-700' : 'bg-white border-rose-200 text-rose-500 hover:bg-rose-50/50'}`}
+                              >
+                                <Play size={12} className={isDark ? 'text-rose-400' : 'text-rose-500'} />
+                                Luyện thi
+                              </button>
+                              <button
+                                onClick={() => handleStartExam(exam.id)}
+                                className={`flex items-center justify-center gap-1.5 rounded-xl border py-2.5 text-xs font-bold transition flex-1 active:scale-95 ${isDark ? 'bg-slate-800 border-slate-600 text-rose-400 hover:bg-slate-700' : 'bg-white border-rose-200 text-rose-500 hover:bg-rose-50/50'}`}
+                              >
+                                <BookOpen size={12} className={isDark ? 'text-rose-400' : 'text-rose-500'} />
+                                Luyện tập
+                              </button>
+                            </div>
  </motion.div>
  );
  })}
@@ -629,21 +633,21 @@ export const ExamsPage = () => {
  {/* Exam Pagination */}
  {totalPages > 1 && (
  <div className="mt-8 flex justify-center gap-2">
- <button
- disabled={currentPage === 1}
- onClick={() => setCurrentPage((c) => c - 1)}
- className="rounded-lg border border-slate-200 bg-white p-2 text-slate-500 transition hover:bg-slate-50 disabled:opacity-50 "
- >
- <ChevronLeft size={16} />
- </button>
- <span className="flex items-center text-xs text-slate-500">
- Trang {currentPage} / {totalPages}
- </span>
- <button
- disabled={currentPage === totalPages}
- onClick={() => setCurrentPage((c) => c + 1)}
- className="rounded-lg border border-slate-200 bg-white p-2 text-slate-500 transition hover:bg-slate-50 disabled:opacity-50 "
- >
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((c) => c - 1)}
+                    className={`rounded-lg border p-2 transition disabled:opacity-50 ${isDark ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <span className="flex items-center text-xs text-slate-500">
+                    Trang {currentPage} / {totalPages}
+                  </span>
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((c) => c + 1)}
+                    className={`rounded-lg border p-2 transition disabled:opacity-50 ${isDark ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                  >
  <ChevronRight size={16} />
  </button>
  </div>
@@ -664,29 +668,29 @@ export const ExamsPage = () => {
  setHistoryPage(1);
  }}
  className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
- historyType === type.value
- ? 'bg-pink-500 text-white'
- : 'bg-slate-50 text-slate-600 hover:bg-slate-100 '
- }`}
- >
- {type.emoji} {type.label}
- </button>
- ))}
- </div>
+                        historyType === type.value
+                          ? 'bg-pink-500 text-white'
+                          : (isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-slate-50 text-slate-600 hover:bg-slate-100')
+                      }`}
+                    >
+                      {type.emoji} {type.label}
+                    </button>
+                  ))}
+                </div>
 
- {loadingHistory ? (
- <div className="space-y-3">
- {Array.from({ length: 3 }).map((_, i) => (
- <div
- key={i}
- className="skeleton h-16 w-full rounded-xl"
- />
- ))}
- </div>
- ) : historyList.length === 0 ? (
- <div className="rounded-2xl border border-dashed border-slate-200 py-16 text-center ">
- <History size={40} className="mx-auto text-slate-300" />
- <h3 className="mt-4 text-sm font-bold text-slate-600 ">
+                {loadingHistory ? (
+                  <div className="space-y-3">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className={`skeleton h-16 w-full rounded-xl ${isDark ? 'bg-slate-700' : ''}`}
+                      />
+                    ))}
+                  </div>
+                ) : historyList.length === 0 ? (
+                  <div className={`rounded-2xl border border-dashed py-16 text-center ${isDark ? 'border-slate-600 bg-slate-800/50' : 'border-slate-200'}`}>
+                    <History size={40} className={`mx-auto ${isDark ? 'text-slate-500' : 'text-slate-300'}`} />
+                    <h3 className={`mt-4 text-sm font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
  Chưa có lịch sử làm bài
  </h3>
  <p className="mt-1 text-xs text-slate-400">
@@ -694,87 +698,87 @@ export const ExamsPage = () => {
  </p>
  </div>
  ) : (
- <div className="divide-y divide-slate-100 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm ">
- {historyList.map((record) => (
- <div
- key={record.id}
- className="flex items-center justify-between py-4 first:pt-2 last:pb-2"
- >
- <div>
- <div className="flex items-center gap-2">
- <span
- className="rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase"
- style={{
- backgroundColor: '#fdf2f8',
- color: BRAND[500],
- }}
- >
- {record.skillType}
- </span>
- <span className="text-xs text-slate-400">
- {new Date(record.createdAt).toLocaleDateString('vi-VN')}
- </span>
- </div>
- <h4 className="mt-1 text-sm font-black text-slate-700 ">
- {record.testTitle}
- </h4>
- <div className="mt-1 text-xs text-slate-400">
- Thời gian hoàn thành:{' '}
- <span className="font-medium text-slate-600 ">
- {Math.round((record.completionTime || 0) / 60)} phút
- </span>
- </div>
- </div>
+                    <div className={`divide-y rounded-2xl border p-4 shadow-sm ${isDark ? 'divide-slate-700 border-slate-700 bg-slate-800' : 'divide-slate-100 border-slate-100 bg-white'}`}>
+                      {historyList.map((record) => (
+                        <div
+                          key={record.id}
+                          className="flex items-center justify-between py-4 first:pt-2 last:pb-2"
+                        >
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase"
+                                style={{
+                                  backgroundColor: isDark ? 'rgba(244, 63, 94, 0.15)' : '#fdf2f8',
+                                  color: isDark ? '#fb7185' : BRAND[500],
+                                }}
+                              >
+                                {record.skillType}
+                              </span>
+                              <span className="text-xs text-slate-400">
+                                {new Date(record.createdAt).toLocaleDateString('vi-VN')}
+                              </span>
+                            </div>
+                            <h4 className={`mt-1 text-sm font-black ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                              {record.testTitle}
+                            </h4>
+                            <div className="mt-1 text-xs text-slate-400">
+                              Thời gian hoàn thành:{' '}
+                              <span className={`font-medium ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                                {Math.round((record.completionTime || 0) / 60)} phút
+                              </span>
+                            </div>
+                          </div>
 
- <div className="flex items-center gap-4">
- {record.score !== null ? (
- <div className="text-right">
- <span className="text-[10px] text-slate-400 block font-semibold">
- Band
- </span>
- <span className="text-lg font-black text-pink-600">
- {record.score.toFixed(1)}
- </span>
- </div>
- ) : (
- <span className="rounded bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-400">
- Đã nộp
- </span>
- )}
+                          <div className="flex items-center gap-4">
+                            {record.score !== null ? (
+                              <div className="text-right">
+                                <span className="text-[10px] text-slate-400 block font-semibold">
+                                  Band
+                                </span>
+                                <span className="text-lg font-black text-pink-600">
+                                  {(record.score ?? 0).toFixed(1)}
+                                </span>
+                              </div>
+                            ) : (
+                              <span className={`rounded px-2.5 py-1 text-xs font-semibold ${isDark ? 'bg-slate-700 text-slate-300' : 'bg-slate-50 text-slate-400'}`}>
+                                Đã nộp
+                              </span>
+                            )}
 
- <button
- onClick={() => handleOpenReview(record.id)}
- className="rounded-xl border border-pink-200 bg-white px-3 py-1.5 text-xs font-bold text-pink-500 hover:bg-pink-50 transition active:scale-95"
- >
- Xem chi tiết
- </button>
- </div>
- </div>
- ))}
- </div>
- )}
+                            <button
+                              onClick={() => handleOpenReview(record.id)}
+                              className={`rounded-xl border px-3 py-1.5 text-xs font-bold transition active:scale-95 ${isDark ? 'bg-slate-700 border-slate-600 text-rose-400 hover:bg-slate-600' : 'bg-white border-pink-200 text-pink-500 hover:bg-pink-50'}`}
+                            >
+                              Xem chi tiết
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
- {/* History Pagination */}
- {historyTotalPages > 1 && (
- <div className="mt-8 flex justify-center gap-2">
- <button
- disabled={historyPage === 1}
- onClick={() => setHistoryPage((c) => c - 1)}
- className="rounded-lg border border-slate-200 bg-white p-2 text-slate-500 transition hover:bg-slate-50 disabled:opacity-50 "
- >
- <ChevronLeft size={16} />
- </button>
- <span className="flex items-center text-xs text-slate-500">
- Trang {historyPage} / {historyTotalPages}
- </span>
- <button
- disabled={historyPage === historyTotalPages}
- onClick={() => setHistoryPage((c) => c + 1)}
- className="rounded-lg border border-slate-200 bg-white p-2 text-slate-500 transition hover:bg-slate-50 disabled:opacity-50 "
- >
- <ChevronRight size={16} />
- </button>
- </div>
+                  {/* History Pagination */}
+                  {historyTotalPages > 1 && (
+                    <div className="mt-8 flex justify-center gap-2">
+                      <button
+                        disabled={historyPage === 1}
+                        onClick={() => setHistoryPage((c) => c - 1)}
+                        className={`rounded-lg border p-2 transition disabled:opacity-50 ${isDark ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                      >
+                        <ChevronLeft size={16} />
+                      </button>
+                      <span className="flex items-center text-xs text-slate-500">
+                        Trang {historyPage} / {historyTotalPages}
+                      </span>
+                      <button
+                        disabled={historyPage === historyTotalPages}
+                        onClick={() => setHistoryPage((c) => c + 1)}
+                        className={`rounded-lg border p-2 transition disabled:opacity-50 ${isDark ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                      >
+                        <ChevronRight size={16} />
+                      </button>
+                    </div>
  )}
  </div>
  )}

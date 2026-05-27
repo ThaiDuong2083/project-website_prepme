@@ -7,6 +7,7 @@ interface AppStore {
   theme: Theme;
   sidebarOpen: boolean;
   sidebarCollapsed: boolean;
+  favCount: number;
 
   // Actions
   setTheme: (theme: Theme) => void;
@@ -14,6 +15,9 @@ interface AppStore {
   setSidebarOpen: (open: boolean) => void;
   toggleSidebar: () => void;
   toggleSidebarCollapsed: () => void;
+  setFavCount: (count: number) => void;
+  incrementFavCount: () => void;
+  decrementFavCount: () => void;
 }
 
 export const useAppStore = create<AppStore>()(
@@ -22,6 +26,7 @@ export const useAppStore = create<AppStore>()(
       theme: 'light',
       sidebarOpen: true,
       sidebarCollapsed: false,
+      favCount: 0,
 
       setTheme: (theme) => {
         set({ theme });
@@ -36,6 +41,9 @@ export const useAppStore = create<AppStore>()(
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
       toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
       toggleSidebarCollapsed: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
+      setFavCount: (count) => set({ favCount: count }),
+      incrementFavCount: () => set((s) => ({ favCount: s.favCount + 1 })),
+      decrementFavCount: () => set((s) => ({ favCount: Math.max(0, s.favCount - 1) })),
     }),
     {
       name: THEME_KEY,

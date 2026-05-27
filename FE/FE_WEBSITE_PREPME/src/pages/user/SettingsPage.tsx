@@ -31,10 +31,12 @@ export const SettingsPage = () => {
     : '23/05/2026'; // Fallback if no joined date
 
   const isDark = theme === 'dark';
-  const cardBg = isDark ? '#1e293b' : '#fff';
-  const itemBg = isDark ? '#334155' : '#fffbeb';
-  const textTitle = isDark ? '#f8fafc' : '#475569';
-  const textValue = isDark ? '#e2e8f0' : '#64748b';
+  const cardBg = isDark ? '#1a1d27' : '#fff';
+  const itemBg = isDark ? '#242a38' : '#fffbeb';
+  const textTitle = isDark ? '#e2e8f0' : '#475569';
+  const textValue = isDark ? '#94a3b8' : '#64748b';
+  const borderColor = isDark ? '#2d3343' : BRAND[200];
+  const headerBorder = isDark ? '#2d3343' : BRAND[100];
 
   return (
     <div
@@ -56,8 +58,8 @@ export const SettingsPage = () => {
           maxWidth: '720px',
           background: cardBg,
           borderRadius: '24px',
-          border: `1.5px solid ${isDark ? '#334155' : BRAND[100]}`,
-          boxShadow: isDark ? '0 20px 40px rgba(0,0,0,0.4)' : '0 20px 40px rgba(251,113,133,0.08)',
+          border: `1.5px solid ${headerBorder}`,
+          boxShadow: isDark ? '0 20px 40px rgba(0,0,0,0.6)' : '0 20px 40px rgba(251,113,133,0.08)',
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
@@ -93,12 +95,12 @@ export const SettingsPage = () => {
             <X size={24} strokeWidth={2.5} />
           </button>
         </div>
-        <hr style={{ border: 'none', borderTop: `1.5px dashed ${isDark ? '#334155' : BRAND[200]}`, margin: '0 0 24px 0' }} />
+        <hr style={{ border: 'none', borderTop: `1.5px dashed ${borderColor}`, margin: '0 0 24px 0' }} />
 
         {/* Section: Thông tin tài khoản */}
         <div
           style={{
-            border: `1.5px solid ${isDark ? '#334155' : BRAND[200]}`,
+            border: `1.5px solid ${borderColor}`,
             borderRadius: '16px',
             padding: '20px',
             marginBottom: '20px',
@@ -128,9 +130,9 @@ export const SettingsPage = () => {
               onClick={handleLogout}
               style={{
                 marginTop: '12px',
-                background: '#fff1f2',
-                color: BRAND[400],
-                border: 'none',
+                background: isDark ? 'rgba(244, 63, 94, 0.1)' : '#fff1f2',
+                color: isDark ? '#fb7185' : BRAND[400],
+                border: isDark ? '1px solid rgba(244, 63, 94, 0.2)' : 'none',
                 borderRadius: '12px',
                 padding: '12px',
                 fontWeight: 800,
@@ -143,10 +145,10 @@ export const SettingsPage = () => {
                 transition: 'all 0.2s',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#ffe4e6';
+                e.currentTarget.style.background = isDark ? 'rgba(244, 63, 94, 0.15)' : '#ffe4e6';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#fff1f2';
+                e.currentTarget.style.background = isDark ? 'rgba(244, 63, 94, 0.1)' : '#fff1f2';
               }}
             >
               <LogOut size={16} strokeWidth={3} /> Đăng xuất khỏi thiết bị
@@ -157,7 +159,7 @@ export const SettingsPage = () => {
         {/* Section: Tiện ích mở rộng */}
         <div
           style={{
-            border: `1.5px solid ${isDark ? '#334155' : BRAND[200]}`,
+            border: `1.5px solid ${borderColor}`,
             borderRadius: '16px',
             padding: '20px',
             position: 'relative',

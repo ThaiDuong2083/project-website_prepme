@@ -4,6 +4,7 @@ import { ChevronLeft, Heart, Shuffle } from 'lucide-react';
 import { vocabularyApi, type FavoriteVocabDTO } from '@api/vocabulary.api';
 import { B } from './colors';
 import { Overlay, ModalBox, ModalHeader, ToastContainer, type ToastState } from './shared';
+import { useAppStore } from '@store/app.store';
 
 import { FlashcardModal, FlashcardIcon } from './VocabModals';
 import type { VocabularyWordDTO } from '@api/vocabulary.api';
@@ -120,6 +121,7 @@ export const FavoriteWordsModal = ({ onClose }: { onClose: () => void }) => {
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<ToastState | null>(null);
   const [showFlashcard, setShowFlashcard] = useState(false);
+  const { decrementFavCount, setFavCount } = useAppStore();
 
   const showToast = useCallback(
     (msg: string, type: ToastState['type'] = 'success') => {
@@ -133,10 +135,14 @@ export const FavoriteWordsModal = ({ onClose }: { onClose: () => void }) => {
     setLoading(true);
     vocabularyApi
       .getFavorites()
-      .then((res) => setFavorites(res.data ?? []))
+      .then((res) => {
+        setFavorites(res.data ?? []);
+        // Optional: Ensure global favCount matches exact length if wanted
+        setFavCount((res.data ?? []).length);
+      })
       .catch(() => showToast('Không thể tải danh sách yêu thích', 'error'))
       .finally(() => setLoading(false));
-  }, [showToast]);
+  }, [showToast, setFavCount]);
 
   // Apply level filter
   useEffect(() => {
@@ -162,6 +168,7 @@ export const FavoriteWordsModal = ({ onClose }: { onClose: () => void }) => {
     try {
       await vocabularyApi.removeFavorite(wordId);
       setFavorites((prev) => prev.filter((f) => f.wordId !== wordId));
+      decrementFavCount();
       showToast('Đã xóa khỏi yêu thích 💔', 'info');
     } catch {
       showToast('Xóa thất bại, vui lòng thử lại', 'error');

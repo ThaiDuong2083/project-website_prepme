@@ -5,6 +5,7 @@ import type { CategoryDTO, VocabularyWordDTO } from '@api/vocabulary.api';
 import { vocabularyApi } from '@api/vocabulary.api';
 import { B } from './colors';
 import { Overlay, ModalBox, ModalHeader, ToastContainer, type ToastState } from './shared';
+import { useAppStore } from '@store/app.store';
 
 export const VocabMenuModal = ({ onClose }: { onClose: () => void }) => {
   const [selectedSet, setSelectedSet] = useState<CategoryDTO | null>(null);
@@ -158,6 +159,8 @@ const TopicListModal = ({
   const [showVocabList, setShowVocabList] = useState(false);
   const [startingLearn, setStartingLearn] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
+  
+  const { incrementFavCount, decrementFavCount } = useAppStore();
 
   const showToast = useCallback((msg: string, type: ToastState['type'] = 'success') => {
     setToast({ msg, type });
@@ -182,9 +185,11 @@ const TopicListModal = ({
     try {
       if (isSaved) {
         await vocabularyApi.removeFavorite(wordId);
+        decrementFavCount();
         showToast('Đã xóa khỏi yêu thích 💔', 'info');
       } else {
         await vocabularyApi.addFavorite(wordId);
+        incrementFavCount();
         showToast('Đã thêm vào yêu thích ❤️', 'success');
       }
     } catch {
@@ -264,21 +269,24 @@ const TopicListModal = ({
         : 'Tất cả';
 
     return (
-      <AnimatePresence>
-        <FlashcardModal
-          topicIds={selectedTopics}
-          topicTitle={`${set.name} – ${topicHeading}`}
-          onClose={() => {
-            setShowFlashcard(false);
-            // Refresh topics list to ensure "Hoàn thành" status is rendered if updated
-            vocabularyApi.getTopics(set.id)
-              .then((res) => setTopics(res.data))
-              .catch(console.error);
-          }}
-          savedIds={savedIds}
-          onToggleSave={handleToggleSave}
-        />
-      </AnimatePresence>
+      <>
+        <AnimatePresence>
+          <FlashcardModal
+            topicIds={selectedTopics}
+            topicTitle={`${set.name} – ${topicHeading}`}
+            onClose={() => {
+              setShowFlashcard(false);
+              // Refresh topics list to ensure "Hoàn thành" status is rendered if updated
+              vocabularyApi.getTopics(set.id)
+                .then((res) => setTopics(res.data))
+                .catch(console.error);
+            }}
+            savedIds={savedIds}
+            onToggleSave={handleToggleSave}
+          />
+        </AnimatePresence>
+        <ToastContainer toast={toast} />
+      </>
     );
   }
 

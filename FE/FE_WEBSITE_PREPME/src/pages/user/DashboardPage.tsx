@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Flame } from 'lucide-react';
+import { Flame, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@constants/routes.constants';
 import { GrammarModal, VocabMenuModal, FavoriteWordsModal } from './DashboardModals';
+import { ToastContainer, type ToastState } from './modals/shared';
 import { vocabularyApi, type VocabularyWordDTO } from '@api/vocabulary.api.ts';
+import { useAppStore } from '@store/app.store';
 
 
 const BRAND = {
@@ -29,23 +31,34 @@ export const DashboardPage = () => {
   const [showSavedWords, setShowSavedWords] = useState(false);
   const [results, setResults] = useState<VocabularyWordDTO[]>([]);
   const [loading, setLoading] = useState(false);
-  const [favCount, setFavCount] = useState(0);
+  const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
+  const [toast, setToast] = useState<ToastState | null>(null);
   const streak = 3;
 
+  const { theme, favCount, setFavCount, incrementFavCount, decrementFavCount } = useAppStore();
 
+  const showToast = (msg: string, type: ToastState['type'] = 'success') => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 2500);
+  };
+  const isDark = theme === 'dark';
+
+  const cardBg = isDark ? '#1e293b' : 'rgba(255,255,255,0.85)';
+  const cardBorder = isDark ? '#334155' : BRAND[100];
+  const textColorTitle = isDark ? '#f8fafc' : '#1e293b';
   useEffect(() => {
     vocabularyApi
       .countFavorites()
       .then((res) => setFavCount(res.data?.count ?? 0))
       .catch(() => {});
+    vocabularyApi
+      .getFavoriteWordIds()
+      .then((res) => setSavedIds(new Set(res.data ?? [])))
+      .catch(() => {});
   }, []);
 
   const handleCloseSaved = () => {
     setShowSavedWords(false);
-    vocabularyApi
-      .countFavorites()
-      .then((res) => setFavCount(res.data?.count ?? 0))
-      .catch(() => {});
   };
 
   const handleCard = (id: string) => {
@@ -65,6 +78,38 @@ export const DashboardPage = () => {
       setResults([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleToggleSave = async (e: React.MouseEvent, wordId: number) => {
+    e.stopPropagation();
+    const isSaved = savedIds.has(wordId);
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      if (isSaved) next.delete(wordId);
+      else next.add(wordId);
+      return next;
+    });
+
+    try {
+      if (isSaved) {
+        await vocabularyApi.removeFavorite(wordId);
+        decrementFavCount();
+        showToast('Đã xóa khỏi yêu thích 💔', 'info');
+      } else {
+        await vocabularyApi.addFavorite(wordId);
+        incrementFavCount();
+        showToast('Đã thêm vào yêu thích ❤️', 'success');
+      }
+    } catch {
+      // rollback
+      setSavedIds((prev) => {
+        const next = new Set(prev);
+        if (isSaved) next.add(wordId);
+        else next.delete(wordId);
+        return next;
+      });
+      showToast('Có lỗi xảy ra, thử lại nhé!', 'error');
     }
   };
 
@@ -88,7 +133,7 @@ export const DashboardPage = () => {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '22px' }}>🧡</span>
-          <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#1e293b', margin: 0 }}>PrepMe</h1>
+          <h1 style={{ fontSize: '22px', fontWeight: 800, color: textColorTitle, margin: 0 }}>PrepMe</h1>
           <span style={{ fontSize: '22px' }}>🌙</span>
         </div>
         <div
@@ -102,7 +147,7 @@ export const DashboardPage = () => {
             padding: '6px 14px',
           }}
         >
-          <span style={{ fontWeight: 800, fontSize: '16px', color: '#1e293b' }}>{streak}</span>
+          <span style={{ fontWeight: 800, fontSize: '16px', color: '#f43f5e' }}>{streak}</span>
           <Flame size={18} color="#f97316" fill="#f97316" />
         </div>
       </div>
@@ -111,8 +156,8 @@ export const DashboardPage = () => {
       <div
         onClick={() => setAnnIdx((i) => (i + 1) % announcements.length)}
         style={{
-          background: 'rgba(255,255,255,0.85)',
-          border: `1.5px solid ${BRAND[100]}`,
+          background: isDark ? 'rgba(30, 41, 59, 0.85)' : 'rgba(255,255,255,0.85)',
+          border: `1.5px solid ${cardBorder}`,
           borderRadius: '14px',
           padding: '10px 16px',
           marginBottom: '18px',
@@ -129,7 +174,7 @@ export const DashboardPage = () => {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
-            style={{ fontSize: '13px', color: '#475569', flex: 1 }}
+            style={{ fontSize: '13px', color: isDark ? '#cbd5e1' : '#475569', flex: 1 }}
           >
             {announcements[annIdx]}
           </motion.span>
@@ -138,7 +183,7 @@ export const DashboardPage = () => {
 
       {/* SEARCH INPUT */}
       <div className="relative w-full" style={{ marginBottom: '30px' }}>
-        <div className="flex items-center overflow-hidden rounded-2xl border-2 border-pink-200 bg-pink-50 shadow-md">
+        <div className={`flex items-center overflow-hidden rounded-2xl border-2 shadow-md ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-pink-50 border-pink-200'}`}>
           <input
             value={search}
             onChange={(e) => {
@@ -150,7 +195,7 @@ export const DashboardPage = () => {
             }}
             placeholder="Nhập từ cần tra cứu..."
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            className="flex-1 bg-transparent px-4 py-3 text-sm text-slate-700 outline-none placeholder:text-slate-400"
+            className={`flex-1 bg-transparent px-4 py-3 text-sm outline-none placeholder:text-slate-400 ${isDark ? 'text-slate-200' : 'text-slate-700'}`}
           />
           <button
             onClick={handleSearch}
@@ -162,10 +207,10 @@ export const DashboardPage = () => {
 
         {/* SEARCH RESULTS */}
         {results.length > 0 && (
-          <div className="absolute z-50 mt-3 max-h-[520px] w-full overflow-y-auto rounded-2xl border border-pink-200 bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-dashed border-pink-200 px-5 py-4 text-sm font-semibold text-pink-500">
+          <div className={`absolute z-50 mt-3 max-h-[520px] w-full overflow-y-auto rounded-2xl border shadow-xl ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-pink-200'}`}>
+            <div className={`flex items-center justify-between border-b border-dashed px-5 py-4 text-sm font-semibold text-pink-500 ${isDark ? 'border-slate-600' : 'border-pink-200'}`}>
               <div>
-                Kết quả cho "<span className="font-medium text-slate-800">{search}</span>"
+                Kết quả cho "<span className={`font-medium ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{search}</span>"
               </div>
               <span
                 className="cursor-pointer text-2xl leading-none hover:text-pink-600"
@@ -184,19 +229,39 @@ export const DashboardPage = () => {
               {results.map((item, index: number) => (
                 <div
                   key={index}
-                  className="mx-2 cursor-pointer rounded-2xl border border-pink-100 bg-[#fff9f0] p-5 transition-all hover:border-pink-200"
+                  className={`mx-2 cursor-pointer rounded-2xl border p-5 transition-all hover:border-pink-200 ${isDark ? 'bg-slate-700/50 border-slate-600' : 'bg-[#fff9f0] border-pink-100'}`}
                 >
                   <div className="flex flex-wrap items-baseline gap-2">
-                    <div className="text-xl font-bold text-slate-800">{item.word}</div>
-                    {item.pronunciation && (
-                      <div className="text-sm font-medium text-pink-600">{item.pronunciation}</div>
-                    )}
-                    <div className="text-sm font-normal text-pink-500">
-                      ({item.wordType || 'noun'})
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-baseline gap-2">
+                        <div className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}>{item.word}</div>
+                        {item.pronunciation && (
+                          <div className="text-sm font-medium text-pink-600">{item.pronunciation}</div>
+                        )}
+                        <div className="text-sm font-normal text-pink-500">
+                          ({item.wordType || 'noun'})
+                        </div>
+                      </div>
+                      <button
+                        onClick={(e) => handleToggleSave(e, item.id)}
+                        className={`flex h-8 w-8 items-center justify-center rounded-full border transition-all ${
+                          savedIds.has(item.id)
+                            ? 'border-pink-500 bg-pink-50'
+                            : isDark
+                              ? 'border-slate-600 bg-slate-700 hover:border-pink-300 hover:bg-slate-600'
+                              : 'border-slate-200 bg-white hover:border-pink-300 hover:bg-pink-50'
+                        }`}
+                      >
+                        <Heart
+                          size={16}
+                          color={savedIds.has(item.id) ? '#f43f5e' : isDark ? '#94a3b8' : '#cbd5e1'}
+                          fill={savedIds.has(item.id) ? '#f43f5e' : 'transparent'}
+                        />
+                      </button>
                     </div>
                   </div>
 
-                  <div className="mt-2 text-slate-700">
+                  <div className={`mt-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                     Nghĩa: <span className="font-medium">{item.meaning}</span>
                   </div>
                 </div>
@@ -205,7 +270,7 @@ export const DashboardPage = () => {
           </div>
         )}
         {loading && (
-          <div className="absolute z-50 mt-3 w-full rounded-2xl border border-pink-200 bg-white p-12 text-center text-slate-400 shadow-xl">
+          <div className={`absolute z-50 mt-3 w-full rounded-2xl border p-12 text-center shadow-xl ${isDark ? 'bg-slate-800 border-slate-700 text-slate-400' : 'bg-white border-pink-200 text-slate-400'}`}>
             Đang tìm kiếm...
           </div>
         )}
@@ -231,6 +296,7 @@ export const DashboardPage = () => {
             title="Từ vựng IELTS"
             subtitle="Mở khóa chủ đề"
             onClick={() => handleCard('vocab')}
+            isDark={isDark}
           />
         </motion.div>
 
@@ -245,6 +311,7 @@ export const DashboardPage = () => {
             title="Ngữ Pháp"
             subtitle="Lý thuyết & Bài tập"
             onClick={() => handleCard('grammar')}
+            isDark={isDark}
           />
         </motion.div>
 
@@ -259,6 +326,7 @@ export const DashboardPage = () => {
             title="Đã lưu"
             subtitle={`${favCount} từ đã lưu`}
             onClick={() => handleCard('saved')}
+            isDark={isDark}
           />
         </motion.div>
 
@@ -274,8 +342,8 @@ export const DashboardPage = () => {
           >
             <div
               style={{
-                background: 'rgba(255,255,255,0.85)',
-                border: `1.5px solid ${BRAND[100]}`,
+                background: cardBg,
+                border: `1.5px solid ${cardBorder}`,
                 borderRadius: '18px',
                 padding: '26px 20px',
                 cursor: 'pointer',
@@ -296,7 +364,7 @@ export const DashboardPage = () => {
               }}
             >
               <span style={{ fontSize: '34px' }}>📄</span>
-              <p style={{ fontSize: '15px', fontWeight: 700, color: '#1e293b', margin: 0 }}>
+              <p style={{ fontSize: '15px', fontWeight: 700, color: textColorTitle, margin: 0 }}>
                 Luyện Thi
               </p>
               <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0 }}>
@@ -312,6 +380,7 @@ export const DashboardPage = () => {
         {showGrammarMenu && <GrammarModal onClose={() => setShowGrammarMenu(false)} />}
         {showSavedWords && <FavoriteWordsModal onClose={handleCloseSaved} />}
       </AnimatePresence>
+      <ToastContainer toast={toast} />
     </div>
   );
 };
@@ -322,12 +391,14 @@ const ModuleCard = ({
   subtitle,
   accent = false,
   onClick,
+  isDark,
 }: {
   emoji: string;
   title: string;
   subtitle: string;
   accent?: boolean;
   onClick?: () => void;
+  isDark?: boolean;
 }) => (
   <button
     onClick={onClick}
@@ -336,8 +407,8 @@ const ModuleCard = ({
       height: '100%',
       background: accent
         ? 'linear-gradient(135deg, #fb7185 0%, #fda4af 100%)'
-        : 'rgba(255,255,255,0.85)',
-      border: accent ? 'none' : '1.5px solid #ffe4e6',
+        : (isDark ? '#1e293b' : 'rgba(255,255,255,0.85)'),
+      border: accent ? 'none' : `1.5px solid ${isDark ? '#334155' : '#ffe4e6'}`,
       borderRadius: '18px',
       padding: '26px 20px',
       cursor: 'pointer',
@@ -368,7 +439,7 @@ const ModuleCard = ({
       style={{
         fontSize: '15px',
         fontWeight: 700,
-        color: accent ? '#fff' : '#1e293b',
+        color: accent ? '#fff' : (isDark ? '#f8fafc' : '#1e293b'),
         margin: 0,
       }}
     >

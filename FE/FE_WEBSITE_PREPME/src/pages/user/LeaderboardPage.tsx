@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, Crown } from 'lucide-react';
+import { useAppStore } from '@store/app.store';
 
 const BRAND = {
   50: '#fff1f2',
@@ -41,7 +42,14 @@ const getRankColor = (rank: number) => {
   return '#64748b';
 };
 
-const getRankBg = (rank: number, isMe: boolean) => {
+const getRankBg = (rank: number, isMe: boolean, isDark: boolean) => {
+  if (isDark) {
+    if (isMe) return 'rgba(244, 63, 94, 0.15)';
+    if (rank === 1) return '#292415';
+    if (rank === 2) return '#1e2532';
+    if (rank === 3) return '#2e1c21';
+    return 'transparent';
+  }
   if (isMe) return BRAND[50];
   if (rank === 1) return '#fffbeb';
   if (rank === 2) return '#f8fafc';
@@ -58,6 +66,13 @@ const RankMedal = ({ rank }: { rank: number }) => {
 
 export const LeaderboardPage = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const { theme } = useAppStore();
+  const isDark = theme === 'dark';
+
+  const boardBg = isDark ? 'rgba(30, 41, 59, 0.92)' : 'rgba(255,255,255,0.92)';
+  const borderCol = isDark ? '#334155' : BRAND[100];
+  const borderDiv = isDark ? '#334155' : BRAND[50];
+  const textTitle = isDark ? '#f8fafc' : '#1e293b';
 
   return (
     <div style={{ maxWidth: '700px', margin: '0 auto', padding: '28px 24px' }}>
@@ -65,11 +80,11 @@ export const LeaderboardPage = () => {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         style={{
-          background: 'rgba(255,255,255,0.92)',
+          background: boardBg,
           borderRadius: '24px',
-          border: `1.5px solid ${BRAND[100]}`,
+          border: `1.5px solid ${borderCol}`,
           backdropFilter: 'blur(12px)',
-          boxShadow: '0 8px 32px rgba(244,63,94,0.10)',
+          boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(244,63,94,0.10)',
           overflow: 'hidden',
         }}
       >
@@ -80,7 +95,7 @@ export const LeaderboardPage = () => {
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '20px 24px 16px',
-            borderBottom: `1.5px solid ${BRAND[50]}`,
+            borderBottom: `1.5px solid ${borderDiv}`,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -89,7 +104,7 @@ export const LeaderboardPage = () => {
               style={{
                 fontSize: '18px',
                 fontWeight: 900,
-                color: '#1e293b',
+                color: textTitle,
                 margin: 0,
                 letterSpacing: '0.04em',
               }}
@@ -104,7 +119,7 @@ export const LeaderboardPage = () => {
           style={{
             display: 'flex',
             overflowX: 'auto',
-            borderBottom: `1.5px solid ${BRAND[50]}`,
+            borderBottom: `1.5px solid ${borderDiv}`,
             padding: '0 16px',
           }}
         >
@@ -146,8 +161,8 @@ export const LeaderboardPage = () => {
                 alignItems: 'center',
                 gap: '14px',
                 padding: '13px 24px',
-                background: getRankBg(entry.rank, entry.isMe),
-                borderBottom: `1px solid ${BRAND[50]}`,
+                background: getRankBg(entry.rank, entry.isMe, isDark),
+                borderBottom: `1px solid ${borderDiv}`,
                 borderLeft: entry.isMe ? `3px solid ${BRAND[400]}` : '3px solid transparent',
               }}
             >
@@ -191,7 +206,7 @@ export const LeaderboardPage = () => {
                   style={{
                     fontSize: '14px',
                     fontWeight: 700,
-                    color: '#1e293b',
+                    color: textTitle,
                     margin: '0 0 2px 0',
                   }}
                 >
