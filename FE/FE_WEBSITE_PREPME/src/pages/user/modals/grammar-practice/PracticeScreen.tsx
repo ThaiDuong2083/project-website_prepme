@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronDown } from 'lucide-react';
 import { B } from '../colors';
 import { useAppStore } from '@store/app.store';
-import { grammarApi, PracticeQuestion } from '../../../../api/grammar.api';
+import { grammarApi } from '@api/grammar.api';
+import type { PracticeQuestion } from '@api/grammar.api';
+import { useAuthStore } from '@store/auth.store';
 
 export const PracticeScreen = ({
-  topicId, topicName, totalQuestions, timePerQuestion, onClose,
+  topicId, topicName, totalQuestions, timePerQuestion, onClose, onFinish,
 }: {
-  topicId: number; topicName: string; totalQuestions: number; timePerQuestion: number; onClose: () => void;
+  topicId: number; topicName: string; totalQuestions: number; timePerQuestion: number; onClose: () => void; onFinish?: () => void;
 }) => {
   const [questions, setQuestions] = useState<PracticeQuestion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,12 +23,15 @@ export const PracticeScreen = ({
   const { theme } = useAppStore();
   const isDark = theme === 'dark';
 
+  const { user } = useAuthStore();
+  const userId = Number(user?.id);
+
   useEffect(() => {
-    grammarApi.getPracticeQuestions(topicId, totalQuestions).then(data => {
-      setQuestions(data);
-      setAnswers(Array(data.length).fill(null));
+    grammarApi.getPracticeQuestions(topicId, totalQuestions).then(res => {
+      setQuestions(res.data);
+      setAnswers(Array(res.data.length).fill(null));
       setLoading(false);
-    }).catch(e => {
+    }).catch(() => {
       setLoading(false);
     });
   }, [topicId, totalQuestions]);
@@ -34,10 +39,26 @@ export const PracticeScreen = ({
   const q = questions[currentIndex];
   const isCorrect = q && selected === q.answer;
 
+  const doSelect = async (opt: string) => {
+    if (showResult) return;
+    setSelected(opt); setShowResult(true); setTimeLeft(null);
+    try {
+      await grammarApi.submitPracticeResult(userId, { questionId: q.id, selectedAnswer: opt });
+    } catch (e) {
+      console.error('Lỗi khi lưu tiến độ:', e);
+    }
+  };
+
+  const doNext = () => {
+    const nxt = [...answers]; nxt[currentIndex] = selected; setAnswers(nxt);
+    if (currentIndex >= questions.length - 1) { setFinished(true); return; }
+    setSelected(null); setShowResult(false); setCurrentIndex((i) => i + 1);
+    if (timePerQuestion > 0) setTimeLeft(timePerQuestion);
+  };
+
   // Timer
   useEffect(() => {
     if (timePerQuestion <= 0 || showResult || finished) return;
-    setTimeLeft(timePerQuestion);
     const id = setInterval(() => {
       setTimeLeft((t) => {
         if (t == null || t <= 1) { clearInterval(id); setSelected(''); setShowResult(true); return 0; }
@@ -50,6 +71,7 @@ export const PracticeScreen = ({
 
   // Keyboard nav
   useEffect(() => {
+    if (!q) return;
     const onKey = (e: KeyboardEvent) => {
       if ((e.key === 'ArrowDown' || e.key === 'Enter') && showResult) { doNext(); return; }
       if (!showResult) {
@@ -61,22 +83,6 @@ export const PracticeScreen = ({
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  const doSelect = async (opt: string) => {
-    if (showResult) return;
-    setSelected(opt); setShowResult(true); setTimeLeft(null);
-    try {
-      await grammarApi.submitPracticeResult({ questionId: q.id, selectedAnswer: opt });
-    } catch (e) {
-      console.error('Lỗi khi lưu tiến độ:', e);
-    }
-  };
-
-  const doNext = () => {
-    const nxt = [...answers]; nxt[currentIndex] = selected; setAnswers(nxt);
-    if (currentIndex >= totalQuestions - 1) { setFinished(true); return; }
-    setSelected(null); setShowResult(false); setCurrentIndex((i) => i + 1);
-    if (timePerQuestion > 0) setTimeLeft(timePerQuestion);
-  };
 
   if (loading) {
     return (
@@ -89,8 +95,9 @@ export const PracticeScreen = ({
   if (!q) return null; // fallback if no questions but not loading
 
   if (finished) {
-    const correct = answers.filter((a) => a === q.answer).length;
-    const pct = Math.round((correct / totalQuestions) * 100);
+    const correct = answers.filter((a, i) => a === questions[i]?.answer).length;
+    const total = questions.length;
+    const pct = Math.round((correct / total) * 100);
     const grade = pct >= 80 ? '🏆 Xuất sắc!' : pct >= 60 ? '👍 Khá tốt!' : pct >= 40 ? '📚 Cần ôn thêm' : '💪 Cố lên nhé!';
     const gc = pct >= 80 ? '#22c55e' : pct >= 60 ? '#f59e0b' : pct >= 40 ? '#fb923c' : B[400];
     const circ = 2 * Math.PI * 58;
@@ -133,8 +140,8 @@ export const PracticeScreen = ({
         <div style={{ display: 'flex', justifyContent: 'center', gap: '32px', marginBottom: '32px' }}>
           {[
             { label: 'Đúng', val: correct, color: '#22c55e' },
-            { label: 'Sai', val: totalQuestions - correct, color: B[400] },
-            { label: 'Tổng', val: totalQuestions, color: isDark ? '#64748b' : '#94a3b8' },
+            { label: 'Sai', val: total - correct, color: B[400] },
+            { label: 'Tổng', val: total, color: isDark ? '#64748b' : '#94a3b8' },
           ].map((s) => (
             <div key={s.label} style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '30px', fontWeight: 900, color: s.color }}>{s.val}</div>
@@ -155,8 +162,9 @@ export const PracticeScreen = ({
             🔄 Làm lại
           </motion.button>
           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-            onClick={onClose}
+            onClick={() => { onFinish?.(); onClose(); }}
             style={{ padding: '12px 22px', borderRadius: '14px', border: 'none', background: `linear-gradient(135deg,${B[400]},${B[300]})`, color: '#fff', fontWeight: 800, fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 6px 20px rgba(244,63,94,0.25)' }}
+            ref={(el) => { if (el) el.onclick = () => { onFinish?.(); onClose(); }; }}
           >
             ← Chọn chủ đề
           </motion.button>
@@ -229,9 +237,6 @@ export const PracticeScreen = ({
           style={{ display: 'grid', gridTemplateColumns: showResult ? '1fr 1fr' : '1fr', gap: '16px', marginBottom: '16px' }}
         >
           <div style={{ border: `1.5px solid ${isDark ? '#334155' : '#fde68a'}`, borderRadius: '16px', padding: '20px', background: isDark ? '#1e2d40' : '#fffbeb', position: 'relative' }}>
-            <button style={{ position: 'absolute', top: '12px', right: '12px', background: isDark ? '#334155' : '#f1f5f9', border: 'none', borderRadius: '8px', padding: '4px 10px', fontSize: '12px', fontWeight: 700, color: subText, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              📝 Note
-            </button>
             <p style={{ fontWeight: 700, fontSize: '16px', color: textMain, textAlign: 'center', marginTop: '24px', lineHeight: 1.8 }}>
               {q.text.split('___').map((part, pi, arr) => (
                 <span key={pi}>

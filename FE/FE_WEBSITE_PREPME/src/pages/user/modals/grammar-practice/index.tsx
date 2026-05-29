@@ -4,8 +4,8 @@ import { ChevronLeft, BarChart2 } from 'lucide-react';
 import { B } from '../colors';
 import { Overlay, ModalBox, ToastContainer, type ToastState } from '../shared';
 import { useAppStore } from '@store/app.store';
-import { grammarApi } from '../../../../api/grammar.api';
-import type { GrammarTopic } from '../../../../api/grammar.api';
+import { useAuthStore } from '@store/auth.store';
+import { grammarApi, type GrammarTopic } from '@api/grammar.api';
 import { ProgressModal } from './ProgressModal';
 import { PracticeScreen } from './PracticeScreen';
 
@@ -17,23 +17,27 @@ export const GrammarPracticeModal = ({ onClose }: { onClose: () => void }) => {
   const [toast, setToast] = useState<ToastState | null>(null);
   const [topics, setTopics] = useState<GrammarTopic[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
   const { theme } = useAppStore();
   const isDark = theme === 'dark';
-
-  useEffect(() => {
-    grammarApi.getTopics().then(data => {
-      setTopics(data);
-      setLoading(false);
-    }).catch(e => {
-      setLoading(false);
-      showToast('Lỗi tải chủ đề', 'error');
-    });
-  }, []);
+  const { user } = useAuthStore();
+  const userId = Number(user?.id);
 
   const showToast = useCallback((msg: string, type: ToastState['type'] = 'info') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 2500);
   }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+    grammarApi.getTopics(userId).then(res => {
+      setTopics(res.data);
+      setLoading(false);
+    }).catch(() => {
+      setLoading(false);
+      showToast('Lỗi tải chủ đề', 'error');
+    });
+  }, [userId, showToast, refreshKey]);
 
   if (showProg) return <><ProgressModal onClose={() => setShowProg(false)} /><ToastContainer toast={toast} /></>;
 
@@ -45,6 +49,7 @@ export const GrammarPracticeModal = ({ onClose }: { onClose: () => void }) => {
           topicName={practice.topicName}
           totalQuestions={numQ}
           timePerQuestion={timePQ}
+          onFinish={() => setRefreshKey(k => k + 1)}
           onClose={() => setPractice(null)}
         />
         <ToastContainer toast={toast} />

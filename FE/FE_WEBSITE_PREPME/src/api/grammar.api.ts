@@ -1,4 +1,5 @@
-import api from './index';
+import axiosInstance from '@lib/axios.lib';
+import type { ApiResponse } from '@types';
 
 export interface GrammarTopic {
   id: number;
@@ -43,27 +44,23 @@ export interface TopicProgressDetailsResponse {
 }
 
 export const grammarApi = {
-  // Lấy danh sách topics kèm progress sơ bộ
-  getTopics: async () => {
-    const res = await api.get<GrammarTopic[]>('/v1/grammar/topics');
+  getTopics: async (userId: number) => {
+    const res = await axiosInstance.get<ApiResponse<GrammarTopic[]>>('/grammar/topics', { params: { userId } });
     return res.data;
   },
 
-  // Lấy danh sách câu hỏi cho 1 phiên practice
   getPracticeQuestions: async (topicId: number, limit: number = 20) => {
-    const res = await api.get<PracticeQuestion[]>(`/v1/grammar/topics/${topicId}/questions?limit=${limit}`);
+    const res = await axiosInstance.get<ApiResponse<PracticeQuestion[]>>(`/grammar/topics/${topicId}/questions`, { params: { limit } });
     return res.data;
   },
 
-  // Submit kết quả 1 câu hỏi
-  submitPracticeResult: async (data: GrammarSubmitRequest) => {
-    const res = await api.post<void>('/v1/grammar/submit', data);
+  submitPracticeResult: async (userId: number, data: GrammarSubmitRequest) => {
+    const res = await axiosInstance.post<ApiResponse<void>>('/grammar/submit', data, { params: { userId } });
     return res.data;
   },
 
-  // Lấy toàn bộ progress để vẽ màn "Tiến độ ngữ pháp"
-  getGrammarProgress: async () => {
-    const res = await api.get<TopicProgressDetailsResponse[]>('/v1/grammar/progress');
+  getGrammarProgress: async (userId: number) => {
+    const res = await axiosInstance.get<ApiResponse<TopicProgressDetailsResponse[]>>('/grammar/progress', { params: { userId } });
     return res.data;
   }
 };

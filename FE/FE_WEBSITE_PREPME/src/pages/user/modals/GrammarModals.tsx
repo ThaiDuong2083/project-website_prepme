@@ -44,7 +44,7 @@ export const GrammarModal = ({ onClose }: { onClose: () => void }) => {
               letterSpacing: '0.5px',
             }}
           >
-            📝 NGỮ PHÁP TOEIC
+            📝 NGỮ PHÁP IELTS
           </h2>
           <p style={{ color: '#64748b', fontSize: '15px', margin: 0, fontWeight: 600 }}>
             Chọn phần bạn muốn học hôm nay
@@ -69,13 +69,6 @@ export const GrammarModal = ({ onClose }: { onClose: () => void }) => {
               title: 'Thực hành theo dạng',
               desc: 'Làm bài tập từng chủ đề',
               color: '#fbbf24',
-            },
-            {
-              id: 'test',
-              icon: '🔥',
-              title: 'Kiểm tra tổng hợp',
-              desc: 'Trộn ngẫu nhiên các chủ đề',
-              color: '#fb923c',
             },
           ].map((item) => (
             <motion.div

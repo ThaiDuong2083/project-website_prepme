@@ -4,23 +4,28 @@ import { X, ChevronDown, ChevronUp } from 'lucide-react';
 import { B } from '../colors';
 import { Overlay, ModalBox } from '../shared';
 import { useAppStore } from '@store/app.store';
-import { grammarApi, TopicProgressDetailsResponse } from '../../../../api/grammar.api';
+import { useAuthStore } from '@store/auth.store';
+import { grammarApi, type TopicProgressDetailsResponse } from '@api/grammar.api';
 
 export const ProgressModal = ({ onClose }: { onClose: () => void }) => {
   const [expanded, setExpanded] = useState<number | null>(null);
   const [progressData, setProgressData] = useState<TopicProgressDetailsResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const { theme } = useAppStore();
+  const { user } = useAuthStore();
   const isDark = theme === 'dark';
 
+  const userId = Number(user?.id);
+
   useEffect(() => {
-    grammarApi.getGrammarProgress().then(data => {
-      setProgressData(data);
+    if (!userId) return;
+    grammarApi.getGrammarProgress(userId).then(res => {
+      setProgressData(res.data);
       setLoading(false);
-    }).catch(e => {
+    }).catch(() => {
       setLoading(false);
     });
-  }, []);
+  }, [userId]);
 
   return (
     <Overlay onClick={onClose}>

@@ -55,6 +55,7 @@ export const VocabMenuModal = ({ onClose }: { onClose: () => void }) => {
             gridTemplateColumns: 'repeat(2, 1fr)',
             gap: '14px',
             overflowY: 'auto',
+            padding: '4px',
           }}
         >
           {sets.length === 0 && (
@@ -201,7 +202,7 @@ const TopicListModal = ({
       });
       showToast('Có lỗi xảy ra, thử lại nhé!', 'error');
     }
-  }, [savedIds, showToast]);
+  }, [savedIds, showToast, decrementFavCount, incrementFavCount]);
 
   useEffect(() => {
     vocabularyApi
@@ -212,8 +213,7 @@ const TopicListModal = ({
 
   useEffect(() => {
     if (selectedTopics.length === 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setWords([]);
+      Promise.resolve().then(() => setWords([]));
       return;
     }
 
@@ -702,7 +702,7 @@ export const FlashcardModal = ({
 
   useEffect(() => {
     if (customWords) {
-      setWords(customWords);
+      Promise.resolve().then(() => setWords(customWords));
       return;
     }
     if (topicIds && topicIds.length > 0) {
