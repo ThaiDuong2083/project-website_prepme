@@ -1,6 +1,7 @@
 package com.fpt.website_prepme.service.impl;
 
 import com.fpt.website_prepme.enums.AuthProvider;
+import com.fpt.website_prepme.enums.MembershipType;
 import com.fpt.website_prepme.exception.AppException;
 import com.fpt.website_prepme.exception.ErrorCode;
 import com.fpt.website_prepme.model.dto.auth.AuthResponse;
@@ -118,6 +119,22 @@ public class AuthServiceImpl implements AuthService {
         }
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         return UserDTO.toEntity(userDetails.user());
+    }
+
+    @Transactional
+    public UserDTO upgradeMembership() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        UserEntity user = userRepository.findById(userDetails.user().getId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        user.setMembershipType(MembershipType.PREMIUM);
+        UserEntity savedUser = userRepository.save(user);
+        log.info("[Auth] User upgraded to PREMIUM (PRO) - userId={}", savedUser.getId());
+        return UserDTO.toEntity(savedUser);
     }
 
 

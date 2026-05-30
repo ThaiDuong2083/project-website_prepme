@@ -3,6 +3,7 @@ export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   REGISTER: '/register',
+  SUCCESS: '/success',
 
   // Error pages
   FORBIDDEN: '/403',

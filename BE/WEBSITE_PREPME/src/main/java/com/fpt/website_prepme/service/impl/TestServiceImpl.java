@@ -32,6 +32,7 @@ public class TestServiceImpl implements TestService {
     private final TestQuestionRepository testQuestionRepository;
     private final PracticeHistoryRepository practiceHistoryRepository;
     private final UserRepository userRepository;
+    private final com.fpt.website_prepme.service.OpenAiService openAiService;
     
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -74,12 +75,22 @@ public class TestServiceImpl implements TestService {
                 .build();
     }
 
+    private void checkProAccess(TestEntity test) {
+        if (Boolean.TRUE.equals(test.getIsPro())) {
+            UserEntity currentUser = getCurrentUser();
+            if (currentUser.getMembershipType() != MembershipType.PREMIUM) {
+                throw new AppException(ErrorCode.FORBIDDEN, "Bài thi này chỉ dành cho tài khoản Pro. Vui lòng nâng cấp tài khoản của bạn.");
+            }
+        }
+    }
+
     @Override
     @Transactional(readOnly = true)
     public TestDetailDTO getExamDetails(Long id, boolean hideAnswers) {
         TestEntity entity = testRepository.findById(id)
                 .filter(t -> !t.getIsDeleted())
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Exam not found or has been deleted"));
+        checkProAccess(entity);
         return TestDetailDTO.toDto(entity, hideAnswers);
     }
 
@@ -90,6 +101,7 @@ public class TestServiceImpl implements TestService {
         TestEntity test = testRepository.findById(id)
                 .filter(t -> !t.getIsDeleted())
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Exam not found"));
+        checkProAccess(test);
 
         SkillType skillType = getSkillTypeFromExamType(test.getExamType());
         Double score = null;
@@ -150,6 +162,44 @@ public class TestServiceImpl implements TestService {
             }
         }
 
+        String submissionContent = request.getSubmissionContent();
+        // If speaking and we have recording but no transcript, transcribe it using Whisper
+        if (request.getStatus() != PracticeStatus.DRAFT && test.getExamType() == ExamType.SPEAKING) {
+            if (request.getRecordingUrl() != null && !request.getRecordingUrl().trim().isEmpty()
+                    && (submissionContent == null || submissionContent.trim().isEmpty())) {
+                try {
+                    String urlField = request.getRecordingUrl().trim();
+                    if (urlField.startsWith("{") && urlField.endsWith("}")) {
+                        // Parse JSON of multiple URLs
+                        Map<String, String> urls = objectMapper.readValue(urlField, new com.fasterxml.jackson.core.type.TypeReference<Map<String, String>>() {});
+                        StringBuilder combinedTranscript = new StringBuilder();
+                        for (Map.Entry<String, String> entry : urls.entrySet()) {
+                            String key = entry.getKey();
+                            String audioUrl = entry.getValue();
+                            if (audioUrl != null && !audioUrl.trim().isEmpty()) {
+                                log.info("Whisper transcribing audio for section {}: {}", key, audioUrl);
+                                try {
+                                    int partNum = Integer.parseInt(key) + 1;
+                                    String transcript = openAiService.transcribeAudio(audioUrl);
+                                    combinedTranscript.append("### Phần ").append(partNum).append("\n")
+                                            .append(transcript).append("\n\n");
+                                } catch (Exception e) {
+                                    log.warn("Failed to transcribe speaking audio section {}: {}", key, e.getMessage());
+                                }
+                            }
+                        }
+                        submissionContent = combinedTranscript.toString().trim();
+                    } else {
+                        log.info("Whisper transcribing audio for speaking test: {}", urlField);
+                        submissionContent = openAiService.transcribeAudio(urlField);
+                    }
+                } catch (Exception e) {
+                    log.warn("Failed to transcribe speaking audio: {}", e.getMessage());
+                    submissionContent = "[Không thể tự động nhận diện giọng nói: " + e.getMessage() + "]";
+                }
+            }
+        }
+
         PracticeHistoryEntity practiceHistory = PracticeHistoryEntity.builder()
                 .user(currentUser)
                 .test(test)
@@ -158,12 +208,25 @@ public class TestServiceImpl implements TestService {
                 .score(score)
                 .completionTime(request.getCompletionTime())
                 .answers(userAnswersJson)
-                .submissionContent(request.getSubmissionContent())
+                .submissionContent(submissionContent)
                 .recordingUrl(request.getRecordingUrl())
                 .status(request.getStatus() != null ? request.getStatus() : PracticeStatus.COMPLETED)
                 .build();
 
+        if (practiceHistory.getStatus() == PracticeStatus.COMPLETED) {
+            practiceHistory.setAiAnalysis("Đang chờ nhận xét từ AI...");
+        }
+
         PracticeHistoryEntity saved = practiceHistoryRepository.save(practiceHistory);
+
+        if (saved.getStatus() == PracticeStatus.COMPLETED) {
+            try {
+                openAiService.generateFeedbackAsync(saved.getId());
+            } catch (Exception e) {
+                log.error("Failed to trigger asynchronous AI feedback: {}", e.getMessage(), e);
+            }
+        }
+
         return PracticeHistoryDTO.toDto(saved);
     }
 
@@ -262,7 +325,8 @@ public class TestServiceImpl implements TestService {
                 .examType(ExamType.LISTENING)
                 .duration(1800)
                 .audioUrl("https://res.cloudinary.com/dilyyimrn/video/upload/v1700000000/listening_sample.mp3")
-                .description("Official Cambridge 18 Practice Listening Test 1. Standard IELTS audio player and 40 fill-in-the-blank questions.")
+                .description("Official Cambridge 18 Practice Listening Test 1. Standard IELTS audio player and 4 sections with 8 fill-in-the-blank and multiple choice questions.")
+                .isPro(false)
                 .build();
         testRepository.save(listening);
 
@@ -271,7 +335,22 @@ public class TestServiceImpl implements TestService {
                 .sectionNumber(1)
                 .title("Part 1: Inquiry about Hotel Booking")
                 .build();
-        testSectionRepository.save(lSec1);
+        TestSectionEntity lSec2 = TestSectionEntity.builder()
+                .test(listening)
+                .sectionNumber(2)
+                .title("Part 2: Local Tourist Information")
+                .build();
+        TestSectionEntity lSec3 = TestSectionEntity.builder()
+                .test(listening)
+                .sectionNumber(3)
+                .title("Part 3: Academic Discussion on Project")
+                .build();
+        TestSectionEntity lSec4 = TestSectionEntity.builder()
+                .test(listening)
+                .sectionNumber(4)
+                .title("Part 4: Lecture on Wildlife Conservation")
+                .build();
+        testSectionRepository.saveAll(List.of(lSec1, lSec2, lSec3, lSec4));
 
         TestQuestionEntity lQ1 = TestQuestionEntity.builder()
                 .section(lSec1)
@@ -290,15 +369,65 @@ public class TestServiceImpl implements TestService {
                 .correctAnswer("B")
                 .explanation("He mentions he wants a single room since he is travelling alone.")
                 .build();
-        testQuestionRepository.saveAll(List.of(lQ1, lQ2));
-
+        TestQuestionEntity lQ3 = TestQuestionEntity.builder()
+                .section(lSec2)
+                .questionNumber(3)
+                .questionType(QuestionType.MULTIPLE_CHOICE)
+                .questionText("What is the main attraction of the park?")
+                .options("[\"A. The waterfall\", \"B. The historic bridge\", \"C. The botanical garden\"]")
+                .correctAnswer("A")
+                .explanation("The speaker mentions the waterfall attracts 90% of visitors.")
+                .build();
+        TestQuestionEntity lQ4 = TestQuestionEntity.builder()
+                .section(lSec2)
+                .questionNumber(4)
+                .questionType(QuestionType.FILL_IN_THE_BLANK)
+                .questionText("The tourist office is located next to the _____")
+                .correctAnswer("library")
+                .explanation("The guide says: 'It is right next to the town library.'")
+                .build();
+        TestQuestionEntity lQ5 = TestQuestionEntity.builder()
+                .section(lSec3)
+                .questionNumber(5)
+                .questionType(QuestionType.MULTIPLE_CHOICE)
+                .questionText("The students agree that their project needs more:")
+                .options("[\"A. Data analysis\", \"B. Background research\", \"C. Visual diagrams\"]")
+                .correctAnswer("B")
+                .explanation("Both agree that the literature review is too brief and needs more background research.")
+                .build();
+        TestQuestionEntity lQ6 = TestQuestionEntity.builder()
+                .section(lSec3)
+                .questionNumber(6)
+                .questionType(QuestionType.FILL_IN_THE_BLANK)
+                .questionText("They will meet again on _____ afternoon.")
+                .correctAnswer("Thursday")
+                .explanation("They schedule the next meeting for Thursday afternoon.")
+                .build();
+        TestQuestionEntity lQ7 = TestQuestionEntity.builder()
+                .section(lSec4)
+                .questionNumber(7)
+                .questionType(QuestionType.FILL_IN_THE_BLANK)
+                .questionText("The primary threat to the animal population is habitat _____")
+                .correctAnswer("loss")
+                .explanation("The lecturer mentions habitat loss due to agriculture.")
+                .build();
+        TestQuestionEntity lQ8 = TestQuestionEntity.builder()
+                .section(lSec4)
+                .questionNumber(8)
+                .questionType(QuestionType.FILL_IN_THE_BLANK)
+                .questionText("Conservationists suggest building wildlife _____ to connect forests.")
+                .correctAnswer("corridors")
+                .explanation("The speaker emphasizes wildlife corridors.")
+                .build();
+        testQuestionRepository.saveAll(List.of(lQ1, lQ2, lQ3, lQ4, lQ5, lQ6, lQ7, lQ8));
 
         // 2. READING EXAM
         TestEntity reading = TestEntity.builder()
                 .title("Cambridge 18 Academic Reading Test 1")
                 .examType(ExamType.READING)
                 .duration(3600)
-                .description("Official Cambridge 18 Practice Reading Test 1. Contains 3 passages with matching headings and true/false/not given.")
+                .description("Official Cambridge 18 Practice Reading Test 1. Contains 3 passages with true/false/not given and multiple choice questions.")
+                .isPro(false)
                 .build();
         testRepository.save(reading);
 
@@ -308,7 +437,19 @@ public class TestServiceImpl implements TestService {
                 .title("Passage 1: The Rise of Forest Bathing")
                 .passage("<div><p>Forest bathing, or Shinrin-yoku, is a practice that originated in Japan in the 1980s. It involves spending quiet, mindful time in a forest, absorbing the atmosphere through the senses. Scientific research shows that this practice reduces stress hormones, lowers blood pressure, and improves immune function.</p></div>")
                 .build();
-        testSectionRepository.save(rSec1);
+        TestSectionEntity rSec2 = TestSectionEntity.builder()
+                .test(reading)
+                .sectionNumber(2)
+                .title("Passage 2: The History of the Bicycle")
+                .passage("<div><p>The history of the bicycle is a story of innovation. The earliest bicycle-like vehicle was the Draisienne, invented by Karl von Drais in 1817. It had no pedals and was propelled by pushing one's feet against the ground. The addition of pedals in the 1860s by French inventors marked a major turning point, leading to the 'boneshaker' and later the penny-farthing bicycle.</p></div>")
+                .build();
+        TestSectionEntity rSec3 = TestSectionEntity.builder()
+                .test(reading)
+                .sectionNumber(3)
+                .title("Passage 3: The Psychology of Decision Making")
+                .passage("<div><p>Decision making is a complex cognitive process. Psychologist Daniel Kahneman describes two systems of thinking: System 1 is fast, automatic, and emotional, while System 2 is slow, deliberative, and logical. Most daily decisions are made using System 1, which relies on heuristics, while complex choices require the deliberate effort of System 2.</p></div>")
+                .build();
+        testSectionRepository.saveAll(List.of(rSec1, rSec2, rSec3));
 
         TestQuestionEntity rQ1 = TestQuestionEntity.builder()
                 .section(rSec1)
@@ -326,7 +467,40 @@ public class TestServiceImpl implements TestService {
                 .correctAnswer("TRUE")
                 .explanation("The passage states scientific research shows reductions in stress, blood pressure, and immune improvements.")
                 .build();
-        testQuestionRepository.saveAll(List.of(rQ1, rQ2));
+        TestQuestionEntity rQ3 = TestQuestionEntity.builder()
+                .section(rSec2)
+                .questionNumber(3)
+                .questionType(QuestionType.TRUE_FALSE_NOT_GIVEN)
+                .questionText("The Draisienne bicycle had pedals.")
+                .correctAnswer("FALSE")
+                .explanation("The text states the Draisienne had no pedals.")
+                .build();
+        TestQuestionEntity rQ4 = TestQuestionEntity.builder()
+                .section(rSec2)
+                .questionNumber(4)
+                .questionType(QuestionType.MULTIPLE_CHOICE)
+                .questionText("Who invented the earliest bicycle-like vehicle?")
+                .options("[\"A. Karl von Drais\", \"B. Pierre Michaux\", \"C. James Starley\"]")
+                .correctAnswer("A")
+                .explanation("Karl von Drais invented the Draisienne in 1817.")
+                .build();
+        TestQuestionEntity rQ5 = TestQuestionEntity.builder()
+                .section(rSec3)
+                .questionNumber(5)
+                .questionType(QuestionType.TRUE_FALSE_NOT_GIVEN)
+                .questionText("System 2 thinking is faster than System 1 thinking.")
+                .correctAnswer("FALSE")
+                .explanation("System 2 is described as slow, while System 1 is fast.")
+                .build();
+        TestQuestionEntity rQ6 = TestQuestionEntity.builder()
+                .section(rSec3)
+                .questionNumber(6)
+                .questionType(QuestionType.FILL_IN_THE_BLANK)
+                .questionText("System 1 thinking relies on mental shortcuts called _____")
+                .correctAnswer("heuristics")
+                .explanation("The passage states System 1 relies on heuristics.")
+                .build();
+        testQuestionRepository.saveAll(List.of(rQ1, rQ2, rQ3, rQ4, rQ5, rQ6));
 
 
         // 3. WRITING EXAM
@@ -335,6 +509,7 @@ public class TestServiceImpl implements TestService {
                 .examType(ExamType.WRITING)
                 .duration(3600)
                 .description("Writing mock exam. Consists of Task 1 (Bar Chart description) and Task 2 (Essay writing).")
+                .isPro(true)
                 .build();
         testRepository.save(writing);
 
@@ -359,6 +534,7 @@ public class TestServiceImpl implements TestService {
                 .examType(ExamType.SPEAKING)
                 .duration(900)
                 .description("Standard IELTS Speaking exam structure including Part 1 introduction, Part 2 cue card description, and Part 3 discussion.")
+                .isPro(true)
                 .build();
         testRepository.save(speaking);
 
@@ -389,6 +565,7 @@ public class TestServiceImpl implements TestService {
                 .examType(ExamType.IELTS)
                 .duration(9900)
                 .description("Composite exam including all 4 skills: Listening, Reading, Writing, and Speaking.")
+                .isPro(true)
                 .build();
         testRepository.save(ieltsPackage);
 
@@ -398,32 +575,191 @@ public class TestServiceImpl implements TestService {
                 .examType(ExamType.LISTENING)
                 .duration(1800)
                 .parentTest(ieltsPackage)
+                .isPro(true)
                 .build();
         testRepository.save(lSub);
+
+        TestSectionEntity lSubSec1 = TestSectionEntity.builder()
+                .test(lSub)
+                .sectionNumber(1)
+                .title("Part 1: Flight Booking Inquiry")
+                .build();
+        TestSectionEntity lSubSec2 = TestSectionEntity.builder()
+                .test(lSub)
+                .sectionNumber(2)
+                .title("Part 2: Museum Tour Information")
+                .build();
+        TestSectionEntity lSubSec3 = TestSectionEntity.builder()
+                .test(lSub)
+                .sectionNumber(3)
+                .title("Part 3: Group Project Discussion")
+                .build();
+        TestSectionEntity lSubSec4 = TestSectionEntity.builder()
+                .test(lSub)
+                .sectionNumber(4)
+                .title("Part 4: Scientific Lecture on Ocean Currents")
+                .build();
+        testSectionRepository.saveAll(List.of(lSubSec1, lSubSec2, lSubSec3, lSubSec4));
+
+        TestQuestionEntity lSubQ1 = TestQuestionEntity.builder()
+                .section(lSubSec1)
+                .questionNumber(1)
+                .questionType(QuestionType.FILL_IN_THE_BLANK)
+                .questionText("Flight number: _____")
+                .correctAnswer("VN123")
+                .explanation("The speaker says flight number VN123.")
+                .build();
+        TestQuestionEntity lSubQ2 = TestQuestionEntity.builder()
+                .section(lSubSec1)
+                .questionNumber(2)
+                .questionType(QuestionType.MULTIPLE_CHOICE)
+                .questionText("Destination city is:")
+                .options("[\"A. Hanoi\", \"B. Da Nang\", \"C. Ho Chi Minh City\"]")
+                .correctAnswer("A")
+                .explanation("He states he is flying to Hanoi.")
+                .build();
+        TestQuestionEntity lSubQ3 = TestQuestionEntity.builder()
+                .section(lSubSec2)
+                .questionNumber(3)
+                .questionType(QuestionType.FILL_IN_THE_BLANK)
+                .questionText("Ticket price: _____ dollars")
+                .correctAnswer("45")
+                .explanation("The tour guide says tickets are 45 dollars.")
+                .build();
+        TestQuestionEntity lSubQ4 = TestQuestionEntity.builder()
+                .section(lSubSec3)
+                .questionNumber(4)
+                .questionType(QuestionType.MULTIPLE_CHOICE)
+                .questionText("The presentation date has been moved to:")
+                .options("[\"A. Monday\", \"B. Wednesday\", \"C. Friday\"]")
+                .correctAnswer("B")
+                .explanation("The professor says the date is moved to Wednesday.")
+                .build();
+        TestQuestionEntity lSubQ5 = TestQuestionEntity.builder()
+                .section(lSubSec4)
+                .questionNumber(5)
+                .questionType(QuestionType.FILL_IN_THE_BLANK)
+                .questionText("Deep ocean currents are driven by density _____")
+                .correctAnswer("differences")
+                .explanation("The speaker mentions density differences driven by temperature.")
+                .build();
+        testQuestionRepository.saveAll(List.of(lSubQ1, lSubQ2, lSubQ3, lSubQ4, lSubQ5));
 
         TestEntity rSub = TestEntity.builder()
                 .title("Reading Subtest (IELTS Vol 1)")
                 .examType(ExamType.READING)
                 .duration(3600)
                 .parentTest(ieltsPackage)
+                .isPro(true)
                 .build();
         testRepository.save(rSub);
+
+        TestSectionEntity rSubSec1 = TestSectionEntity.builder()
+                .test(rSub)
+                .sectionNumber(1)
+                .title("Passage 1: The Integration of Artificial Intelligence")
+                .passage("<div><p>Artificial Intelligence (AI) is transforming industries. Machine learning algorithms analyze vast amounts of data to make predictions. From healthcare diagnoses to autonomous vehicles, AI systems are becoming integrated into daily life.</p></div>")
+                .build();
+        TestSectionEntity rSubSec2 = TestSectionEntity.builder()
+                .test(rSub)
+                .sectionNumber(2)
+                .title("Passage 2: The Migration of Monarch Butterflies")
+                .passage("<div><p>Each year, millions of Monarch butterflies travel up to 3,000 miles from Canada to Mexico. This incredible migration spans multiple generations, using environmental cues and internal compasses to navigate precisely to the same mountain forests.</p></div>")
+                .build();
+        TestSectionEntity rSubSec3 = TestSectionEntity.builder()
+                .test(rSub)
+                .sectionNumber(3)
+                .title("Passage 3: The Evolution of Language")
+                .passage("<div><p>Language evolution is a subject of intense academic study. Chomsky argued that humans possess an innate universal grammar, whereas other theorists emphasize the role of social interaction and cultural transmission in linguistic development.</p></div>")
+                .build();
+        testSectionRepository.saveAll(List.of(rSubSec1, rSubSec2, rSubSec3));
+
+        TestQuestionEntity rSubQ1 = TestQuestionEntity.builder()
+                .section(rSubSec1)
+                .questionNumber(1)
+                .questionType(QuestionType.TRUE_FALSE_NOT_GIVEN)
+                .questionText("AI systems are only used in healthcare.")
+                .correctAnswer("FALSE")
+                .explanation("The text states AI is used in healthcare, autonomous vehicles, and integrated into daily life.")
+                .build();
+        TestQuestionEntity rSubQ2 = TestQuestionEntity.builder()
+                .section(rSubSec1)
+                .questionNumber(2)
+                .questionType(QuestionType.MULTIPLE_CHOICE)
+                .questionText("What do machine learning algorithms analyze to make predictions?")
+                .options("[\"A. Human behaviors\", \"B. Vast amounts of data\", \"C. Financial markets\"]")
+                .correctAnswer("B")
+                .explanation("The text says machine learning algorithms analyze vast amounts of data.")
+                .build();
+        TestQuestionEntity rSubQ3 = TestQuestionEntity.builder()
+                .section(rSubSec2)
+                .questionNumber(3)
+                .questionType(QuestionType.TRUE_FALSE_NOT_GIVEN)
+                .questionText("The Monarch butterfly migration is completed by a single insect.")
+                .correctAnswer("FALSE")
+                .explanation("The text states that the migration spans multiple generations.")
+                .build();
+        TestQuestionEntity rSubQ4 = TestQuestionEntity.builder()
+                .section(rSubSec3)
+                .questionNumber(4)
+                .questionType(QuestionType.FILL_IN_THE_BLANK)
+                .questionText("Chomsky proposed that humans are born with a universal _____")
+                .correctAnswer("grammar")
+                .explanation("The passage says Chomsky argued humans possess an innate universal grammar.")
+                .build();
+        testQuestionRepository.saveAll(List.of(rSubQ1, rSubQ2, rSubQ3, rSubQ4));
 
         TestEntity wSub = TestEntity.builder()
                 .title("Writing Subtest (IELTS Vol 1)")
                 .examType(ExamType.WRITING)
                 .duration(3600)
                 .parentTest(ieltsPackage)
+                .isPro(true)
                 .build();
         testRepository.save(wSub);
+
+        TestSectionEntity wSubSec1 = TestSectionEntity.builder()
+                .test(wSub)
+                .sectionNumber(1)
+                .title("Task 1: Describe the Line Graph")
+                .passage("The graph below shows the changes in oil consumption in four countries between 2000 and 2015. Summarize the main trends.")
+                .build();
+        TestSectionEntity wSubSec2 = TestSectionEntity.builder()
+                .test(wSub)
+                .sectionNumber(2)
+                .title("Task 2: Essay Writing")
+                .passage("With the rise of social media, face-to-face communication is decreasing. Do you agree that the advantages outweigh the disadvantages?")
+                .build();
+        testSectionRepository.saveAll(List.of(wSubSec1, wSubSec2));
 
         TestEntity sSub = TestEntity.builder()
                 .title("Speaking Subtest (IELTS Vol 1)")
                 .examType(ExamType.SPEAKING)
                 .duration(900)
                 .parentTest(ieltsPackage)
+                .isPro(true)
                 .build();
         testRepository.save(sSub);
+
+        TestSectionEntity sSubSec1 = TestSectionEntity.builder()
+                .test(sSub)
+                .sectionNumber(1)
+                .title("Part 1: Study and Work")
+                .passage("What are you studying? Do you prefer studying in the morning or in the evening?")
+                .build();
+        TestSectionEntity sSubSec2 = TestSectionEntity.builder()
+                .test(sSub)
+                .sectionNumber(2)
+                .title("Part 2: Cue Card")
+                .cueCard("Describe a memorable holiday you had. You should say:\n- Where you went\n- Who you went with\n- What you did\n- And explain why it was memorable.")
+                .build();
+        TestSectionEntity sSubSec3 = TestSectionEntity.builder()
+                .test(sSub)
+                .sectionNumber(3)
+                .title("Part 3: Discussion")
+                .passage("Let's talk about tourism. In what ways does tourism benefit local communities? Can it have negative impacts?")
+                .build();
+        testSectionRepository.saveAll(List.of(sSubSec1, sSubSec2, sSubSec3));
     }
 
     private UserEntity getCurrentUser() {

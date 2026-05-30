@@ -53,4 +53,10 @@ public class AuthController {
     public ResponseEntity<ApiResponse<UserDTO>> getMe() {
         return ResponseEntity.ok(ApiResponse.success(authService.getMe()));
     }
+
+    @PostMapping("/upgrade")
+    @Operation(summary = "Nâng cấp tài khoản lên Pro/Premium")
+    public ResponseEntity<ApiResponse<UserDTO>> upgrade() {
+        return ResponseEntity.ok(ApiResponse.success("Nâng cấp tài khoản thành công", authService.upgradeMembership()));
+    }
 }

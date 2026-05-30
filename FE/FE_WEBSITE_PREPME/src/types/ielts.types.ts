@@ -112,6 +112,7 @@ export interface TestListDTO {
   description?: string;
   sectionCount: number;
   createdAt: string;
+  isPro?: boolean;
 }
 
 export interface TestQuestionDTO {
@@ -143,6 +144,7 @@ export interface TestDetailDTO {
   description?: string;
   sections: TestSectionDTO[];
   childTests?: TestDetailDTO[];
+  isPro?: boolean;
 }
 
 export interface TestSubmitRequest {

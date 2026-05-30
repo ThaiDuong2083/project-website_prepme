@@ -100,6 +100,14 @@ app:
     # Google OAuth2 Client ID (Web Application type) from Google Cloud Console
     client-id: ${GOOGLE_CLIENT_ID:your-google-client-id.apps.googleusercontent.com}
 
+  # ─── OpenAI ────────────────────────────────────────────────────────────
+  openai:
+    api-key: ${OPENAI_API_KEY:sk-6QNo9E1A4oL06XwLXgA5e-CYHVgKt5_p7M5CXeaGO28}
+    model: ${OPENAI_MODEL:codex/gpt5.5}
+    transcribe-model: ${OPENAI_TRANSCRIBE_MODEL:whisper-1}
+    base-url: ${OPENAI_BASE_URL:https://api.shineshop.dev/v1}
+    max-tokens: ${OPENAI_MAX_TOKENS:20}
+
 # ─── Logging ─────────────────────────────────────────────────────────────────
 logging:
   level:

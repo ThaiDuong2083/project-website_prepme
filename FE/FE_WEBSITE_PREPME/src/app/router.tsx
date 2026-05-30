@@ -27,6 +27,9 @@ const LeaderboardPage = lazy(() =>
 const SettingsPage = lazy(() =>
   import('@pages/user/SettingsPage').then((m) => ({ default: m.SettingsPage })),
 );
+const PaymentSuccessPage = lazy(() =>
+  import('@pages/user/PaymentSuccessPage').then((m) => ({ default: m.PaymentSuccessPage })),
+);
 const AdminDashboardPage = lazy(() =>
   import('@pages/admin/AdminDashboardPage').then((m) => ({ default: m.AdminDashboardPage })),
 );
@@ -78,6 +81,7 @@ const router = createBrowserRouter([
       { path: ROUTES.USER.EXAMS, element: withSuspense(ExamsPage) },
       { path: ROUTES.USER.LEADERBOARD, element: withSuspense(LeaderboardPage) },
       { path: ROUTES.USER.SETTINGS, element: withSuspense(SettingsPage) },
+      { path: ROUTES.SUCCESS, element: withSuspense(PaymentSuccessPage) },
     ],
   },
 

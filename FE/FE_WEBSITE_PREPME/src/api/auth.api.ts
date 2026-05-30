@@ -29,6 +29,11 @@ export const authApi = {
     return response.data;
   },
 
+  upgrade: async (): Promise<ApiResponse<User>> => {
+    const response = await axiosInstance.post<ApiResponse<User>>('/auth/upgrade');
+    return response.data;
+  },
+
   logout: async (): Promise<void> => {
     await axiosInstance.post('/auth/logout');
   },

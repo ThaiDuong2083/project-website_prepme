@@ -17,6 +17,7 @@ interface AuthStore {
   loginWithGoogle: (idToken: string) => Promise<void>;
   fetchProfile: () => Promise<void>;
   setTokenAndProfile: (tokens: AuthTokens) => Promise<void>;
+  upgrade: () => Promise<void>;
   logout: () => void;
   setLoading: (loading: boolean) => void;
 }
@@ -84,6 +85,22 @@ export const useAuthStore = create<AuthStore>()(
           set({ user });
         } catch {
           get().logout();
+        }
+      },
+
+      upgrade: async () => {
+        set({ isLoading: true });
+        try {
+          const response = await authApi.upgrade();
+          const user = response.data;
+          storage.setUser(user);
+          set({ user });
+          toast.success('Nâng cấp tài khoản PRO thành công! 👑');
+        } catch (error: any) {
+          toast.error(error.response?.data?.message || 'Nâng cấp tài khoản thất bại');
+          throw error;
+        } finally {
+          set({ isLoading: false });
         }
       },
 

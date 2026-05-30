@@ -1,6 +1,7 @@
 package com.fpt.website_prepme.model.dto;
 
 import com.fpt.website_prepme.enums.AuthProvider;
+import com.fpt.website_prepme.enums.MembershipType;
 import com.fpt.website_prepme.model.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ public class UserDTO {
     private String role;
     private AuthProvider provider;
     private String createdAt;
+    private MembershipType membershipType;
 
     public static UserDTO toEntity(UserEntity user) {
         String role = user.getRoles().stream().findFirst().map(r -> r.getName()).orElse("USER");
@@ -32,6 +34,7 @@ public class UserDTO {
                 .role(role)
                 .provider(user.getProvider())
                 .createdAt(user.getCreatedAt() != null ? user.getCreatedAt().toString() : null)
+                .membershipType(user.getMembershipType())
                 .build();
     }
 }

@@ -44,7 +44,7 @@ const navItems: NavItemDef[] = [
 ];
 
 const bottomItems: NavItemDef[] = [
-  { label: 'Profile', href: ROUTES.USER.PROFILE, icon: User },
+  { label: 'Profile', href: ROUTES.USER.SETTINGS, icon: User },
   { label: 'Settings', href: ROUTES.USER.SETTINGS, icon: Settings },
 ];
 

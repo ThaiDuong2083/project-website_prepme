@@ -48,6 +48,19 @@ public class UploadServiceImpl implements UploadService {
         "video/webm"
     );
 
+    private static final Set<String> AUDIO_TYPES = Set.of(
+        "audio/webm",
+        "audio/mp3",
+        "audio/mpeg",
+        "audio/wav",
+        "audio/ogg",
+        "audio/m4a",
+        "audio/x-m4a",
+        "audio/mp4",
+        "audio/aac",
+        "audio/flac"
+    );
+
     @Override
     public FileUploadResult upload(MultipartFile file) {
         validateFile(file);
@@ -138,15 +151,16 @@ public class UploadServiceImpl implements UploadService {
             );
         }
 
-        if (VIDEO_TYPES.contains(contentType) && size > MAX_VIDEO_SIZE) {
+        if ((VIDEO_TYPES.contains(contentType) || AUDIO_TYPES.contains(contentType)) && size > MAX_VIDEO_SIZE) {
             throw new AppException(
                 ErrorCode.FILE_SIZE_EXCEEDED,
-                "Video must not exceed 100 MB"
+                "Video or audio must not exceed 100 MB"
             );
         }
 
         if (!IMAGE_TYPES.contains(contentType)
             && !VIDEO_TYPES.contains(contentType)
+            && !AUDIO_TYPES.contains(contentType)
             && size > MAX_RAW_SIZE) {
 
             throw new AppException(
@@ -161,7 +175,7 @@ public class UploadServiceImpl implements UploadService {
         if (IMAGE_TYPES.contains(contentType) || contentType.toLowerCase().contains("pdf")) {
             return "image";
         }
-        if (VIDEO_TYPES.contains(contentType)) {
+        if (VIDEO_TYPES.contains(contentType) || AUDIO_TYPES.contains(contentType)) {
             return "video";
         }
         return "auto";

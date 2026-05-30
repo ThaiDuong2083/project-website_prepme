@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Settings, X, User as UserIcon, LogOut, Wrench } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Settings, X, User as UserIcon, LogOut, Wrench, CheckCircle, Sparkles, CreditCard } from 'lucide-react';
 import { ROUTES } from '@constants/routes.constants';
 import { useAuthStore } from '@store/auth.store';
 import { useAppStore } from '@store/app.store';
+import { paymentApi } from '@api/payment.api';
 import toast from 'react-hot-toast';
 
 const BRAND = {
@@ -19,11 +21,33 @@ export const SettingsPage = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const { theme, toggleTheme } = useAppStore();
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [initiatingPayment, setInitiatingPayment] = useState(false);
 
   const handleLogout = () => {
     logout();
     toast.success('Đã đăng xuất khỏi thiết bị', { icon: '👋' });
     navigate(ROUTES.LOGIN);
+  };
+
+  const handleMomoPayment = async () => {
+    setInitiatingPayment(true);
+    const loadingToastId = toast.loading('Đang khởi tạo liên kết thanh toán MoMo...');
+    try {
+      const response = await paymentApi.createMomoPayment('1000000');
+      const resObj = typeof response === 'string' ? JSON.parse(response) : response;
+      if (resObj && resObj.payUrl) {
+        toast.success('Đang chuyển hướng sang MoMo...', { id: loadingToastId });
+        window.location.href = resObj.payUrl;
+      } else {
+        toast.error(resObj?.message || 'Không thể tạo yêu cầu thanh toán MoMo.', { id: loadingToastId });
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error('Lỗi kết nối máy chủ thanh toán.', { id: loadingToastId });
+    } finally {
+      setInitiatingPayment(false);
+    }
   };
 
   const formattedDate = user?.createdAt
@@ -89,7 +113,7 @@ export const SettingsPage = () => {
               justifyContent: 'center',
               transition: 'background 0.2s',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = '#f1f5f9')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = isDark ? '#2e354f' : '#f1f5f9')}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
             <X size={24} strokeWidth={2.5} />
@@ -108,7 +132,7 @@ export const SettingsPage = () => {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: isDark ? '#cbd5e1' : BRAND[300], marginBottom: '16px' }}>
-            <UserIcon size={18} fill={isDark ? '#cbd5e1' : BRAND[300]} />
+            <UserIcon size={18} fill={isDark ? '#cbd5e1' : BRAND[300]} color={cardBg} />
             <span style={{ fontWeight: 800, fontSize: '15px' }}>Thông tin tài khoản</span>
           </div>
 
@@ -120,11 +144,51 @@ export const SettingsPage = () => {
               </span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ color: textTitle, fontWeight: 700, fontSize: '14px' }}>Loại tài khoản:</span>
+              <span style={{
+                color: user?.membershipType === 'PREMIUM' ? '#fbbf24' : '#94a3b8',
+                fontWeight: 800,
+                fontSize: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                {user?.membershipType === 'PREMIUM' ? '👑 PRO' : 'FREE'}
+              </span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ color: textTitle, fontWeight: 700, fontSize: '14px' }}>Ngày tham gia:</span>
               <span style={{ color: textValue, fontWeight: 700, fontSize: '14px' }}>
                 {formattedDate}
               </span>
             </div>
+
+            {user?.membershipType !== 'PREMIUM' && (
+              <motion.button
+                whileHover={{ scale: 1.02, boxShadow: '0 8px 24px rgba(244, 63, 94, 0.3)' }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowPaymentModal(true)}
+                style={{
+                  marginTop: '12px',
+                  background: 'linear-gradient(135deg, #fb7185 0%, #f43f5e 100%)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '12px',
+                  fontWeight: 800,
+                  fontSize: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(244, 63, 94, 0.2)',
+                  transition: 'all 0.2s',
+                }}
+              >
+                👑 Nâng cấp tài khoản PRO
+              </motion.button>
+            )}
 
             <button
               onClick={handleLogout}
@@ -216,8 +280,200 @@ export const SettingsPage = () => {
             </div>
           </div>
         </div>
-
       </motion.div>
+
+      {/* Payment Upgrade Modal */}
+      <AnimatePresence>
+        {showPaymentModal && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+            }}
+          >
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !initiatingPayment && setShowPaymentModal(false)}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(15, 23, 42, 0.75)',
+                backdropFilter: 'blur(8px)',
+              }}
+            />
+
+            {/* Modal Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              style={{
+                position: 'relative',
+                background: isDark ? '#1e293b' : '#ffffff',
+                width: '100%',
+                maxWidth: '520px',
+                borderRadius: '24px',
+                padding: '32px',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                border: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`,
+                color: isDark ? '#f1f5f9' : '#0f172a',
+                zIndex: 1000,
+              }}
+            >
+              {/* Close Button */}
+              <button
+                disabled={initiatingPayment}
+                onClick={() => setShowPaymentModal(false)}
+                style={{
+                  position: 'absolute',
+                  top: '24px',
+                  right: '24px',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: isDark ? '#94a3b8' : '#64748b',
+                  padding: '4px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                }}
+              >
+                <X size={20} />
+              </button>
+
+              {/* Title */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
+                <div style={{ background: 'rgba(251, 113, 133, 0.1)', padding: '10px', borderRadius: '12px' }}>
+                  <Sparkles className="text-rose-500" size={24} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '20px', fontWeight: 900, letterSpacing: '-0.02em' }}>
+                    Nâng Cấp Hội Viên PRO
+                  </h3>
+                  <p style={{ fontSize: '13px', color: isDark ? '#94a3b8' : '#64748b' }}>
+                    Mở khóa tiềm năng tối đa cùng trợ lý AI Prepme
+                  </p>
+                </div>
+              </div>
+
+              {/* Benefit List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '28px' }}>
+                {[
+                  { text: 'Truy cập 100% Đề thi:', desc: 'Làm toàn bộ đề Premium Listening, Reading, Writing & Speaking.' },
+                  { text: 'Đánh giá chi tiết bằng AI:', desc: 'Nhận Band Score dự đoán, sửa lỗi ngữ pháp và từ vựng chi tiết.' },
+                  { text: 'Trợ lý học tập thông minh:', desc: 'Xem bài mẫu gợi ý, nâng cấp vốn từ vựng học thuật.' },
+                  { text: 'Sử dụng trọn đời:', desc: 'Thanh toán duy nhất một lần, cập nhật đề thi mới miễn phí.' },
+                ].map((item, idx) => (
+                  <div key={idx} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                    <CheckCircle className="text-emerald-500 flex-shrink-0" size={18} style={{ marginTop: '2px' }} />
+                    <div>
+                      <h4 style={{ fontSize: '14px', fontWeight: 800 }}>{item.text}</h4>
+                      <p style={{ fontSize: '12.5px', color: isDark ? '#94a3b8' : '#64748b', marginTop: '1px' }}>
+                        {item.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Pricing Box */}
+              <div
+                style={{
+                  background: isDark ? '#0f172a' : '#f8fafc',
+                  border: `1.5px solid ${isDark ? '#334155' : '#e2e8f0'}`,
+                  borderRadius: '16px',
+                  padding: '20px',
+                  marginBottom: '28px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <div>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#fb7185', textTransform: 'uppercase' }}>
+                    Gói trọn đời
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '2px' }}>
+                    <span style={{ fontSize: '24px', fontWeight: 900 }}>1.000.000đ</span>
+                    <span style={{ fontSize: '13px', color: '#94a3b8', textDecoration: 'line-through' }}>
+                      2.000.000đ
+                    </span>
+                  </div>
+                </div>
+                <div
+                  style={{
+                    background: 'rgba(251, 113, 133, 0.1)',
+                    color: '#f43f5e',
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    padding: '4px 8px',
+                    borderRadius: '8px',
+                  }}
+                >
+                  TIẾT KIỆM 50%
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <motion.button
+                  disabled={initiatingPayment}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={handleMomoPayment}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    background: '#a21caf', // MoMo magenta color
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '14px',
+                    padding: '14px',
+                    fontWeight: 800,
+                    fontSize: '15px',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 14px rgba(162, 28, 175, 0.25)',
+                    opacity: initiatingPayment ? 0.7 : 1,
+                  }}
+                >
+                  <CreditCard size={18} />
+                  {initiatingPayment ? 'Đang kết nối...' : 'Thanh toán qua ví MoMo'}
+                </motion.button>
+                <button
+                  disabled={initiatingPayment}
+                  onClick={() => setShowPaymentModal(false)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: isDark ? '#94a3b8' : '#64748b',
+                    fontSize: '13.5px',
+                    fontWeight: 700,
+                    padding: '8px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Hủy bỏ
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

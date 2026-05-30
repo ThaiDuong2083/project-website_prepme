@@ -26,7 +26,7 @@ public class TestEntity extends BaseEntity {
     @Column(name = "duration")
     private Integer duration; // Default duration in seconds (e.g. 1800 for 30 minutes)
 
-    @Column(name = "audio_url", length = 512)
+    @Column(name = "audio_url", columnDefinition = "TEXT")
     private String audioUrl; // Mainly for listening exams
 
     @Column(name = "description", columnDefinition = "TEXT")
@@ -44,4 +44,8 @@ public class TestEntity extends BaseEntity {
     @Builder.Default
     @OrderBy("sectionNumber ASC")
     private List<TestSectionEntity> sections = new ArrayList<>();
+
+    @Column(name = "is_pro", nullable = false, columnDefinition = "boolean default false")
+    @Builder.Default
+    private Boolean isPro = false;
 }

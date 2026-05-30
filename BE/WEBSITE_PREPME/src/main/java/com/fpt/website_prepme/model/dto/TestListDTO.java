@@ -21,6 +21,7 @@ public class TestListDTO {
     private String description;
     private int sectionCount;
     private LocalDateTime createdAt;
+    private Boolean isPro;
 
     public static TestListDTO toDto(TestEntity entity) {
         return TestListDTO.builder()
@@ -31,6 +32,7 @@ public class TestListDTO {
                 .description(entity.getDescription())
                 .sectionCount(entity.getSections() != null ? entity.getSections().size() : 0)
                 .createdAt(entity.getCreatedAt())
+                .isPro(entity.getIsPro())
                 .build();
     }
 }

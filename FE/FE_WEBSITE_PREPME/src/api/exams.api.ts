@@ -9,8 +9,10 @@ export const examsApi = {
     return response.data;
   },
 
-  getById: async (id: string | number): Promise<ApiResponse<TestDetailDTO>> => {
-    const response = await axiosInstance.get<ApiResponse<TestDetailDTO>>(`/exams/${id}`);
+  getById: async (id: string | number, hideAnswers = true): Promise<ApiResponse<TestDetailDTO>> => {
+    const response = await axiosInstance.get<ApiResponse<TestDetailDTO>>(`/exams/${id}`, {
+      params: { hideAnswers },
+    });
     return response.data;
   },
 

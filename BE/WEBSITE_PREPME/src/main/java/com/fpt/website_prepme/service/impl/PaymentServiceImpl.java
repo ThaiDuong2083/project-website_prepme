@@ -4,8 +4,18 @@ import com.fpt.website_prepme.config.MomoConfig;
 import com.fpt.website_prepme.exception.AppException;
 import com.fpt.website_prepme.exception.ErrorCode;
 import com.fpt.website_prepme.service.PaymentService;
+import com.fpt.website_prepme.model.entity.PaymentTransactionEntity;
+import com.fpt.website_prepme.model.entity.UserEntity;
+import com.fpt.website_prepme.enums.PaymentStatus;
+import com.fpt.website_prepme.enums.MembershipType;
+import com.fpt.website_prepme.repository.UserRepository;
+import com.fpt.website_prepme.repository.PaymentTransactionRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.crypto.Mac;
@@ -24,14 +34,23 @@ import org.springframework.stereotype.Service;
 public class PaymentServiceImpl implements PaymentService {
 
   private final MomoConfig momoConfig;
+  private final UserRepository userRepository;
+  private final PaymentTransactionRepository paymentTransactionRepository;
 
   //momo
+  @Override
+  @Transactional
   public String createPaymentRequest(String amount) {
     try {
+      // Get current authenticated user
+      String username = SecurityContextHolder.getContext().getAuthentication().getName();
+      UserEntity user = userRepository.findByUsername(username)
+              .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, "User not found"));
+
       // Generate requestId and orderId
       String requestId = momoConfig.getPARTNER_CODE() + new Date().getTime();
       String orderId = requestId;
-      String orderInfo = "SN Mobile";
+      String orderInfo = "Nâng cấp tài khoản PRO - Prepme";
       String extraData = "";
 
       // Generate raw signature
@@ -56,7 +75,7 @@ public class PaymentServiceImpl implements PaymentService {
       requestBody.put("extraData", extraData);
       requestBody.put("requestType", momoConfig.getREQUEST_TYPE());
       requestBody.put("signature", signature);
-      requestBody.put("lang", "en");
+      requestBody.put("lang", "vi");
 
       CloseableHttpClient httpClient = HttpClients.createDefault();
       HttpPost httpPost = new HttpPost("https://test-payment.momo.vn/v2/gateway/api/create");
@@ -71,7 +90,25 @@ public class PaymentServiceImpl implements PaymentService {
         while ((line = reader.readLine()) != null) {
           result.append(line);
         }
-        return result.toString();
+        
+        String resultStr = result.toString();
+        JSONObject responseJson = new JSONObject(resultStr);
+
+        // If transaction link is generated successfully, create and save the transaction entity
+        if (responseJson.has("payUrl")) {
+            PaymentTransactionEntity transaction = PaymentTransactionEntity.builder()
+                    .user(user)
+                    .amount(new BigDecimal(amount))
+                    .currency("VND")
+                    .paymentProvider("MOMO")
+                    .transactionReference(orderId)
+                    .status(PaymentStatus.PENDING)
+                    .description(orderInfo)
+                    .build();
+            paymentTransactionRepository.save(transaction);
+        }
+
+        return resultStr;
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -101,7 +138,8 @@ public class PaymentServiceImpl implements PaymentService {
   }
 
 
-    @Override
+  @Override
+  @Transactional
   public String checkPaymentStatus(String orderId) {
     try {
       String requestId = momoConfig.getPARTNER_CODE() + new Date().getTime();
@@ -116,7 +154,7 @@ public class PaymentServiceImpl implements PaymentService {
       requestBody.put("requestId", requestId);
       requestBody.put("orderId", orderId);
       requestBody.put("signature", signature);
-      requestBody.put("lang", "en");
+      requestBody.put("lang", "vi");
 
       CloseableHttpClient httpClient = HttpClients.createDefault();
       HttpPost httpPost = new HttpPost("https://test-payment.momo.vn/v2/gateway/api/query");
@@ -131,7 +169,32 @@ public class PaymentServiceImpl implements PaymentService {
         while ((line = reader.readLine()) != null) {
           result.append(line);
         }
-        return result.toString();
+        
+        String resultStr = result.toString();
+        JSONObject responseJson = new JSONObject(resultStr);
+
+        // Process status update in database
+        if (responseJson.has("resultCode")) {
+            int resultCode = responseJson.getInt("resultCode");
+            paymentTransactionRepository.findByTransactionReference(orderId).ifPresent(transaction -> {
+                if (transaction.getStatus() == PaymentStatus.PENDING) {
+                    if (resultCode == 0) {
+                        transaction.setStatus(PaymentStatus.COMPLETED);
+                        paymentTransactionRepository.save(transaction);
+
+                        // Upgrade user to PRO/PREMIUM
+                        UserEntity user = transaction.getUser();
+                        user.setMembershipType(MembershipType.PREMIUM);
+                        userRepository.save(user);
+                    } else if (resultCode != 1000 && resultCode != 9000) { // NOT pending / initiated
+                        transaction.setStatus(PaymentStatus.FAILED);
+                        paymentTransactionRepository.save(transaction);
+                    }
+                }
+            });
+        }
+
+        return resultStr;
       }
     } catch (Exception e) {
       e.printStackTrace();

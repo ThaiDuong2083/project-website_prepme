@@ -11,4 +11,5 @@ public interface AuthService {
   AuthResponse login(LoginRequest request);
   AuthResponse loginWithGoogle(GoogleAuthRequest request);
   UserDTO getMe();
+  UserDTO upgradeMembership();
 }

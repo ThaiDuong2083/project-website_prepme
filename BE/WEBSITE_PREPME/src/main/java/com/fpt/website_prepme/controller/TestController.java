@@ -36,9 +36,11 @@ public class TestController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get details of a specific exam. Correct answers and explanations are hidden.")
-    public ResponseEntity<ApiResponse<TestDetailDTO>> getExamDetails(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success(testService.getExamDetails(id, true)));
+    @Operation(summary = "Get details of a specific exam. Correct answers and explanations are hidden by default.")
+    public ResponseEntity<ApiResponse<TestDetailDTO>> getExamDetails(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "true") boolean hideAnswers) {
+        return ResponseEntity.ok(ApiResponse.success(testService.getExamDetails(id, hideAnswers)));
     }
 
     @PostMapping("/{id}/submit")
