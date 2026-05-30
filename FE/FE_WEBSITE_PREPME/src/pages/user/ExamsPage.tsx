@@ -1208,10 +1208,20 @@ export const ExamsPage = () => {
 
                                 {section.passage && (
                                   <div className="rounded-2xl bg-amber-50/30 border border-amber-100 p-4">
-                                    <span className="text-[10px] font-extrabold text-amber-800 block mb-1">ĐỀ BÀI / ĐOẠN VĂN MẪU:</span>
+                                    <span className="text-[10px] font-extrabold text-amber-800 block mb-1">ĐỀ BÀI:</span>
                                     <div
                                       className="prose max-w-none text-xs text-slate-600 leading-relaxed"
                                       dangerouslySetInnerHTML={{ __html: section.passage }}
+                                    />
+                                  </div>
+                                )}
+
+                                {section.sampleAnswer && (
+                                  <div className="rounded-2xl bg-emerald-50/20 border border-emerald-100 p-4">
+                                    <span className="text-[10px] font-extrabold text-emerald-800 block mb-1">BÀI VĂN MẪU THAM KHẢO:</span>
+                                    <div
+                                      className="prose max-w-none text-xs text-slate-700 whitespace-pre-wrap leading-relaxed"
+                                      dangerouslySetInnerHTML={{ __html: section.sampleAnswer }}
                                     />
                                   </div>
                                 )}
@@ -1284,6 +1294,16 @@ export const ExamsPage = () => {
                                       <pre className="whitespace-pre-wrap font-sans text-xs text-slate-700 leading-relaxed">
                                         {section.cueCard}
                                       </pre>
+                                    </div>
+                                  )}
+
+                                  {section.sampleAnswer && (
+                                    <div className="rounded-2xl bg-emerald-50/20 border border-emerald-100 p-4">
+                                      <span className="text-[10px] font-extrabold text-emerald-800 block mb-1">BÀI NÓI MẪU THAM KHẢO (SAMPLE RESPONSE):</span>
+                                      <div
+                                        className="prose max-w-none text-xs text-slate-700 whitespace-pre-wrap leading-relaxed"
+                                        dangerouslySetInnerHTML={{ __html: section.sampleAnswer }}
+                                      />
                                     </div>
                                   )}
 

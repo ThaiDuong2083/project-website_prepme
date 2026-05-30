@@ -28,9 +28,8 @@ public class TestDetailDTO {
     private Boolean isPro;
 
     public static TestDetailDTO toDto(TestEntity entity, boolean hideAnswers) {
-        List<String> audioUrls = parseAudioUrls(entity.getAudioUrl());
-
         List<TestSectionDTO> sectionDTOs = Collections.emptyList();
+        String firstAudioUrl = null;
         if (entity.getSections() != null) {
             java.util.List<com.fpt.website_prepme.model.entity.TestSectionEntity> sortedSections = new ArrayList<>(entity.getSections());
             sortedSections.sort(java.util.Comparator.comparing(
@@ -38,15 +37,14 @@ public class TestDetailDTO {
             ));
 
             List<TestSectionDTO> list = new ArrayList<>();
-            for (int i = 0; i < sortedSections.size(); i++) {
-                com.fpt.website_prepme.model.entity.TestSectionEntity sectionEntity = sortedSections.get(i);
+            for (com.fpt.website_prepme.model.entity.TestSectionEntity sectionEntity : sortedSections) {
                 TestSectionDTO sectionDto = TestSectionDTO.toDto(sectionEntity, hideAnswers);
-                if (i < audioUrls.size()) {
-                    sectionDto.setAudioUrl(audioUrls.get(i));
-                }
                 list.add(sectionDto);
             }
             sectionDTOs = list;
+            if (!sortedSections.isEmpty()) {
+                firstAudioUrl = sortedSections.get(0).getAudioUrl();
+            }
         }
 
         List<TestDetailDTO> childrenList = entity.getChildTests() != null
@@ -60,31 +58,11 @@ public class TestDetailDTO {
                 .title(entity.getTitle())
                 .examType(entity.getExamType())
                 .duration(entity.getDuration())
-                .audioUrl(entity.getAudioUrl())
+                .audioUrl(firstAudioUrl)
                 .description(entity.getDescription())
                 .sections(sectionDTOs)
                 .childTests(childrenList)
                 .isPro(entity.getIsPro())
                 .build();
-    }
-
-    private static List<String> parseAudioUrls(String audioUrlField) {
-        if (audioUrlField == null || audioUrlField.trim().isEmpty()) {
-            return Collections.emptyList();
-        }
-        String trimmed = audioUrlField.trim();
-        // Check if JSON array
-        if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
-            try {
-                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-                return mapper.readValue(trimmed, new TypeReference<List<String>>() {});
-            } catch (Exception e) {
-                // Fallback to comma splitting
-            }
-        }
-        return java.util.Arrays.stream(trimmed.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .toList();
     }
 }

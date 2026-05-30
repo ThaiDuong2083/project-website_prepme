@@ -26,9 +26,6 @@ public class TestEntity extends BaseEntity {
     @Column(name = "duration")
     private Integer duration; // Default duration in seconds (e.g. 1800 for 30 minutes)
 
-    @Column(name = "audio_url", columnDefinition = "TEXT")
-    private String audioUrl; // Mainly for listening exams
-
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 

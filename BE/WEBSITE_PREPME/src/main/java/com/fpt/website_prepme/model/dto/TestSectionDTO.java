@@ -20,6 +20,7 @@ public class TestSectionDTO {
     private String passage;
     private String cueCard;
     private String audioUrl;
+    private String sampleAnswer;
     private List<TestQuestionDTO> questions;
 
     public static TestSectionDTO toDto(TestSectionEntity entity, boolean hideAnswers) {
@@ -36,6 +37,7 @@ public class TestSectionDTO {
                 .passage(entity.getPassage())
                 .cueCard(entity.getCueCard())
                 .audioUrl(entity.getAudioUrl())
+                .sampleAnswer(hideAnswers ? null : entity.getSampleAnswer())
                 .questions(questionDTOs)
                 .build();
     }

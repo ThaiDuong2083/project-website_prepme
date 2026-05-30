@@ -324,7 +324,6 @@ public class TestServiceImpl implements TestService {
                 .title("Cambridge 18 Academic Listening Test 1")
                 .examType(ExamType.LISTENING)
                 .duration(1800)
-                .audioUrl("https://res.cloudinary.com/dilyyimrn/video/upload/v1700000000/listening_sample.mp3")
                 .description("Official Cambridge 18 Practice Listening Test 1. Standard IELTS audio player and 4 sections with 8 fill-in-the-blank and multiple choice questions.")
                 .isPro(false)
                 .build();
@@ -334,21 +333,25 @@ public class TestServiceImpl implements TestService {
                 .test(listening)
                 .sectionNumber(1)
                 .title("Part 1: Inquiry about Hotel Booking")
+                .audioUrl("https://res.cloudinary.com/dilyyimrn/video/upload/v1700000000/listening_sample.mp3")
                 .build();
         TestSectionEntity lSec2 = TestSectionEntity.builder()
                 .test(listening)
                 .sectionNumber(2)
                 .title("Part 2: Local Tourist Information")
+                .audioUrl("https://res.cloudinary.com/dilyyimrn/video/upload/v1700000000/listening_sample.mp3")
                 .build();
         TestSectionEntity lSec3 = TestSectionEntity.builder()
                 .test(listening)
                 .sectionNumber(3)
                 .title("Part 3: Academic Discussion on Project")
+                .audioUrl("https://res.cloudinary.com/dilyyimrn/video/upload/v1700000000/listening_sample.mp3")
                 .build();
         TestSectionEntity lSec4 = TestSectionEntity.builder()
                 .test(listening)
                 .sectionNumber(4)
                 .title("Part 4: Lecture on Wildlife Conservation")
+                .audioUrl("https://res.cloudinary.com/dilyyimrn/video/upload/v1700000000/listening_sample.mp3")
                 .build();
         testSectionRepository.saveAll(List.of(lSec1, lSec2, lSec3, lSec4));
 
@@ -518,12 +521,14 @@ public class TestServiceImpl implements TestService {
                 .sectionNumber(1)
                 .title("Task 1: Describe the Bar Chart")
                 .passage("The chart below shows the percentage of households with internet access in different countries between 2010 and 2020. Summarize the information by selecting and reporting the main features, and make comparisons where relevant. Write at least 150 words.")
+                .sampleAnswer("The bar chart illustrates the proportions of households with internet connection in three selected nations (Country A, Country B, and Country C) over a ten-year span from 2010 to 2020. Overall, internet accessibility witnessed a steady upward trend in all three countries. Country A maintained the highest percentage of internet-enabled homes throughout the period, while Country C experienced the most rapid growth. In 2010, Country A was the leader with approximately 60% of households having internet access, compared to 40% in Country B and only 15% in Country C. By 2020, Country A's figure reached 85%, Country B grew to 70%, and Country C surged to 65%.")
                 .build();
         TestSectionEntity wSec2 = TestSectionEntity.builder()
                 .test(writing)
                 .sectionNumber(2)
                 .title("Task 2: Essay Writing")
                 .passage("Some people believe that university education should be free for everyone, while others argue that students should pay tuition fees. Discuss both views and give your opinion. Write at least 250 words.")
+                .sampleAnswer("The question of whether tertiary education should be fully funded by the state or paid for by students themselves is a subject of ongoing debate. While some argue that free higher education benefits society as a whole, others contend that personal investment leads to better outcomes. On one hand, making university free ensures equal opportunity for all, regardless of socio-economic background, thereby unlocking talent and driving economic growth. On the other hand, tuition fees help universities maintain high standards of teaching and facilities, and students who contribute financially may be more motivated to succeed. In conclusion, while private contributions are useful, I believe that university education should be free to cultivate a highly educated workforce.")
                 .build();
         testSectionRepository.saveAll(List.of(wSec1, wSec2));
 
@@ -543,18 +548,21 @@ public class TestServiceImpl implements TestService {
                 .sectionNumber(1)
                 .title("Part 1: Introduction & Interview")
                 .passage("Let's talk about your hometown. Where is your hometown? What do you like most about it?")
+                .sampleAnswer("I come from Da Nang, a beautiful coastal city in central Vietnam. What I like most about my hometown is the perfect blend of modern infrastructure and pristine nature, particularly the stunning beaches and the iconic bridges. It has a very laid-back vibe compared to busier cities like Hanoi or Ho Chi Minh City.")
                 .build();
         TestSectionEntity sSec2 = TestSectionEntity.builder()
                 .test(speaking)
                 .sectionNumber(2)
                 .title("Part 2: Cue Card")
                 .cueCard("Describe a book you read recently that you found interesting. You should say: \n- What book it is \n- When you read it \n- What it is about \n- And explain why you found it interesting.")
+                .sampleAnswer("I would like to talk about \"Sapiens: A Brief History of Humankind\" by Yuval Noah Harari, which I read last year. The book explores the history of human species from the Stone Age up to the twenty-first century. I found it absolutely fascinating because it combines history and biology to explain why humans succeeded in dominating the planet, highlighting the power of shared imagination and myths.")
                 .build();
         TestSectionEntity sSec3 = TestSectionEntity.builder()
                 .test(speaking)
                 .sectionNumber(3)
                 .title("Part 3: Discussion")
                 .passage("Let's discuss reading habits. Do you think electronic books will completely replace paper books in the future? Why?")
+                .sampleAnswer("In my opinion, while digital books are growing in popularity due to their portability and convenience, they are unlikely to completely replace physical books. Printed books offer a tactile experience—the smell of paper, the feel of turning pages—that many readers still treasure. Moreover, physical books do not cause eye strain or rely on battery power.")
                 .build();
         testSectionRepository.saveAll(List.of(sSec1, sSec2, sSec3));
 
@@ -583,21 +591,25 @@ public class TestServiceImpl implements TestService {
                 .test(lSub)
                 .sectionNumber(1)
                 .title("Part 1: Flight Booking Inquiry")
+                .audioUrl("https://res.cloudinary.com/dilyyimrn/video/upload/v1700000000/listening_sample.mp3")
                 .build();
         TestSectionEntity lSubSec2 = TestSectionEntity.builder()
                 .test(lSub)
                 .sectionNumber(2)
                 .title("Part 2: Museum Tour Information")
+                .audioUrl("https://res.cloudinary.com/dilyyimrn/video/upload/v1700000000/listening_sample.mp3")
                 .build();
         TestSectionEntity lSubSec3 = TestSectionEntity.builder()
                 .test(lSub)
                 .sectionNumber(3)
                 .title("Part 3: Group Project Discussion")
+                .audioUrl("https://res.cloudinary.com/dilyyimrn/video/upload/v1700000000/listening_sample.mp3")
                 .build();
         TestSectionEntity lSubSec4 = TestSectionEntity.builder()
                 .test(lSub)
                 .sectionNumber(4)
                 .title("Part 4: Scientific Lecture on Ocean Currents")
+                .audioUrl("https://res.cloudinary.com/dilyyimrn/video/upload/v1700000000/listening_sample.mp3")
                 .build();
         testSectionRepository.saveAll(List.of(lSubSec1, lSubSec2, lSubSec3, lSubSec4));
 

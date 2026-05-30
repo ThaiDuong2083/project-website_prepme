@@ -34,6 +34,9 @@ public class TestSectionEntity extends BaseEntity {
     @Column(name = "audio_url", length = 512)
     private String audioUrl; // Section-specific audio if any
 
+    @Column(name = "sample_answer", columnDefinition = "TEXT")
+    private String sampleAnswer; // Sample/model answer for Writing/Speaking
+
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     @OrderBy("questionNumber ASC")

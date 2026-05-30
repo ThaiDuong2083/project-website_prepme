@@ -132,6 +132,7 @@ export interface TestSectionDTO {
   passage?: string;
   cueCard?: string;
   audioUrl?: string;
+  sampleAnswer?: string;
   questions: TestQuestionDTO[];
 }
 
