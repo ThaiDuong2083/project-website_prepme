@@ -15,6 +15,9 @@ import com.fpt.website_prepme.model.entity.RoleEntity;
 import com.fpt.website_prepme.model.entity.UserEntity;
 import com.fpt.website_prepme.repository.RoleRepository;
 import com.fpt.website_prepme.repository.UserRepository;
+import com.fpt.website_prepme.repository.UserMembershipLogRepository;
+import com.fpt.website_prepme.model.entity.UserMembershipLogEntity;
+import java.time.LocalDateTime;
 import com.fpt.website_prepme.service.AuthService;
 import com.fpt.website_prepme.utils.AppConstant;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -48,6 +51,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final UserMembershipLogRepository userMembershipLogRepository;
 
     @Value("${app.jwt.access-token-expiration}")
     private long accessTokenExpiration;
@@ -131,8 +135,21 @@ public class AuthServiceImpl implements AuthService {
         UserEntity user = userRepository.findById(userDetails.user().getId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        MembershipType oldType = user.getMembershipType();
         user.setMembershipType(MembershipType.PREMIUM);
+        user.setProSubscribedAt(LocalDateTime.now());
+        user.setSubscriptionExpiresAt(LocalDateTime.now().plusDays(30));
         UserEntity savedUser = userRepository.save(user);
+
+        // Save membership change log
+        UserMembershipLogEntity logEntity = UserMembershipLogEntity.builder()
+                .user(savedUser)
+                .oldMembershipType(oldType)
+                .newMembershipType(MembershipType.PREMIUM)
+                .changeReason("PRO upgrade via auth upgrade API")
+                .build();
+        userMembershipLogRepository.save(logEntity);
+
         log.info("[Auth] User upgraded to PREMIUM (PRO) - userId={}", savedUser.getId());
         return UserDTO.toEntity(savedUser);
     }

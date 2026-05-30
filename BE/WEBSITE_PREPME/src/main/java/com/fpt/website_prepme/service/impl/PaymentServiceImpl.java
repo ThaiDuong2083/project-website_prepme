@@ -10,6 +10,9 @@ import com.fpt.website_prepme.enums.PaymentStatus;
 import com.fpt.website_prepme.enums.MembershipType;
 import com.fpt.website_prepme.repository.UserRepository;
 import com.fpt.website_prepme.repository.PaymentTransactionRepository;
+import com.fpt.website_prepme.repository.UserMembershipLogRepository;
+import com.fpt.website_prepme.model.entity.UserMembershipLogEntity;
+import java.time.LocalDateTime;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +39,7 @@ public class PaymentServiceImpl implements PaymentService {
   private final MomoConfig momoConfig;
   private final UserRepository userRepository;
   private final PaymentTransactionRepository paymentTransactionRepository;
+  private final UserMembershipLogRepository userMembershipLogRepository;
 
   //momo
   @Override
@@ -184,8 +188,20 @@ public class PaymentServiceImpl implements PaymentService {
 
                         // Upgrade user to PRO/PREMIUM
                         UserEntity user = transaction.getUser();
+                        MembershipType oldType = user.getMembershipType();
                         user.setMembershipType(MembershipType.PREMIUM);
+                        user.setProSubscribedAt(LocalDateTime.now());
+                        user.setSubscriptionExpiresAt(LocalDateTime.now().plusDays(30));
                         userRepository.save(user);
+
+                        // Save membership change log
+                        UserMembershipLogEntity logEntity = UserMembershipLogEntity.builder()
+                                .user(user)
+                                .oldMembershipType(oldType)
+                                .newMembershipType(MembershipType.PREMIUM)
+                                .changeReason("PRO upgrade via MOMO payment (orderId: " + orderId + ")")
+                                .build();
+                        userMembershipLogRepository.save(logEntity);
                     } else if (resultCode != 1000 && resultCode != 9000) { // NOT pending / initiated
                         transaction.setStatus(PaymentStatus.FAILED);
                         paymentTransactionRepository.save(transaction);

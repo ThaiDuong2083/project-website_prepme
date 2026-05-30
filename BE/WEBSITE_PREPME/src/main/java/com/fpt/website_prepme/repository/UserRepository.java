@@ -1,10 +1,13 @@
 package com.fpt.website_prepme.repository;
 
+import com.fpt.website_prepme.enums.MembershipType;
 import com.fpt.website_prepme.model.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -26,4 +29,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>,
     boolean existsByUsername(String username);
 
     boolean existsByGoogleId(String googleId);
+
+    List<UserEntity> findAllByMembershipTypeAndSubscriptionExpiresAtBefore(MembershipType membershipType, LocalDateTime dateTime);
 }

@@ -988,6 +988,45 @@ export const ExamsPage = () => {
                                 </pre>
                               </div>
                             )}
+
+                            {/* Render Questions under the passage/audio/cue card */}
+                            {activeSec.questions && activeSec.questions.length > 0 && (
+                              <div className="mt-8 pt-6 border-t border-rose-100 space-y-6 animate-fadeIn">
+                                <h4 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                                  <BookOpen size={16} className="text-pink-500" />
+                                  DANH SÁCH CÂU HỎI
+                                </h4>
+                                <div className="space-y-4">
+                                  {activeSec.questions.map((q) => (
+                                    <div
+                                      key={q.id}
+                                      className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm space-y-3"
+                                    >
+                                      <div className="flex items-start gap-2.5">
+                                        <span className="rounded-lg bg-rose-50 px-2.5 py-1 text-xs font-black text-rose-500 border border-rose-100/50 shrink-0">
+                                          Câu {q.questionNumber}
+                                        </span>
+                                        <div className="text-xs font-bold text-slate-700 mt-1 leading-relaxed">
+                                          {q.questionText}
+                                        </div>
+                                      </div>
+
+                                      {/* Options for Multiple Choice */}
+                                      {q.questionType === 'MULTIPLE_CHOICE' && q.options && (
+                                        <div className="pl-9 grid grid-cols-1 gap-2 text-xs text-slate-500 font-medium">
+                                          {q.options.map((option) => (
+                                            <div key={option} className="flex items-start gap-1.5">
+                                              <span className="h-1.5 w-1.5 rounded-full bg-pink-400 mt-1.5 shrink-0" />
+                                              <span>{option}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         );
                       })()}

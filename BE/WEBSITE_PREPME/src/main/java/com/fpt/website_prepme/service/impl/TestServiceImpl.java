@@ -213,13 +213,13 @@ public class TestServiceImpl implements TestService {
                 .status(request.getStatus() != null ? request.getStatus() : PracticeStatus.COMPLETED)
                 .build();
 
-        if (practiceHistory.getStatus() == PracticeStatus.COMPLETED) {
+        if (practiceHistory.getStatus() == PracticeStatus.COMPLETED && test.getExamType() != ExamType.SPEAKING) {
             practiceHistory.setAiAnalysis("Đang chờ nhận xét từ AI...");
         }
 
         PracticeHistoryEntity saved = practiceHistoryRepository.save(practiceHistory);
 
-        if (saved.getStatus() == PracticeStatus.COMPLETED) {
+        if (saved.getStatus() == PracticeStatus.COMPLETED && test.getExamType() != ExamType.SPEAKING) {
             try {
                 openAiService.generateFeedbackAsync(saved.getId());
             } catch (Exception e) {

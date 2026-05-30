@@ -75,6 +75,9 @@ public class UserEntity extends BaseEntity {
     @Builder.Default
     private MembershipType membershipType = MembershipType.FREE;
 
+    @Column(name = "pro_subscribed_at")
+    private LocalDateTime proSubscribedAt;
+
     @Column(name = "subscription_expires_at")
     private LocalDateTime subscriptionExpiresAt;
 

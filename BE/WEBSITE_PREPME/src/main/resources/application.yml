@@ -81,7 +81,7 @@ server:
 # ─── JWT ─────────────────────────────────────────────────────────────────────
 app:
   jwt:
-    secret: ${JWT_SECRET:ThisIsAVerySecretKeyForJWTTokenGenerationMustBe256BitsLong!}
+    secret: ${JWT_SECRET:tU1GgKoDDd2AB8jllEbk1N8AytRba7MvlIyOA7EOowb}
     access-token-expiration: ${JWT_ACCESS_EXPIRATION:2592000000}    # 30 days
 
   # ─── Cloudinary ────────────────────────────────────────────────────────────

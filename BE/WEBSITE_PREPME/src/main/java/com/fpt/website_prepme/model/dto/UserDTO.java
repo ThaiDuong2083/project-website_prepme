@@ -22,6 +22,8 @@ public class UserDTO {
     private AuthProvider provider;
     private String createdAt;
     private MembershipType membershipType;
+    private java.time.LocalDateTime proSubscribedAt;
+    private java.time.LocalDateTime subscriptionExpiresAt;
 
     public static UserDTO toEntity(UserEntity user) {
         String role = user.getRoles().stream().findFirst().map(r -> r.getName()).orElse("USER");
@@ -35,6 +37,8 @@ public class UserDTO {
                 .provider(user.getProvider())
                 .createdAt(user.getCreatedAt() != null ? user.getCreatedAt().toString() : null)
                 .membershipType(user.getMembershipType())
+                .proSubscribedAt(user.getProSubscribedAt())
+                .subscriptionExpiresAt(user.getSubscriptionExpiresAt())
                 .build();
     }
 }
