@@ -975,6 +975,16 @@ export const ExamsPage = () => {
                               />
                             )}
 
+                            {examDetail.examType === 'WRITING' && activeSec.audioUrl && (
+                              <div className="mt-4 rounded-2xl overflow-hidden border border-slate-100 max-w-full flex justify-center bg-white p-2 shadow-sm">
+                                <img
+                                  src={activeSec.audioUrl}
+                                  alt="Writing prompt illustration"
+                                  className="max-h-[400px] object-contain rounded-xl"
+                                />
+                              </div>
+                            )}
+
                             {activeSec.cueCard && (
                               <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-6 ">
                                 <h4 className="text-sm font-extrabold text-amber-800 mb-3">
@@ -1209,6 +1219,16 @@ export const ExamsPage = () => {
                                     <div
                                       className="prose max-w-none text-xs text-slate-600 leading-relaxed"
                                       dangerouslySetInnerHTML={{ __html: section.passage }}
+                                    />
+                                  </div>
+                                )}
+
+                                {reviewDetail.skillType === 'WRITING' && section.audioUrl && (
+                                  <div className="mt-2 rounded-2xl overflow-hidden border border-slate-100 max-w-full flex justify-center bg-white p-2 shadow-sm">
+                                    <img
+                                      src={section.audioUrl}
+                                      alt="Writing prompt illustration"
+                                      className="max-h-[300px] object-contain rounded-xl"
                                     />
                                   </div>
                                 )}

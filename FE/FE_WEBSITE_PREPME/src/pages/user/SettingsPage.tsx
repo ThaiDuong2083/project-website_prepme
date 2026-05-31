@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, X, User as UserIcon, LogOut, Wrench, CheckCircle, Sparkles, CreditCard } from 'lucide-react';
+import { Settings, X, User as UserIcon, LogOut, Wrench, CheckCircle, Sparkles } from 'lucide-react';
 import { ROUTES } from '@constants/routes.constants';
 import { useAuthStore } from '@store/auth.store';
 import { useAppStore } from '@store/app.store';
-import { paymentApi } from '@api/payment.api';
 import toast from 'react-hot-toast';
 
 const BRAND = {
@@ -22,7 +21,6 @@ export const SettingsPage = () => {
   const { user, logout } = useAuthStore();
   const { theme, toggleTheme } = useAppStore();
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [initiatingPayment, setInitiatingPayment] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -30,24 +28,9 @@ export const SettingsPage = () => {
     navigate(ROUTES.LOGIN);
   };
 
-  const handleMomoPayment = async () => {
-    setInitiatingPayment(true);
-    const loadingToastId = toast.loading('Đang khởi tạo liên kết thanh toán MoMo...');
-    try {
-      const response = await paymentApi.createMomoPayment('1000000');
-      const resObj = typeof response === 'string' ? JSON.parse(response) : response;
-      if (resObj && resObj.payUrl) {
-        toast.success('Đang chuyển hướng sang MoMo...', { id: loadingToastId });
-        window.location.href = resObj.payUrl;
-      } else {
-        toast.error(resObj?.message || 'Không thể tạo yêu cầu thanh toán MoMo.', { id: loadingToastId });
-      }
-    } catch (err: any) {
-      console.error(err);
-      toast.error('Lỗi kết nối máy chủ thanh toán.', { id: loadingToastId });
-    } finally {
-      setInitiatingPayment(false);
-    }
+  const copyToClipboard = (text: string, message: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(message);
   };
 
   const formattedDate = user?.createdAt
@@ -259,7 +242,7 @@ export const SettingsPage = () => {
 
             {/* Nhắn tin cho Admin */}
             <div
-              onClick={() => window.open('https://facebook.com', '_blank')}
+              onClick={() => window.open('https://www.facebook.com/profile.php?id=61590306457643', '_blank')}
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -304,7 +287,7 @@ export const SettingsPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => !initiatingPayment && setShowPaymentModal(false)}
+              onClick={() => setShowPaymentModal(false)}
               style={{
                 position: 'absolute',
                 top: 0,
@@ -325,7 +308,9 @@ export const SettingsPage = () => {
                 position: 'relative',
                 background: isDark ? '#1e293b' : '#ffffff',
                 width: '100%',
-                maxWidth: '520px',
+                maxWidth: '540px',
+                maxHeight: '90vh',
+                overflowY: 'auto',
                 borderRadius: '24px',
                 padding: '32px',
                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
@@ -336,7 +321,6 @@ export const SettingsPage = () => {
             >
               {/* Close Button */}
               <button
-                disabled={initiatingPayment}
                 onClick={() => setShowPaymentModal(false)}
                 style={{
                   position: 'absolute',
@@ -370,12 +354,12 @@ export const SettingsPage = () => {
               </div>
 
               {/* Benefit List */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '28px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '24px' }}>
                 {[
                   { text: 'Truy cập 100% Đề thi:', desc: 'Làm toàn bộ đề Premium Listening, Reading, Writing & Speaking.' },
                   { text: 'Đánh giá chi tiết bằng AI:', desc: 'Nhận Band Score dự đoán, sửa lỗi ngữ pháp và từ vựng chi tiết.' },
                   { text: 'Trợ lý học tập thông minh:', desc: 'Xem bài mẫu gợi ý, nâng cấp vốn từ vựng học thuật.' },
-                  { text: 'Sử dụng trọn đời:', desc: 'Thanh toán duy nhất một lần, cập nhật đề thi mới miễn phí.' },
+                  { text: 'Thời hạn sử dụng:', desc: 'Tài khoản có thời hạn 30 ngày kể từ ngày đăng ký.' },
                 ].map((item, idx) => (
                   <div key={idx} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
                     <CheckCircle className="text-emerald-500 flex-shrink-0" size={18} style={{ marginTop: '2px' }} />
@@ -389,85 +373,120 @@ export const SettingsPage = () => {
                 ))}
               </div>
 
-              {/* Pricing Box */}
-              <div
-                style={{
-                  background: isDark ? '#0f172a' : '#f8fafc',
-                  border: `1.5px solid ${isDark ? '#334155' : '#e2e8f0'}`,
-                  borderRadius: '16px',
-                  padding: '20px',
-                  marginBottom: '28px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#fb7185', textTransform: 'uppercase' }}>
-                    Gói trọn đời
-                  </span>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '2px' }}>
-                    <span style={{ fontSize: '24px', fontWeight: 900 }}>1.000.000đ</span>
-                    <span style={{ fontSize: '13px', color: '#94a3b8', textDecoration: 'line-through' }}>
-                      2.000.000đ
-                    </span>
+              {/* QR and Transfer Info */}
+              <div style={{ display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
+                {/* QR Code */}
+                <div style={{ flex: '1 1 160px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ padding: '8px', background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                    <img
+                      src="https://res.cloudinary.com/dilyyimrn/image/upload/v1780242258/ab7f4a31-b2ed-40a2-bd16-be2dc9937636_qr.png"
+                      alt="Payment QR Code"
+                      style={{ width: '100%', maxWidth: '160px', height: 'auto', borderRadius: '8px', display: 'block' }}
+                    />
                   </div>
+                  <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600 }}>Quét mã QR để thanh toán nhanh</span>
                 </div>
-                <div
-                  style={{
-                    background: 'rgba(251, 113, 133, 0.1)',
-                    color: '#f43f5e',
-                    fontSize: '11px',
-                    fontWeight: 800,
-                    padding: '4px 8px',
-                    borderRadius: '8px',
-                  }}
-                >
-                  TIẾT KIỆM 50%
+
+                {/* Account Details */}
+                <div style={{ flex: '1 1 240px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ background: isDark ? '#0f172a' : '#f8fafc', padding: '12px 16px', borderRadius: '12px', border: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`, fontSize: '13px' }}>
+                    <div style={{ marginBottom: '6px' }}>
+                      <span style={{ color: '#94a3b8', fontSize: '11px', display: 'block' }}>Chủ tài khoản:</span>
+                      <strong style={{ color: textTitle, fontSize: '13px' }}>NGUYEN THI PHUONG THAO</strong>
+                    </div>
+
+                    <div style={{ marginBottom: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <span style={{ color: '#94a3b8', fontSize: '11px', display: 'block' }}>Số tài khoản:</span>
+                        <strong style={{ color: textTitle, fontSize: '13px' }}>3385 7779 69</strong>
+                      </div>
+                      <button
+                        onClick={() => copyToClipboard('3385777969', 'Đã sao chép số tài khoản!')}
+                        style={{ padding: '4px 8px', fontSize: '11px', background: 'rgba(244, 63, 94, 0.1)', color: '#f43f5e', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 700 }}
+                      >
+                        Sao chép
+                      </button>
+                    </div>
+
+                    <div style={{ marginBottom: '6px' }}>
+                      <span style={{ color: '#94a3b8', fontSize: '11px', display: 'block' }}>Số tiền:</span>
+                      <strong style={{ color: '#f43f5e', fontSize: '15px', fontWeight: 900 }}>79.000đ</strong>
+                      <span style={{ textDecoration: 'line-through', color: '#94a3b8', marginLeft: '8px', fontSize: '11px' }}>99.000đ</span>
+                    </div>
+
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                        <span style={{ color: '#94a3b8', fontSize: '11px' }}>Nội dung chuyển khoản:</span>
+                        <button
+                          onClick={() => copyToClipboard(`${user?.phone || ''} nang cap goi pro`.trim(), 'Đã sao chép nội dung!')}
+                          style={{ padding: '4px 8px', fontSize: '11px', background: 'rgba(244, 63, 94, 0.1)', color: '#f43f5e', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 700 }}
+                        >
+                          Sao chép
+                        </button>
+                      </div>
+                      <strong style={{ color: textTitle, fontSize: '12px', wordBreak: 'break-all', display: 'block', lineHeight: '1.4' }}>
+                        {user?.phone ? `${user.phone} nang cap goi pro` : '[Số điện thoại] nang cap goi pro'}
+                      </strong>
+                      <span style={{ fontSize: '10.5px', color: '#f43f5e', display: 'block', marginTop: '2px', fontStyle: 'italic' }}>
+                        * SĐT đăng ký của bạn
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
+              {/* Note banner */}
+              <div style={{
+                background: isDark ? 'rgba(251, 113, 133, 0.05)' : 'rgba(251, 113, 133, 0.08)',
+                border: '1px solid rgba(251, 113, 133, 0.2)',
+                borderRadius: '12px',
+                padding: '12px',
+                marginBottom: '24px',
+                fontSize: '12px',
+                color: isDark ? '#fb7185' : '#e11d48',
+                lineHeight: '1.5',
+              }}>
+                <strong>📌 Lưu ý:</strong> Vui lòng reload (F5 lại trang) sau 5 phút để cập nhật trạng thái PRO. Nếu vẫn chưa được nâng cấp, vui lòng nhắn admin hỗ trợ qua Facebook.
+              </div>
+
               {/* Action Buttons */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <motion.button
-                  disabled={initiatingPayment}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  onClick={handleMomoPayment}
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button
+                  onClick={() => window.open('https://www.facebook.com/profile.php?id=61590306457643', '_blank')}
                   style={{
+                    flex: 1,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '10px',
-                    background: '#a21caf', // MoMo magenta color
+                    gap: '6px',
+                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
                     color: '#fff',
                     border: 'none',
-                    borderRadius: '14px',
-                    padding: '14px',
+                    borderRadius: '12px',
+                    padding: '12px',
                     fontWeight: 800,
-                    fontSize: '15px',
+                    fontSize: '13.5px',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 14px rgba(162, 28, 175, 0.25)',
-                    opacity: initiatingPayment ? 0.7 : 1,
+                    boxShadow: '0 4px 12px rgba(29, 78, 216, 0.2)',
                   }}
                 >
-                  <CreditCard size={18} />
-                  {initiatingPayment ? 'Đang kết nối...' : 'Thanh toán qua ví MoMo'}
-                </motion.button>
+                  Nhắn tin hỗ trợ (FB)
+                </button>
                 <button
-                  disabled={initiatingPayment}
                   onClick={() => setShowPaymentModal(false)}
                   style={{
-                    background: 'transparent',
+                    flex: 1,
+                    background: isDark ? '#334155' : '#f1f5f9',
                     border: 'none',
-                    color: isDark ? '#94a3b8' : '#64748b',
+                    color: isDark ? '#cbd5e1' : '#475569',
+                    borderRadius: '12px',
+                    padding: '12px',
+                    fontWeight: 800,
                     fontSize: '13.5px',
-                    fontWeight: 700,
-                    padding: '8px',
                     cursor: 'pointer',
                   }}
                 >
-                  Hủy bỏ
+                  Đóng
                 </button>
               </div>
             </motion.div>
