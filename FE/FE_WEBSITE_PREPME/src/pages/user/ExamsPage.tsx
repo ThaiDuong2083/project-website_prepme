@@ -629,7 +629,7 @@ export const ExamsPage = () => {
                         const attempts = historyList.filter((h) => h.testId === exam.id);
                         const hasAttempted = attempts.length > 0;
                         const maxScore = hasAttempted ? Math.max(...attempts.map((a) => a.score ?? 0)) : 0;
-                        const questionCount = exam.examType === 'LISTENING' || exam.examType === 'READING' ? 40 : exam.examType === 'WRITING' ? 2 : 3;
+                        const questionCount = exam.questionCount ?? 0;
 
                         return (
                           <motion.div
@@ -644,11 +644,8 @@ export const ExamsPage = () => {
                             )}
                             <div>
                               <h3 className={`text-base font-black leading-snug ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
-                                Test {index + 1}
-                              </h3>
-                              <p className="text-xs text-slate-400 font-semibold mt-0.5 line-clamp-1 ">
                                 {exam.title}
-                              </p>
+                              </h3>
 
                               <div className="mt-4 flex items-center gap-6 text-xs text-slate-400 font-semibold ">
                                 <div className="flex items-center gap-1.5">

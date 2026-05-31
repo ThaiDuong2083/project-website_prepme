@@ -111,6 +111,7 @@ export interface TestListDTO {
   duration: number; // in seconds
   description?: string;
   sectionCount: number;
+  questionCount: number;
   createdAt: string;
   isPro?: boolean;
 }
@@ -146,6 +147,7 @@ export interface TestDetailDTO {
   sections: TestSectionDTO[];
   childTests?: TestDetailDTO[];
   isPro?: boolean;
+  questionCount: number;
 }
 
 export interface TestSubmitRequest {

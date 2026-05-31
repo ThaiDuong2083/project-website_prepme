@@ -26,6 +26,7 @@ public class TestDetailDTO {
     private List<TestSectionDTO> sections;
     private List<TestDetailDTO> childTests; // Used for composite IELTS exams
     private Boolean isPro;
+    private int questionCount;
 
     public static TestDetailDTO toDto(TestEntity entity, boolean hideAnswers) {
         List<TestSectionDTO> sectionDTOs = Collections.emptyList();
@@ -63,6 +64,7 @@ public class TestDetailDTO {
                 .sections(sectionDTOs)
                 .childTests(childrenList)
                 .isPro(entity.getIsPro())
+                .questionCount(entity.getQuestionCount())
                 .build();
     }
 }

@@ -20,6 +20,7 @@ public class TestListDTO {
     private Integer duration;
     private String description;
     private int sectionCount;
+    private int questionCount;
     private LocalDateTime createdAt;
     private Boolean isPro;
 
@@ -31,6 +32,7 @@ public class TestListDTO {
                 .duration(entity.getDuration())
                 .description(entity.getDescription())
                 .sectionCount(entity.getSections() != null ? entity.getSections().size() : 0)
+                .questionCount(entity.getQuestionCount())
                 .createdAt(entity.getCreatedAt())
                 .isPro(entity.getIsPro())
                 .build();

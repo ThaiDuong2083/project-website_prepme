@@ -45,4 +45,22 @@ public class TestEntity extends BaseEntity {
     @Column(name = "is_pro", nullable = false, columnDefinition = "boolean default false")
     @Builder.Default
     private Boolean isPro = false;
+
+    public int getQuestionCount() {
+        int count = 0;
+        if (sections != null) {
+            for (TestSectionEntity section : sections) {
+                if (section.getQuestions() != null) {
+                    count += section.getQuestions().size();
+                }
+            }
+        }
+        if (childTests != null) {
+            for (TestEntity child : childTests) {
+                count += child.getQuestionCount();
+            }
+        }
+        return count;
+    }
 }
+
