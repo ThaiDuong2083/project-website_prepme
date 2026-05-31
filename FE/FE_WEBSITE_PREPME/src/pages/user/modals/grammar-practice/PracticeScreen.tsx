@@ -238,7 +238,7 @@ export const PracticeScreen = ({
         >
           <div style={{ border: `1.5px solid ${isDark ? '#334155' : '#fde68a'}`, borderRadius: '16px', padding: '20px', background: isDark ? '#1e2d40' : '#fffbeb', position: 'relative' }}>
             <p style={{ fontWeight: 700, fontSize: '16px', color: textMain, textAlign: 'center', marginTop: '24px', lineHeight: 1.8 }}>
-              {q.text.split('___').map((part, pi, arr) => (
+              {q.text.split(/_{2,}/).map((part, pi, arr) => (
                 <span key={pi}>
                   {part}
                   {pi < arr.length - 1 && (
