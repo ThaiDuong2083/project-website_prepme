@@ -789,4 +789,133 @@ public class TestServiceImpl implements TestService {
             default -> throw new AppException(ErrorCode.BAD_REQUEST, "Cannot map ExamType " + examType + " to SkillType directly.");
         };
     }
+
+    // ─── Admin CRUD ───────────────────────────────────────────────────────────
+
+    @Override
+    @Transactional
+    public TestDetailDTO createTest(com.fpt.website_prepme.model.dto.AdminCreateTestRequest request) {
+        TestEntity entity = TestEntity.builder()
+                .title(request.getTitle())
+                .examType(request.getExamType())
+                .duration(request.getDuration() != null ? request.getDuration() : 3600)
+                .isPro(Boolean.TRUE.equals(request.getIsPro()))
+                .description(request.getDescription())
+                .build();
+        TestEntity saved = testRepository.save(entity);
+        return TestDetailDTO.toDto(saved, false);
+    }
+
+    @Override
+    @Transactional
+    public TestDetailDTO updateTest(Long id, com.fpt.website_prepme.model.dto.AdminCreateTestRequest request) {
+        TestEntity entity = testRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Test not found with id: " + id));
+        if (request.getTitle() != null) entity.setTitle(request.getTitle());
+        if (request.getExamType() != null) entity.setExamType(request.getExamType());
+        if (request.getDuration() != null) entity.setDuration(request.getDuration());
+        if (request.getIsPro() != null) entity.setIsPro(request.getIsPro());
+        if (request.getDescription() != null) entity.setDescription(request.getDescription());
+        TestEntity saved = testRepository.save(entity);
+        return TestDetailDTO.toDto(saved, false);
+    }
+
+    @Override
+    @Transactional
+    public void deleteTest(Long id) {
+        TestEntity entity = testRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Test not found with id: " + id));
+        entity.softDelete();
+        testRepository.save(entity);
+    }
+
+    @Override
+    @Transactional
+    public TestSectionDTO createSection(Long testId, com.fpt.website_prepme.model.dto.AdminCreateSectionRequest request) {
+        TestEntity test = testRepository.findById(testId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Test not found with id: " + testId));
+        TestSectionEntity section = TestSectionEntity.builder()
+                .test(test)
+                .sectionNumber(request.getSectionNumber())
+                .title(request.getTitle())
+                .audioUrl(request.getAudioUrl())
+                .passage(request.getPassage())
+                .cueCard(request.getCueCard())
+                .sampleAnswer(request.getSampleAnswer())
+                .build();
+        TestSectionEntity saved = testSectionRepository.save(section);
+        return TestSectionDTO.toDto(saved, false);
+    }
+
+    @Override
+    @Transactional
+    public TestSectionDTO updateSection(Long sectionId, com.fpt.website_prepme.model.dto.AdminCreateSectionRequest request) {
+        TestSectionEntity section = testSectionRepository.findById(sectionId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Section not found with id: " + sectionId));
+        if (request.getSectionNumber() != null) section.setSectionNumber(request.getSectionNumber());
+        if (request.getTitle() != null) section.setTitle(request.getTitle());
+        if (request.getAudioUrl() != null) section.setAudioUrl(request.getAudioUrl());
+        if (request.getPassage() != null) section.setPassage(request.getPassage());
+        if (request.getCueCard() != null) section.setCueCard(request.getCueCard());
+        if (request.getSampleAnswer() != null) section.setSampleAnswer(request.getSampleAnswer());
+        TestSectionEntity saved = testSectionRepository.save(section);
+        return TestSectionDTO.toDto(saved, false);
+    }
+
+    @Override
+    @Transactional
+    public void deleteSection(Long sectionId) {
+        if (!testSectionRepository.existsById(sectionId))
+            throw new AppException(ErrorCode.NOT_FOUND, "Section not found with id: " + sectionId);
+        testSectionRepository.deleteById(sectionId);
+    }
+
+    @Override
+    @Transactional
+    public TestQuestionDTO createQuestion(Long sectionId, com.fpt.website_prepme.model.dto.AdminCreateQuestionRequest request) {
+        TestSectionEntity section = testSectionRepository.findById(sectionId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Section not found with id: " + sectionId));
+        String optionsJson = null;
+        if (request.getOptions() != null && !request.getOptions().isEmpty()) {
+            try { optionsJson = objectMapper.writeValueAsString(request.getOptions()); }
+            catch (Exception e) { log.warn("Failed to serialize options", e); }
+        }
+        TestQuestionEntity question = TestQuestionEntity.builder()
+                .section(section)
+                .questionNumber(request.getQuestionNumber())
+                .questionType(request.getQuestionType())
+                .questionText(request.getQuestionText())
+                .options(optionsJson)
+                .correctAnswer(request.getCorrectAnswer())
+                .explanation(request.getExplanation())
+                .build();
+        TestQuestionEntity saved = testQuestionRepository.save(question);
+        return TestQuestionDTO.toDto(saved, false);
+    }
+
+    @Override
+    @Transactional
+    public TestQuestionDTO updateQuestion(Long questionId, com.fpt.website_prepme.model.dto.AdminCreateQuestionRequest request) {
+        TestQuestionEntity question = testQuestionRepository.findById(questionId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Question not found with id: " + questionId));
+        if (request.getQuestionNumber() != null) question.setQuestionNumber(request.getQuestionNumber());
+        if (request.getQuestionType() != null) question.setQuestionType(request.getQuestionType());
+        if (request.getQuestionText() != null) question.setQuestionText(request.getQuestionText());
+        if (request.getCorrectAnswer() != null) question.setCorrectAnswer(request.getCorrectAnswer());
+        if (request.getExplanation() != null) question.setExplanation(request.getExplanation());
+        if (request.getOptions() != null && !request.getOptions().isEmpty()) {
+            try { question.setOptions(objectMapper.writeValueAsString(request.getOptions())); }
+            catch (Exception e) { log.warn("Failed to serialize options", e); }
+        }
+        TestQuestionEntity saved = testQuestionRepository.save(question);
+        return TestQuestionDTO.toDto(saved, false);
+    }
+
+    @Override
+    @Transactional
+    public void deleteQuestion(Long questionId) {
+        if (!testQuestionRepository.existsById(questionId))
+            throw new AppException(ErrorCode.NOT_FOUND, "Question not found with id: " + questionId);
+        testQuestionRepository.deleteById(questionId);
+    }
 }

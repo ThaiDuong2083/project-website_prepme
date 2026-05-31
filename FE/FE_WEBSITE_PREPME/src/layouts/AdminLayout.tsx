@@ -11,6 +11,8 @@ import {
   GraduationCap,
   Sun,
   Moon,
+  Sparkles,
+  HardDrive,
 } from 'lucide-react';
 import { cn } from '@utils/isValidPhoneNumber.ts';
 import { useAuth } from '@hooks/useAuth';
@@ -25,6 +27,9 @@ const adminNav = [
   { label: 'Users', href: ROUTES.ADMIN.USERS, icon: Users },
   { label: 'Courses', href: ROUTES.ADMIN.COURSES, icon: BookOpen },
   { label: 'Exams', href: ROUTES.ADMIN.EXAMS, icon: FileText },
+  { label: 'AI Vocab Generator', href: ROUTES.ADMIN.VOCAB_AI, icon: Sparkles },
+  { label: 'AI Grammar Generator', href: ROUTES.ADMIN.GRAMMAR_AI, icon: BookOpen },
+  { label: 'Quản lý Files', href: ROUTES.ADMIN.FILES, icon: HardDrive },
   { label: 'Analytics', href: ROUTES.ADMIN.ANALYTICS, icon: BarChart2 },
   { label: 'Settings', href: ROUTES.ADMIN.SETTINGS, icon: Settings },
 ];

@@ -381,10 +381,135 @@ public class OpenAiServiceImpl implements OpenAiService, org.springframework.bea
         }
     }
 
+    @Value("${app.gemini.api-key:}")
+    private String geminiApiKey;
+
+    @Value("${app.gemini.model:gemini-1.5-flash}")
+    private String geminiModel;
+
+    @Value("${app.gemini.base-url:https://generativelanguage.googleapis.com/v1beta/models}")
+    private String geminiBaseUrl;
+
+    @Override
+    public String generateVocabularyJson(String userPrompt) {
+        String systemInstruction = """
+You are a professional English vocabulary expert. Generate vocabulary words based on the user's request.
+IMPORTANT: Respond ONLY with a valid JSON array. No markdown, no explanation, no code fences.
+Each element must have these exact fields:
+- word (string)
+- wordType (string, e.g. "noun", "verb", "adjective", "adverb", "phrase")
+- pronunciation (string, IPA format, e.g. "/ˈwɜːkˌpleɪs/")
+- meaning (string, Vietnamese meaning)
+- exampleEn (string, example sentence in English)
+- exampleVi (string, Vietnamese translation of the example)
+- level (string, one of: "BEGINNER", "INTERMEDIATE", "ADVANCED")
+
+Example output format:
+[{"word":"deadline","wordType":"noun","pronunciation":"/ˈdedlaɪn/","meaning":"hạn chót","exampleEn":"We must meet the deadline.","exampleVi":"Chúng ta phải đáp ứng hạn chót.","level":"BEGINNER"}]
+""";
+        log.info("[Gemini Vocab] Generating vocabulary with prompt: {}", userPrompt);
+        // Try Gemini first, fall back to OpenAI if Gemini key is missing
+        if (geminiApiKey != null && !geminiApiKey.isBlank()) {
+            try {
+                String result = callGeminiVocab(systemInstruction, userPrompt);
+                if (result != null) return result;
+            } catch (Exception e) {
+                log.warn("[Gemini Vocab] Gemini call failed ({}), falling back to OpenAI.", e.getMessage());
+            }
+        } else {
+            log.warn("[Gemini Vocab] Gemini API key is missing. Falling back to OpenAI.");
+        }
+        // Fallback: use OpenAI
+        try {
+            log.info("[Gemini Vocab] Using OpenAI fallback for vocabulary generation.");
+            String result = callAiChatCompletions(systemInstruction, userPrompt);
+            // Strip markdown fences if present
+            result = result.trim();
+            if (result.startsWith("```")) {
+                result = result.replaceAll("^```[a-zA-Z]*\\n?", "").replaceAll("```$", "").trim();
+            }
+            log.info("[Gemini Vocab] OpenAI fallback returned {} chars", result.length());
+            return result;
+        } catch (Exception e) {
+            log.error("[Gemini Vocab] OpenAI fallback also failed: {}", e.getMessage(), e);
+            throw new RuntimeException("Lỗi sinh từ vựng AI: " + e.getMessage());
+        }
+    }
+
+    private String callGeminiVocab(String systemInstruction, String userPrompt) {
+        // Use X-goog-api-key header (same as curl -H 'X-goog-api-key: ...')
+        String url = geminiBaseUrl + "/" + geminiModel + ":generateContent";
+        Map<String, Object> textPart = Map.of("text", systemInstruction + "\n\n" + userPrompt);
+        Map<String, Object> content = Map.of("parts", List.of(textPart));
+        Map<String, Object> requestBody = Map.of("contents", List.of(content));
+
+        RestTemplate restTemplate = createRestTemplateWithTimeout();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X-goog-api-key", geminiApiKey);
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        @SuppressWarnings("unchecked")
+        ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> candidates = (List<Map<String, Object>>) response.getBody().get("candidates");
+            if (candidates != null && !candidates.isEmpty()) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> contentMap = (Map<String, Object>) candidates.get(0).get("content");
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> parts = (List<Map<String, Object>>) contentMap.get("parts");
+                if (parts != null && !parts.isEmpty()) {
+                    String text = (String) parts.get(0).get("text");
+                    text = text.trim();
+                    if (text.startsWith("```")) {
+                        text = text.replaceAll("^```[a-zA-Z]*\\n?", "").replaceAll("```$", "").trim();
+                    }
+                    log.info("[Gemini Vocab] Generated {} chars of JSON", text.length());
+                    return text;
+                }
+            }
+        }
+        throw new RuntimeException("Empty response from Gemini");
+    }
+
     private RestTemplate createRestTemplateWithTimeout() {
         org.springframework.http.client.SimpleClientHttpRequestFactory factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(15000);
         factory.setReadTimeout(120000);
         return new RestTemplate(factory);
+    }
+
+    @Override
+    public String generateGrammarJson(String userPrompt) {
+        String systemInstruction = """
+You are a professional English grammar teacher. Generate grammar practice questions based on the user's request.
+IMPORTANT: Respond ONLY with a valid JSON array. No markdown, no explanation, no code fences.
+Each element must have these exact fields:
+- questionText (string, the grammar question/sentence with a blank or question)
+- options (JSON array of exactly 4 plain strings WITHOUT any letter prefix, e.g. ["go", "goes", "going", "gone"])
+- answer (string, the correct answer value, must match one of the options exactly, NO letter prefix)
+- explanation (string, English explanation of why the answer is correct)
+- translation (string, Vietnamese translation of the question)
+- vocabulary (JSON array of key words in the question, each object has "word" and "meaning" in Vietnamese, e.g. [{"word":"famous","meaning":"nổi tiếng"}])
+
+CRITICAL: Do NOT add "A.", "B.", "C.", "D." or any prefix to options or answer. Just plain words/phrases.
+
+Example output format:
+[{"questionText":"She _____ to school every day.","options":["go","goes","going","gone"],"answer":"goes","explanation":"Third person singular present simple uses 's/es'.","translation":"Cô ấy _____ đến trường mỗi ngày.","vocabulary":[{"word":"school","meaning":"trường học"}]}]
+""";
+        log.info("[Gemini Grammar] Generating grammar questions with prompt: {}", userPrompt);
+        if (geminiApiKey != null && !geminiApiKey.isBlank()) {
+            try {
+                String result = callGeminiVocab(systemInstruction, userPrompt);
+                if (result != null) return result;
+            } catch (Exception e) {
+                log.warn("[Gemini Grammar] Gemini call failed ({}), falling back to OpenAI.", e.getMessage());
+            }
+        } else {
+            log.warn("[Gemini Grammar] Gemini API key is missing.");
+        }
+        throw new RuntimeException("Lỗi sinh câu hỏi ngữ pháp AI: Gemini API key không hợp lệ.");
     }
 }

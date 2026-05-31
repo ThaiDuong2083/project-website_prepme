@@ -63,4 +63,7 @@ public interface VocabularyWordRepository extends JpaRepository<VocabularyWordEn
            OR LOWER(w.meaning) LIKE LOWER(CONCAT('%', :keyword, '%')))
     """)
   List<VocabularyWordEntity> searchByKeyword(@Param("keyword") String keyword);
+
+  @Query("SELECT w.word FROM VocabularyWordEntity w WHERE w.category.id = :categoryId AND w.isDeleted = false")
+  List<String> findWordsByCategoryId(@Param("categoryId") Long categoryId);
 }

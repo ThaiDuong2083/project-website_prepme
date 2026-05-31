@@ -2,11 +2,15 @@ package com.fpt.website_prepme.model.dto;
 
 import com.fpt.website_prepme.model.entity.VocabularyProgressEntity;
 import com.fpt.website_prepme.model.entity.VocabularyWordEntity;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class VocabWordDTO {
     private Long id;
     private String word;

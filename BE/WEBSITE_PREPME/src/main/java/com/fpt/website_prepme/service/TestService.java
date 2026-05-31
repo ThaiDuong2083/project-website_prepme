@@ -21,4 +21,23 @@ public interface TestService {
     PracticeStatisticsDTO getPracticeStatistics();
 
     void seedDemoExams();
+
+    // ─── Admin CRUD ───────────────────────────────────────────────────────────
+    TestDetailDTO createTest(AdminCreateTestRequest request);
+
+    TestDetailDTO updateTest(Long id, AdminCreateTestRequest request);
+
+    void deleteTest(Long id);
+
+    TestSectionDTO createSection(Long testId, AdminCreateSectionRequest request);
+
+    TestSectionDTO updateSection(Long sectionId, AdminCreateSectionRequest request);
+
+    void deleteSection(Long sectionId);
+
+    TestQuestionDTO createQuestion(Long sectionId, AdminCreateQuestionRequest request);
+
+    TestQuestionDTO updateQuestion(Long questionId, AdminCreateQuestionRequest request);
+
+    void deleteQuestion(Long questionId);
 }

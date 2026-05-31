@@ -138,4 +138,19 @@ export const vocabularyApi = {
     const res = await axiosInstance.delete<ApiResponse<void>>(`/vocabulary/favorites/${wordId}`);
     return res.data;
   },
+
+  // ── AI Vocabulary Generation ────────────────────────────────────────────────
+  aiGenerate: async (payload: { prompt: string; categoryId: number }) => {
+    const res = await axiosInstance.post<ApiResponse<VocabularyWordDTO[]>>(
+      '/admin/vocabulary/ai/generate',
+      payload,
+      { timeout: 120_000 }, // Gemini can take up to 60s — use 120s to be safe
+    );
+    return res.data;
+  },
+
+  aiSave: async (payload: { words: VocabularyWordDTO[]; categoryId: number }) => {
+    const res = await axiosInstance.post<ApiResponse<{ savedCount: number; categoryId: number; categoryName: string }>>('/admin/vocabulary/ai/save', payload);
+    return res.data;
+  },
 };

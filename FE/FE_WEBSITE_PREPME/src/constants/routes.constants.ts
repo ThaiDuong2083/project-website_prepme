@@ -35,5 +35,8 @@ export const ROUTES = {
     EXAM_DETAIL: '/admin/exams/:examId',
     ANALYTICS: '/admin/analytics',
     SETTINGS: '/admin/settings',
+    VOCAB_AI: '/admin/vocabulary/ai',
+    GRAMMAR_AI: '/admin/grammar/ai',
+    FILES: '/admin/files',
   },
 } as const;

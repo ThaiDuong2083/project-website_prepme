@@ -33,6 +33,18 @@ const PaymentSuccessPage = lazy(() =>
 const AdminDashboardPage = lazy(() =>
   import('@pages/admin/AdminDashboardPage').then((m) => ({ default: m.AdminDashboardPage })),
 );
+const AdminVocabAiPage = lazy(() =>
+  import('@pages/admin/AdminVocabAiPage').then((m) => ({ default: m.AdminVocabAiPage })),
+);
+const AdminGrammarAiPage = lazy(() =>
+  import('@pages/admin/AdminGrammarAiPage').then((m) => ({ default: m.AdminGrammarAiPage })),
+);
+const AdminFilesPage = lazy(() =>
+  import('@pages/admin/AdminFilesPage').then((m) => ({ default: m.AdminFilesPage })),
+);
+const AdminExamsPage = lazy(() =>
+  import('@pages/admin/AdminExamsPage').then((m) => ({ default: m.AdminExamsPage })),
+);
 const ForbiddenPage = lazy(() =>
   import('@pages/errors/ForbiddenPage').then((m) => ({ default: m.ForbiddenPage })),
 );
@@ -93,7 +105,13 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     errorElement: <ServerErrorPage />,
-    children: [{ path: ROUTES.ADMIN.DASHBOARD, element: withSuspense(AdminDashboardPage) }],
+    children: [
+      { path: ROUTES.ADMIN.DASHBOARD, element: withSuspense(AdminDashboardPage) },
+      { path: ROUTES.ADMIN.VOCAB_AI, element: withSuspense(AdminVocabAiPage) },
+      { path: ROUTES.ADMIN.GRAMMAR_AI, element: withSuspense(AdminGrammarAiPage) },
+      { path: ROUTES.ADMIN.FILES, element: withSuspense(AdminFilesPage) },
+      { path: ROUTES.ADMIN.EXAMS, element: withSuspense(AdminExamsPage) },
+    ],
   },
 
   // Error pages

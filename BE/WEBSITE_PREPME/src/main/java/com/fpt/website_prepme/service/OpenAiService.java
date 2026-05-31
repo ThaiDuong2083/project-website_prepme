@@ -28,4 +28,20 @@ public interface OpenAiService {
      * @return transcribed text content
      */
     String transcribeAudio(String audioUrl);
+
+    /**
+     * Generates a list of vocabulary words for a given topic using AI.
+     *
+     * @param userPrompt the prompt describing what to generate
+     * @return JSON string containing the list of vocabulary words
+     */
+    String generateVocabularyJson(String userPrompt);
+
+    /**
+     * Generates grammar practice questions for a given topic using AI.
+     *
+     * @param userPrompt the prompt describing what to generate
+     * @return JSON string containing the list of grammar questions
+     */
+    String generateGrammarJson(String userPrompt);
 }

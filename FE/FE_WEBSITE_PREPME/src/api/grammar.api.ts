@@ -43,6 +43,23 @@ export interface TopicProgressDetailsResponse {
   questions: GrammarProgressHistoryResponse[];
 }
 
+export interface GrammarTopicCategory {
+  id: number;
+  name: string;
+  description: string;
+}
+
+export interface AiGrammarQuestionDTO {
+  id?: number;
+  topicId: number;
+  questionText: string;
+  options: string[];
+  answer: string;
+  explanation: string;
+  translation: string;
+  vocabulary?: { word: string; meaning: string }[];
+}
+
 export const grammarApi = {
   getTopics: async (userId: number) => {
     const res = await axiosInstance.get<ApiResponse<GrammarTopic[]>>('/grammar/topics', { params: { userId } });
@@ -62,5 +79,28 @@ export const grammarApi = {
   getGrammarProgress: async (userId: number) => {
     const res = await axiosInstance.get<ApiResponse<TopicProgressDetailsResponse[]>>('/grammar/progress', { params: { userId } });
     return res.data;
-  }
+  },
+
+  // ── AI Grammar Generation ──────────────────────────────────────────────────
+  getAiTopics: async () => {
+    const res = await axiosInstance.get<ApiResponse<GrammarTopicCategory[]>>('/admin/grammar/ai/topics');
+    return res.data;
+  },
+
+  aiGenerate: async (payload: { prompt: string; topicId: number }) => {
+    const res = await axiosInstance.post<ApiResponse<AiGrammarQuestionDTO[]>>(
+      '/admin/grammar/ai/generate',
+      payload,
+      { timeout: 120_000 },
+    );
+    return res.data;
+  },
+
+  aiSave: async (payload: { questions: AiGrammarQuestionDTO[]; topicId: number }) => {
+    const res = await axiosInstance.post<ApiResponse<{ savedCount: number; topicId: number; topicName: string }>>(
+      '/admin/grammar/ai/save',
+      payload,
+    );
+    return res.data;
+  },
 };
