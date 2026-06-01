@@ -168,3 +168,31 @@
 .focus-ring:focus-visible {
   outline-color: var(--color-brand-500);
 }
+
+/* ─── Prose styles for HTML passages/prompts ─── */
+.prose {
+  line-height: 1.6;
+}
+.prose h3 {
+  font-size: 1.125rem;
+  font-weight: 800;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-text-primary);
+}
+.prose ul {
+  list-style-type: disc !important;
+  margin-left: 1.5rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.75rem !important;
+  padding-left: 0.5rem !important;
+}
+.prose li {
+  margin-bottom: 0.375rem !important;
+  display: list-item !important;
+  list-style-position: outside !important;
+}
+.prose strong {
+  font-weight: 800;
+  color: var(--color-text-primary);
+}
