@@ -54,6 +54,13 @@ public class TestDetailDTO {
                     .toList()
                 : Collections.emptyList();
 
+        int count = 0;
+        if (entity.getExamType().equals(ExamType.SPEAKING)){
+            count = 3;
+        }else if (entity.getExamType().equals(ExamType.WRITING)){
+            count = 2;
+        }
+
         return TestDetailDTO.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())
@@ -64,7 +71,7 @@ public class TestDetailDTO {
                 .sections(sectionDTOs)
                 .childTests(childrenList)
                 .isPro(entity.getIsPro())
-                .questionCount(entity.getQuestionCount())
+                .questionCount(count != 0 ? count : entity.getQuestionCount())
                 .build();
     }
 }

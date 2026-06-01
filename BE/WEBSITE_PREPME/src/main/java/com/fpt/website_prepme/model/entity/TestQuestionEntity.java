@@ -27,6 +27,9 @@ public class TestQuestionEntity extends BaseEntity {
     @Column(name = "question_text", columnDefinition = "TEXT")
     private String questionText;
 
+    @Column(name = "image_url", length = 512)
+    private String imageUrl;
+
     @Column(name = "options", columnDefinition = "TEXT")
     private String options; // JSON string of choices, e.g. ["Choice A", "Choice B", "Choice C"]
 

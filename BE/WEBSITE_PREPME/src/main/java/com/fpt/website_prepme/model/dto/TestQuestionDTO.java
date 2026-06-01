@@ -23,6 +23,7 @@ public class TestQuestionDTO {
     private Integer questionNumber;
     private QuestionType questionType;
     private String questionText;
+    private String imageUrl;
     private List<String> options;
     private String correctAnswer;
     private String explanation;
@@ -45,6 +46,7 @@ public class TestQuestionDTO {
                 .questionNumber(entity.getQuestionNumber())
                 .questionType(entity.getQuestionType())
                 .questionText(entity.getQuestionText())
+                .imageUrl(entity.getImageUrl())
                 .options(optionsList)
                 .correctAnswer(hideAnswers ? null : entity.getCorrectAnswer())
                 .explanation(hideAnswers ? null : entity.getExplanation())

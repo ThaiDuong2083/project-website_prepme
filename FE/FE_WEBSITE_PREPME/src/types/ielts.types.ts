@@ -99,6 +99,7 @@ export type BEExamType = 'LISTENING' | 'READING' | 'WRITING' | 'SPEAKING' | 'IEL
 
 export type BEQuestionType =
   | 'TRUE_FALSE_NOT_GIVEN'
+  | 'YES_NO_NOT_GIVEN'
   | 'MATCHING_HEADINGS'
   | 'MULTIPLE_CHOICE'
   | 'FILL_IN_THE_BLANK'
@@ -121,6 +122,7 @@ export interface TestQuestionDTO {
   questionNumber: number;
   questionType: BEQuestionType;
   questionText: string;
+  imageUrl?: string;
   options?: string[];
   correctAnswer?: string;
   explanation?: string;

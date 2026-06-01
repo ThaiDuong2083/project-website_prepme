@@ -25,6 +25,12 @@ public class TestListDTO {
     private Boolean isPro;
 
     public static TestListDTO toDto(TestEntity entity) {
+        int count = 0;
+        if (entity.getExamType().equals(ExamType.SPEAKING)){
+            count = 3;
+        }else if (entity.getExamType().equals(ExamType.WRITING)){
+            count = 2;
+        }
         return TestListDTO.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())
@@ -32,7 +38,7 @@ public class TestListDTO {
                 .duration(entity.getDuration())
                 .description(entity.getDescription())
                 .sectionCount(entity.getSections() != null ? entity.getSections().size() : 0)
-                .questionCount(entity.getQuestionCount())
+                .questionCount(count == 0 ? entity.getQuestionCount() : count)
                 .createdAt(entity.getCreatedAt())
                 .isPro(entity.getIsPro())
                 .build();

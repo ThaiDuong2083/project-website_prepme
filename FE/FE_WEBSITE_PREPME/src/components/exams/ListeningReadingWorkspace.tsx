@@ -38,9 +38,21 @@ export const ListeningReadingWorkspace: React.FC<ListeningReadingWorkspaceProps>
                   ? 'Chọn đáp án'
                   : q.questionType === 'TRUE_FALSE_NOT_GIVEN'
                   ? 'True/False/NG'
+                  : q.questionType === 'YES_NO_NOT_GIVEN'
+                  ? 'Yes/No/NG'
                   : 'Nhập đáp án'}
               </span>
             </div>
+
+            {q.imageUrl && (
+              <div className="mt-1 rounded-xl overflow-hidden border border-slate-100 max-w-full flex justify-center bg-slate-50 p-1">
+                <img
+                  src={q.imageUrl}
+                  alt={`Minh họa câu ${q.questionNumber}`}
+                  className="max-h-[200px] object-contain rounded-lg"
+                />
+              </div>
+            )}
 
             {/* Answer Inputs */}
             {q.questionType === 'MULTIPLE_CHOICE' && q.options && (
@@ -92,8 +104,30 @@ export const ListeningReadingWorkspace: React.FC<ListeningReadingWorkspaceProps>
               </div>
             )}
 
+            {q.questionType === 'YES_NO_NOT_GIVEN' && (
+              <div className="grid grid-cols-3 gap-2 mt-1">
+                {['YES', 'NO', 'NOT GIVEN'].map((val) => (
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() =>
+                      setAnswers((prev) => ({ ...prev, [q.id]: val }))
+                    }
+                    className={`rounded-xl border py-2 text-center text-[10px] font-black uppercase tracking-wider transition ${
+                      answers[q.id] === val
+                        ? 'border-pink-500 bg-pink-50 text-pink-600 shadow-sm'
+                        : 'border-slate-200 hover:bg-slate-50 text-slate-500'
+                    }`}
+                  >
+                    {val}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {q.questionType !== 'MULTIPLE_CHOICE' &&
-              q.questionType !== 'TRUE_FALSE_NOT_GIVEN' && (
+              q.questionType !== 'TRUE_FALSE_NOT_GIVEN' &&
+              q.questionType !== 'YES_NO_NOT_GIVEN' && (
                 <input
                   type="text"
                   placeholder="Điền đáp án..."

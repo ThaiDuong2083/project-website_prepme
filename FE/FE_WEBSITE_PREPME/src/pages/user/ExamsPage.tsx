@@ -25,6 +25,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import parse from 'html-react-parser';
 import { useAppStore } from '@store/app.store';
 import { useAuthStore } from '@store/auth.store';
 import { examsApi } from '@api/exams.api';
@@ -63,6 +64,12 @@ const EXAM_TYPES: { value: BEExamType | 'ALL'; label: string; emoji: string }[] 
   { value: 'SPEAKING', label: 'Speaking', emoji: '🎤' },
   // { value: 'IELTS', label: 'Full IELTS', emoji: '🏆' },
 ];
+
+const formatHtmlContent = (str: string) => {
+  if (!str) return '';
+  const sanitized = str.replace(/<\/br>/gi, '<br />');
+  return parse(sanitized);
+};
 
 export const ExamsPage = () => {
   const { theme } = useAppStore();
@@ -629,7 +636,7 @@ export const ExamsPage = () => {
                         const attempts = historyList.filter((h) => h.testId === exam.id);
                         const hasAttempted = attempts.length > 0;
                         const maxScore = hasAttempted ? Math.max(...attempts.map((a) => a.score ?? 0)) : 0;
-                        const questionCount = exam.questionCount ?? 0;
+                        const questionCount = exam.questionCount ?? 2;
 
                         return (
                           <motion.div
@@ -969,10 +976,9 @@ export const ExamsPage = () => {
                             )}
 
                             {activeSec.passage && (
-                              <div
-                                className="prose max-w-none text-sm text-slate-600 leading-relaxed"
-                                dangerouslySetInnerHTML={{ __html: activeSec.passage }}
-                              />
+                              <div className="prose max-w-none text-sm text-slate-600 leading-relaxed">
+                                {formatHtmlContent(activeSec.passage)}
+                              </div>
                             )}
 
                             {examDetail.examType === 'WRITING' && activeSec.audioUrl && (
@@ -1004,7 +1010,9 @@ export const ExamsPage = () => {
                                   DANH SÁCH CÂU HỎI
                                 </h4>
                                 <div className="space-y-4">
-                                  {activeSec.questions.map((q) => (
+                                  {activeSec.questions
+                                    .filter((q) => q.questionText && q.questionText.trim())
+                                    .map((q) => (
                                     <div
                                       key={q.id}
                                       className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm space-y-3"
@@ -1013,8 +1021,17 @@ export const ExamsPage = () => {
                                         <span className="rounded-lg bg-rose-50 px-2.5 py-1 text-xs font-black text-rose-500 border border-rose-100/50 shrink-0">
                                           Câu {q.questionNumber}
                                         </span>
-                                        <div className="text-xs font-bold text-slate-700 mt-1 leading-relaxed">
-                                          {q.questionText}
+                                        <div className="text-xs font-bold text-slate-700 mt-1 leading-relaxed flex-1">
+                                          <div>{q.questionText}</div>
+                                          {q.imageUrl && (
+                                            <div className="mt-2 rounded-xl overflow-hidden border border-slate-100 max-w-full flex justify-center bg-slate-50 p-1">
+                                              <img
+                                                src={q.imageUrl}
+                                                alt={`Câu hỏi ${q.questionNumber}`}
+                                                className="max-h-[300px] object-contain rounded-lg"
+                                              />
+                                            </div>
+                                          )}
                                         </div>
                                       </div>
 
@@ -1216,10 +1233,9 @@ export const ExamsPage = () => {
                                 {section.passage && (
                                   <div className="rounded-2xl bg-amber-50/30 border border-amber-100 p-4">
                                     <span className="text-[10px] font-extrabold text-amber-800 block mb-1">ĐỀ BÀI:</span>
-                                    <div
-                                      className="prose max-w-none text-xs text-slate-600 leading-relaxed"
-                                      dangerouslySetInnerHTML={{ __html: section.passage }}
-                                    />
+                                    <div className="prose max-w-none text-xs text-slate-600 leading-relaxed">
+                                      {formatHtmlContent(section.passage)}
+                                    </div>
                                   </div>
                                 )}
 
@@ -1298,10 +1314,9 @@ export const ExamsPage = () => {
                                   {section.passage && (
                                     <div className="rounded-2xl bg-amber-50/30 border border-amber-100 p-4">
                                       <span className="text-[10px] font-extrabold text-amber-800 block mb-1">ĐỀ BÀI:</span>
-                                      <div
-                                        className="prose max-w-none text-xs text-slate-600 leading-relaxed"
-                                        dangerouslySetInnerHTML={{ __html: section.passage }}
-                                      />
+                                      <div className="prose max-w-none text-xs text-slate-600 leading-relaxed">
+                                        {formatHtmlContent(section.passage)}
+                                      </div>
                                     </div>
                                   )}
 
@@ -1374,6 +1389,15 @@ export const ExamsPage = () => {
                                     PHẦN {section.sectionNumber || sIdx + 1}
                                   </div>
 
+                                  {section.passage && (
+                                    <div className="rounded-2xl bg-amber-50/30 border border-amber-100 p-4">
+                                      <span className="text-[10px] font-extrabold text-amber-800 block mb-1">ĐỀ BÀI:</span>
+                                      <div className="prose max-w-none text-xs text-slate-600 leading-relaxed">
+                                        {formatHtmlContent(section.passage)}
+                                      </div>
+                                    </div>
+                                  )}
+
                                   {section.questions.map((q) => {
                                     const userAnswer = reviewDetail.answers?.[q.id.toString()] || reviewDetail.answers?.[q.questionNumber.toString()];
                                     const isCorrect =
@@ -1399,8 +1423,17 @@ export const ExamsPage = () => {
                                           >
                                             Câu {q.questionNumber}
                                           </span>
-                                          <div className="text-xs font-bold text-slate-700 ">
-                                            {q.questionText}
+                                          <div className="text-xs font-bold text-slate-700 flex-1">
+                                            <div>{q.questionText}</div>
+                                            {q.imageUrl && (
+                                              <div className="mt-2 rounded-xl overflow-hidden border border-slate-100 max-w-full flex justify-center bg-slate-50 p-1">
+                                                <img
+                                                  src={q.imageUrl}
+                                                  alt={`Câu hỏi ${q.questionNumber}`}
+                                                  className="max-h-[250px] object-contain rounded-lg"
+                                                />
+                                              </div>
+                                            )}
                                           </div>
                                         </div>
 
