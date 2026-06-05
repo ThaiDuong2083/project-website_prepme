@@ -211,7 +211,7 @@ export const LoginPage = () => {
               fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
           >
-            CHARNISHERE
+            PREPME
           </h1>
           <span style={{ fontSize: '18px' }}>✨</span>
         </div>
@@ -223,7 +223,7 @@ export const LoginPage = () => {
             margin: 0,
           }}
         >
-          Nền tảng luyện thi TOEIC cá nhân hóa
+          Nền tảng luyện thi IELTS cá nhân hóa
         </p>
       </div>
 
