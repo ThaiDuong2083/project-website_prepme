@@ -18,7 +18,7 @@ const BRAND = {
 const navItems = [
   { label: 'Trang chủ', href: ROUTES.USER.DASHBOARD, icon: Home },
   { label: 'Luyện thi', href: ROUTES.USER.EXAMS, icon: BookOpen },
-  { label: 'Xếp hạng', href: ROUTES.USER.LEADERBOARD, icon: Trophy },
+  //{ label: 'Xếp hạng', href: ROUTES.USER.LEADERBOARD, icon: Trophy },
   { label: 'Cài đặt', href: ROUTES.USER.SETTINGS, icon: Settings },
 ];
 

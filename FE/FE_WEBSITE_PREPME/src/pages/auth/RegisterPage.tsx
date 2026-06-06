@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import toast from 'react-hot-toast';
-import { Phone, Lock, Eye, EyeOff, User } from 'lucide-react';
+import { Phone, Lock, Eye, EyeOff, User, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { z } from 'zod';
 
@@ -26,6 +26,7 @@ const BRAND = {
 const registerSchema = z.object({
   fullName: z.string().min(2, 'Họ tên phải ít nhất 2 ký tự'),
   phone: z.string().regex(/(84|0[3|5|7|8|9])+([0-9]{8})\b/, 'Số điện thoại không hợp lệ'),
+  email: z.string().email('Email không hợp lệ').optional().or(z.literal('')),
   password: z.string().min(6, 'Mật khẩu phải ít nhất 8 ký tự'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -158,7 +159,8 @@ export const RegisterPage = () => {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      await registerAccount(data);
+      const payload = { ...data, email: data.email?.trim() || undefined };
+      await registerAccount(payload);
       toast.success('Đăng ký tài khoản thành công! 🎉');
       navigate(ROUTES.USER.DASHBOARD);
     } catch (error) {
@@ -236,6 +238,16 @@ export const RegisterPage = () => {
           error={errors.phone?.message}
           leftIcon={<Phone size={16} />}
           {...register('phone')}
+        />
+
+        <BrandInput
+          id="email"
+          label="Email (để nhận thông báo)"
+          type="email"
+          placeholder="example@gmail.com"
+          error={errors.email?.message}
+          leftIcon={<Mail size={16} />}
+          {...register('email')}
         />
 
         <BrandInput

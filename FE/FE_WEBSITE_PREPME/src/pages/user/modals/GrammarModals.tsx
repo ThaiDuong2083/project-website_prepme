@@ -190,7 +190,14 @@ export const GrammarTheoryModal = ({ onClose }: { onClose: () => void }) => {
           </h2>
           <div style={{ width: '32px' }}></div>
         </div>
-
+        <div
+          className={`flex items-center justify-center gap-2 rounded-2xl border px-4 py-2 text-xs font-semibold border-amber-200 bg-amber-50 text-amber-700 mb-5`}
+        >
+          <span>©</span>
+          <span>
+            Tài liệu tham khảo từ <strong>Chanishere</strong>
+          </span>
+        </div>
         {files.length > 0 && (
           <div style={{ position: 'relative', marginBottom: '16px' }}>
             <select
@@ -241,7 +248,6 @@ export const GrammarTheoryModal = ({ onClose }: { onClose: () => void }) => {
             style={{
               textAlign: 'center',
               color: '#94a3b8',
-              fontStyle: 'italic',
               marginTop: '40px',
             }}
           >

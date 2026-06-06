@@ -19,6 +19,7 @@ import com.fpt.website_prepme.repository.UserMembershipLogRepository;
 import com.fpt.website_prepme.model.entity.UserMembershipLogEntity;
 import java.time.LocalDateTime;
 import com.fpt.website_prepme.service.AuthService;
+import com.fpt.website_prepme.service.EmailService;
 import com.fpt.website_prepme.utils.AppConstant;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
@@ -52,6 +53,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final UserMembershipLogRepository userMembershipLogRepository;
+    private final EmailService emailService;
 
     @Value("${app.jwt.access-token-expiration}")
     private long accessTokenExpiration;
@@ -71,6 +73,7 @@ public class AuthServiceImpl implements AuthService {
         UserEntity user = UserEntity.builder()
                 .username(username)
                 .phone(request.getPhone())
+                .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .fullName(request.getFullName())
                 .provider(AuthProvider.LOCAL)
@@ -78,6 +81,10 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         userRepository.save(user);
         log.info("[Auth] Đăng ký LOCAL thành công - phone={}", request.getPhone());
+        // Gửi email chào mừng bất đồng bộ
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            emailService.sendWelcomeEmail(user.getEmail(), user.getFullName());
+        }
         return buildAuthResponse(user);
     }
 
@@ -103,6 +110,7 @@ public class AuthServiceImpl implements AuthService {
         String avatarUrl = (String) payload.get("picture");
 
         UserEntity user = userRepository.findByGoogleId(googleId).orElse(null);
+        boolean isNewUser = false;
         if (user == null && email != null) {
             user = userRepository.findByEmail(email)
                     .map(u -> linkGoogle(u, googleId, avatarUrl))
@@ -111,8 +119,12 @@ public class AuthServiceImpl implements AuthService {
 
         if (user == null) {
             user = createGoogleUser(googleId, email, fullName, avatarUrl);
+            isNewUser = true;
         }
         log.info("[Auth] Đăng nhập GOOGLE thành công - userId={}", user.getId());
+        if (isNewUser && email != null) {
+            emailService.sendWelcomeEmail(email, fullName);
+        }
         return buildAuthResponse(user);
     }
 

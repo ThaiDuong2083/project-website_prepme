@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Nhắc nhở học IELTS hôm nay</title>
+</head>
+<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+         style="background:#f0f4f8;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+             style="max-width:560px;background:#ffffff;border-radius:24px;overflow:hidden;
+                    box-shadow:0 8px 40px rgba(244,63,94,0.12);">
+
+        <!-- ══ HEADER ══ -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#ff6b8a 0%,#f43f5e 60%,#e11d48 100%);
+                     padding:28px 32px 22px;text-align:center;">
+            <div style="display:inline-block;width:96px;height:96px;border-radius:50%;
+                        background:#ffffff;
+                        box-shadow:0 4px 20px rgba(0,0,0,0.15);
+                        text-align:center;line-height:96px;
+                        margin-bottom:12px;overflow:hidden;">
+              <img src="cid:logo" alt="PrepMe"
+                   width="72" height="72"
+                   style="display:inline-block;vertical-align:middle;
+                          width:72px;height:72px;object-fit:contain;"/>
+            </div>
+          </td>
+        </tr>
+
+        <!-- ══ BODY ══ -->
+        <tr>
+          <td style="padding:36px 40px 32px;">
+
+            <!-- Headline thay đổi cảm xúc -->
+            <p style="color:#f43f5e;font-size:12px;font-weight:700;letter-spacing:0.1em;
+                       text-transform:uppercase;margin:0 0 10px;">
+              🔔 Nhắc nhở hôm nay
+            </p>
+            <h2 style="color:#1e293b;font-size:22px;font-weight:900;margin:0 0 16px;line-height:1.4;">
+              Có thể bạn đã bỏ lỡ<br>
+              <span style="color:#f43f5e;">buổi học hôm nay rồi...</span> ⏰
+            </h2>
+
+            <p style="color:#64748b;font-size:15px;line-height:1.8;margin:0 0 14px;">
+              Này <strong th:text="${fullName}" style="color:#1e293b;">bạn</strong>,
+              hành trình chinh phục IELTS không cần nhiều — chỉ cần <strong style="color:#1e293b;">đều đặn mỗi ngày</strong>.
+              Những người đạt band cao không phải vì họ học nhiều hơn, mà vì họ không bỏ ngày nào.
+            </p>
+
+            <p style="color:#64748b;font-size:15px;line-height:1.8;margin:0 0 28px;">
+              Hôm nay vẫn còn kịp. Mở PrepMe lên và dành chút thời gian cho mục tiêu của bạn nhé 💪
+            </p>
+
+            <!-- Quote / motivation box -->
+            <div style="background:#fff1f2;border-left:4px solid #f43f5e;border-radius:0 14px 14px 0;
+                        padding:16px 20px;">
+              <p style="color:#1e293b;font-size:14px;font-weight:600;
+                         margin:0 0 6px;line-height:1.6;">
+                "Sự kiên trì không phải một cuộc chạy marathon — đó là hàng trăm cuộc chạy nước rút nhỏ, từng ngày một."
+              </p>
+              <p style="color:#94a3b8;font-size:12px;margin:0;">— Bí quyết của những người đạt IELTS 7.0+</p>
+            </div>
+
+          </td>
+        </tr>
+
+        <!-- ══ FOOTER ══ -->
+        <tr>
+          <td style="background:#f8fafc;padding:18px 40px;text-align:center;
+                     border-top:1.5px solid #f1f5f9;">
+            <p style="color:#94a3b8;font-size:12px;margin:0 0 4px;font-weight:600;">
+              PrepMe – Đồng hành cùng bạn chinh phục IELTS
+            </p>
+            <p style="color:#cbd5e1;font-size:11px;margin:0;line-height:1.6;">
+              Email này được gửi 1 lần mỗi ngày như một lời nhắc nhỏ từ PrepMe.<br>
+              © 2026 PrepMe. All rights reserved.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+
+</body>
+</html>

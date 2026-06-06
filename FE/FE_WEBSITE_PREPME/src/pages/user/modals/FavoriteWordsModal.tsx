@@ -68,7 +68,6 @@ const FavoriteWordCard = ({
                   margin: '0 0 3px 0',
                   fontSize: '13px',
                   color: '#1e293b',
-                  fontStyle: 'italic',
                   fontWeight: 500,
                 }}
               >

@@ -1,4 +1,5 @@
 export type UserRole = 'ADMIN' | 'USER';
+export type WeakSkill = 'LISTENING' | 'READING' | 'WRITING' | 'SPEAKING';
 
 export interface User {
   id: string;
@@ -11,6 +12,10 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   membershipType?: 'FREE' | 'PREMIUM';
+  surveyCompleted?: boolean;
+  ieltsTarget?: number;
+  currentLevel?: number;
+  weakSkills?: WeakSkill[];
 }
 
 export interface AuthTokens {
@@ -30,6 +35,7 @@ export interface LoginWithGooglePayload {
 export interface RegisterPayload {
   fullName: string;
   phone: string;
+  email?: string;
   password: string;
   confirmPassword: string;
 }

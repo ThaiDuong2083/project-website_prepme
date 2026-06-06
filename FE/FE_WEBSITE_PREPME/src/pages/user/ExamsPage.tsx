@@ -1,28 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
-  ChevronLeft,
-  ChevronRight,
-  Search,
-  Play,
-  Clock,
-  FileText,
-  Volume2,
-  Mic,
+  ArrowLeft,
   Award,
-  History,
-  CheckCircle,
-  AlertCircle,
-  HelpCircle,
-  Upload,
   BookOpen,
   Check,
-  X,
-  Database,
-  ArrowLeft,
-  Square,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  FileText,
+  History,
+  Play,
   RefreshCw,
+  Search,
   Sparkles,
+  Volume2,
+  X,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import parse from 'html-react-parser';
@@ -32,14 +25,11 @@ import { examsApi } from '@api/exams.api';
 import { practiceHistoryApi } from '@api/practice-history.api';
 import { filesApi } from '@api/files.api';
 import type {
-  TestListDTO,
-  TestDetailDTO,
-  TestQuestionDTO,
-  TestSectionDTO,
+  BEExamType,
   PracticeHistoryDTO,
   PracticeStatisticsDTO,
-  BEExamType,
-  QuestionType,
+  TestDetailDTO,
+  TestListDTO,
 } from '@types';
 import { WritingWorkspace } from '@components/exams/WritingWorkspace';
 import { SpeakingWorkspace } from '@components/exams/SpeakingWorkspace';
@@ -137,7 +127,11 @@ export const ExamsPage = () => {
   // Poll for AI analysis update if it is in "Đang chờ nhận xét từ AI..." status
   useEffect(() => {
     let intervalId: any = null;
-    if (view === 'RESULT' && reviewDetail && reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...') {
+    if (
+      view === 'RESULT' &&
+      reviewDetail &&
+      reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...'
+    ) {
       intervalId = setInterval(async () => {
         try {
           const res = await practiceHistoryApi.getById(reviewDetail.id);
@@ -148,7 +142,7 @@ export const ExamsPage = () => {
             }
           }
         } catch (err) {
-          console.error("Error polling AI analysis status:", err);
+          console.error('Error polling AI analysis status:', err);
         }
       }, 4000);
     }
@@ -297,7 +291,10 @@ export const ExamsPage = () => {
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         setSpeakingFiles((prev) => ({ ...prev, [activeSectionIdx]: audioBlob }));
-        setSpeakingLocalUrls((prev) => ({ ...prev, [activeSectionIdx]: URL.createObjectURL(audioBlob) }));
+        setSpeakingLocalUrls((prev) => ({
+          ...prev,
+          [activeSectionIdx]: URL.createObjectURL(audioBlob),
+        }));
         stream.getTracks().forEach((track) => track.stop());
       };
 
@@ -399,23 +396,27 @@ export const ExamsPage = () => {
           }
         }
         // Serialize all section URLs as JSON for backend Whisper transcription
-        finalRecordingUrl = Object.keys(uploadedUrls).length === 1
-          ? Object.values(uploadedUrls)[0]
-          : JSON.stringify(uploadedUrls);
+        finalRecordingUrl =
+          Object.keys(uploadedUrls).length === 1
+            ? Object.values(uploadedUrls)[0]
+            : JSON.stringify(uploadedUrls);
       }
 
       // 2. Build submit payload
       const timeSpent = (examDetail.duration || 3600) - timeLeft;
       const payload = {
         answers,
-        submissionContent: examDetail.examType === 'WRITING' ? (() => {
-          const parts: string[] = [];
-          const totalSections = examDetail.sections.length || 1;
-          for (let i = 0; i < totalSections; i++) {
-            parts.push(writingAnswers[i] || '');
-          }
-          return parts.join('\n\n---SECTION_SEPARATOR---\n\n');
-        })() : undefined,
+        submissionContent:
+          examDetail.examType === 'WRITING'
+            ? (() => {
+                const parts: string[] = [];
+                const totalSections = examDetail.sections.length || 1;
+                for (let i = 0; i < totalSections; i++) {
+                  parts.push(writingAnswers[i] || '');
+                }
+                return parts.join('\n\n---SECTION_SEPARATOR---\n\n');
+              })()
+            : undefined,
         recordingUrl: examDetail.examType === 'SPEAKING' ? finalRecordingUrl : undefined,
         completionTime: timeSpent,
         status: 'COMPLETED' as const,
@@ -474,7 +475,9 @@ export const ExamsPage = () => {
   };
 
   return (
-    <div className={`min-h-screen px-4 py-12 ${isDark ? '' : 'bg-gradient-to-br from-[#fff5f6] via-white to-[#fff9fa]'}`}>
+    <div
+      className={`min-h-screen px-4 py-12 ${isDark ? '' : 'bg-gradient-to-br from-[#fff5f6] via-white to-[#fff9fa]'}`}
+    >
       <div className="mx-auto max-w-[1200px]">
         <AnimatePresence mode="wait">
           {/* ────────────────── VIEW 1: EXAM LIST & STATS ────────────────── */}
@@ -483,62 +486,62 @@ export const ExamsPage = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              className={`w-full max-w-[950px] mx-auto border rounded-[32px] shadow-xl p-8 space-y-6 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-rose-100/70'}`}
+              className={`mx-auto w-full max-w-[950px] space-y-6 rounded-[32px] border p-8 shadow-xl ${isDark ? 'border-slate-700 bg-slate-800' : 'border-rose-100/70 bg-white'}`}
             >
               {/* Header */}
-              <div className={`relative flex flex-col items-center pb-4 border-b ${isDark ? 'border-slate-700' : 'border-rose-50'}`}>
+              <div
+                className={`relative flex flex-col items-center border-b pb-4 ${isDark ? 'border-slate-700' : 'border-rose-50'}`}
+              >
                 <button
                   onClick={() => window.history.back()}
-                  className={`absolute left-0 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full transition active:scale-95 ${isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-rose-50/50 text-rose-500 hover:bg-rose-100'}`}
+                  className={`absolute top-1/2 left-0 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full transition active:scale-95 ${isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-rose-50/50 text-rose-500 hover:bg-rose-100'}`}
                 >
                   <ChevronLeft size={20} />
                 </button>
-                <h2 className="text-2xl font-black text-rose-500 tracking-tight ">
+                <h2 className="text-2xl font-black tracking-tight text-rose-500">
                   Chinh phục IELTS Full Test
                 </h2>
-                <p className="text-xs font-semibold text-slate-400 mt-1 ">
+                <p className="mt-1 text-xs font-semibold text-slate-400">
                   Luyện đề thi thật & chấm điểm tự động
                 </p>
 
                 {/* Seed Helper on Right */}
-                <button
-                  onClick={handleSeed}
-                  title="Khởi tạo bộ đề mẫu"
-                  className={`absolute right-0 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full transition active:scale-95 ${isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-rose-50/50 text-rose-500 hover:bg-rose-100'}`}
-                >
-                  <Database size={16} />
-                </button>
               </div>
-
+              <div
+                className={`flex items-center justify-center gap-2 rounded-2xl border px-4 py-2 text-xs font-semibold ${isDark ? 'border-slate-600 bg-slate-700/50 text-slate-400' : 'border-amber-200 bg-amber-50 text-amber-700'}`}
+              >
+                <span>©</span>
+                <span>Tài liệu thuộc bản quyền của Bộ đề Cambridge Ielts</span>
+              </div>
               {/* Tab Selector: Exams vs History */}
-              <div className={`flex justify-center gap-8 border-b pb-3 ${isDark ? 'border-slate-700' : 'border-rose-50'}`}>
+              <div
+                className={`flex justify-center gap-8 border-b pb-3 ${isDark ? 'border-slate-700' : 'border-rose-50'}`}
+              >
                 <button
                   onClick={() => setListTab('EXAMS')}
-                  className={`pb-1 text-sm font-black transition-all relative ${listTab === 'EXAMS'
-                    ? 'text-rose-500'
-                    : 'text-slate-400 hover:text-slate-600 '
-                    }`}
+                  className={`relative pb-1 text-sm font-black transition-all ${
+                    listTab === 'EXAMS' ? 'text-rose-500' : 'text-slate-400 hover:text-slate-600'
+                  }`}
                 >
                   Danh sách đề thi
                   {listTab === 'EXAMS' && (
                     <motion.div
                       layoutId="activeTabIndicator"
-                      className="absolute -bottom-[15px] left-0 right-0 h-0.5 bg-rose-500 rounded-full"
+                      className="absolute right-0 -bottom-[15px] left-0 h-0.5 rounded-full bg-rose-500"
                     />
                   )}
                 </button>
                 <button
                   onClick={() => setListTab('HISTORY')}
-                  className={`pb-1 text-sm font-black transition-all relative ${listTab === 'HISTORY'
-                    ? 'text-rose-500'
-                    : 'text-slate-400 hover:text-slate-600 '
-                    }`}
+                  className={`relative pb-1 text-sm font-black transition-all ${
+                    listTab === 'HISTORY' ? 'text-rose-500' : 'text-slate-400 hover:text-slate-600'
+                  }`}
                 >
                   Lịch sử luyện tập
                   {listTab === 'HISTORY' && (
                     <motion.div
                       layoutId="activeTabIndicator"
-                      className="absolute -bottom-[15px] left-0 right-0 h-0.5 bg-rose-500 rounded-full"
+                      className="absolute right-0 -bottom-[15px] left-0 h-0.5 rounded-full bg-rose-500"
                     />
                   )}
                 </button>
@@ -548,9 +551,12 @@ export const ExamsPage = () => {
               {listTab === 'EXAMS' && (
                 <div className="space-y-6">
                   {/* Search Section */}
-                  <div className="flex gap-3 max-w-[650px] mx-auto mb-6">
+                  <div className="mx-auto mb-6 flex max-w-[650px] gap-3">
                     <div className="relative flex-1">
-                      <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-400" />
+                      <Search
+                        size={18}
+                        className="absolute top-1/2 left-4 -translate-y-1/2 text-rose-400"
+                      />
                       <input
                         type="text"
                         placeholder="Tìm kiếm bộ đề..."
@@ -562,7 +568,7 @@ export const ExamsPage = () => {
                             setCurrentPage(1);
                           }
                         }}
-                        className={`w-full rounded-full border py-3 pl-11 pr-4 text-sm outline-none shadow-inner ${isDark ? 'bg-slate-700 border-slate-600 text-slate-200 placeholder-slate-400 focus:border-rose-500' : 'bg-[#fffdfb] border-rose-100 text-slate-700 placeholder-rose-200 focus:border-rose-300'}`}
+                        className={`w-full rounded-full border py-3 pr-4 pl-11 text-sm shadow-inner outline-none ${isDark ? 'border-slate-600 bg-slate-700 text-slate-200 placeholder-slate-400 focus:border-rose-500' : 'border-rose-100 bg-[#fffdfb] text-slate-700 placeholder-rose-200 focus:border-rose-300'}`}
                       />
                     </div>
                     <button
@@ -570,15 +576,17 @@ export const ExamsPage = () => {
                         setSearch(localSearch);
                         setCurrentPage(1);
                       }}
-                      className={`rounded-full border px-8 text-sm font-extrabold transition active:scale-95 shadow-sm ${isDark ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' : 'bg-white border-rose-200 text-rose-500 hover:bg-rose-50/50'}`}
+                      className={`rounded-full border px-8 text-sm font-extrabold shadow-sm transition active:scale-95 ${isDark ? 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600' : 'border-rose-200 bg-white text-rose-500 hover:bg-rose-50/50'}`}
                     >
                       Tìm
                     </button>
                   </div>
 
                   {/* Skill Sub-tabs / Categories */}
-                  <div className={`relative border-b pb-2 ${isDark ? 'border-slate-700' : 'border-rose-100'}`}>
-                    <div className="flex gap-6 overflow-x-auto no-scrollbar pb-1">
+                  <div
+                    className={`relative border-b pb-2 ${isDark ? 'border-slate-700' : 'border-rose-100'}`}
+                  >
+                    <div className="no-scrollbar flex gap-6 overflow-x-auto pb-1">
                       {EXAM_TYPES.map((type) => {
                         const isActive = activeType === type.value;
                         return (
@@ -588,16 +596,15 @@ export const ExamsPage = () => {
                               setActiveType(type.value);
                               setCurrentPage(1);
                             }}
-                            className={`relative pb-3 text-xs font-black transition-all whitespace-nowrap uppercase tracking-wider ${isActive
-                              ? 'text-rose-500'
-                              : 'text-slate-400 hover:text-slate-600 '
-                              }`}
+                            className={`relative pb-3 text-xs font-black tracking-wider whitespace-nowrap uppercase transition-all ${
+                              isActive ? 'text-rose-500' : 'text-slate-400 hover:text-slate-600'
+                            }`}
                           >
                             {type.label}
                             {isActive && (
                               <motion.div
                                 layoutId="activeSkillUnderline"
-                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-rose-500 rounded-full"
+                                className="absolute right-0 bottom-0 left-0 h-0.5 rounded-full bg-rose-500"
                               />
                             )}
                           </button>
@@ -608,22 +615,35 @@ export const ExamsPage = () => {
 
                   {/* Exam Cards Grid */}
                   {loadingExams ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                       {Array.from({ length: 4 }).map((_, i) => (
                         <div
                           key={i}
-                          className={`h-44 rounded-[24px] border p-6 shadow-sm animate-pulse ${isDark ? 'bg-slate-700/50 border-slate-700' : 'bg-white border-rose-100/50'}`}
+                          className={`h-44 animate-pulse rounded-[24px] border p-6 shadow-sm ${isDark ? 'border-slate-700 bg-slate-700/50' : 'border-rose-100/50 bg-white'}`}
                         >
-                          <div className={`h-5 w-2/3 rounded-full ${isDark ? 'bg-slate-600' : 'bg-rose-50/50'}`} />
-                          <div className={`mt-3 h-4 w-1/3 rounded-full ${isDark ? 'bg-slate-600/50' : 'bg-rose-50/30'}`} />
-                          <div className={`mt-6 h-9 w-full rounded-xl ${isDark ? 'bg-slate-600/30' : 'bg-rose-50/20'}`} />
+                          <div
+                            className={`h-5 w-2/3 rounded-full ${isDark ? 'bg-slate-600' : 'bg-rose-50/50'}`}
+                          />
+                          <div
+                            className={`mt-3 h-4 w-1/3 rounded-full ${isDark ? 'bg-slate-600/50' : 'bg-rose-50/30'}`}
+                          />
+                          <div
+                            className={`mt-6 h-9 w-full rounded-xl ${isDark ? 'bg-slate-600/30' : 'bg-rose-50/20'}`}
+                          />
                         </div>
                       ))}
                     </div>
                   ) : exams.length === 0 ? (
-                    <div className={`rounded-[24px] border border-dashed py-16 text-center ${isDark ? 'border-slate-600 bg-slate-800/50' : 'border-rose-200 bg-rose-50/10'}`}>
-                      <FileText size={40} className={`mx-auto ${isDark ? 'text-slate-500' : 'text-rose-300'}`} />
-                      <h3 className={`mt-4 text-sm font-bold ${isDark ? 'text-slate-300' : 'text-rose-600'}`}>
+                    <div
+                      className={`rounded-[24px] border border-dashed py-16 text-center ${isDark ? 'border-slate-600 bg-slate-800/50' : 'border-rose-200 bg-rose-50/10'}`}
+                    >
+                      <FileText
+                        size={40}
+                        className={`mx-auto ${isDark ? 'text-slate-500' : 'text-rose-300'}`}
+                      />
+                      <h3
+                        className={`mt-4 text-sm font-bold ${isDark ? 'text-slate-300' : 'text-rose-600'}`}
+                      >
                         Không tìm thấy đề thi
                       </h3>
                       <p className="mt-1 text-xs text-slate-400">
@@ -631,30 +651,34 @@ export const ExamsPage = () => {
                       </p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                       {exams.map((exam, index) => {
                         const attempts = historyList.filter((h) => h.testId === exam.id);
                         const hasAttempted = attempts.length > 0;
-                        const maxScore = hasAttempted ? Math.max(...attempts.map((a) => a.score ?? 0)) : 0;
+                        const maxScore = hasAttempted
+                          ? Math.max(...attempts.map((a) => a.score ?? 0))
+                          : 0;
                         const questionCount = exam.questionCount ?? 2;
 
                         return (
                           <motion.div
                             key={exam.id}
                             whileHover={{ y: -2, boxShadow: '0 8px 30px rgba(244,63,94,0.06)' }}
-                            className={`relative flex flex-col justify-between rounded-[24px] border p-6 shadow-sm ${isDark ? 'bg-slate-700/30 border-slate-700' : 'bg-white border-rose-100/70'}`}
+                            className={`relative flex flex-col justify-between rounded-[24px] border p-6 shadow-sm ${isDark ? 'border-slate-700 bg-slate-700/30' : 'border-rose-100/70 bg-white'}`}
                           >
                             {exam.isPro && (
-                              <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-md uppercase tracking-wider">
+                              <div className="absolute top-4 right-4 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 px-2.5 py-0.5 text-[10px] font-black tracking-wider text-white uppercase shadow-md">
                                 Pro
                               </div>
                             )}
                             <div>
-                              <h3 className={`text-base font-black leading-snug ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
+                              <h3
+                                className={`text-base leading-snug font-black ${isDark ? 'text-slate-100' : 'text-slate-800'}`}
+                              >
                                 {exam.title}
                               </h3>
 
-                              <div className="mt-4 flex items-center gap-6 text-xs text-slate-400 font-semibold ">
+                              <div className="mt-4 flex items-center gap-6 text-xs font-semibold text-slate-400">
                                 <div className="flex items-center gap-1.5">
                                   <FileText size={14} className="text-rose-400" />
                                   <span>{questionCount} câu</span>
@@ -669,16 +693,22 @@ export const ExamsPage = () => {
                             <div className="mt-6 flex gap-3">
                               <button
                                 onClick={() => handleStartExam(exam.id, exam.isPro)}
-                                className={`flex items-center justify-center gap-1.5 rounded-xl border py-2.5 text-xs font-bold transition flex-1 active:scale-95 ${isDark ? 'bg-slate-800 border-slate-600 text-rose-400 hover:bg-slate-700' : 'bg-white border-rose-200 text-rose-500 hover:bg-rose-50/50'}`}
+                                className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2.5 text-xs font-bold transition active:scale-95 ${isDark ? 'border-slate-600 bg-slate-800 text-rose-400 hover:bg-slate-700' : 'border-rose-200 bg-white text-rose-500 hover:bg-rose-50/50'}`}
                               >
-                                <Play size={12} className={isDark ? 'text-rose-400' : 'text-rose-500'} />
+                                <Play
+                                  size={12}
+                                  className={isDark ? 'text-rose-400' : 'text-rose-500'}
+                                />
                                 Luyện thi
                               </button>
                               <button
                                 onClick={() => handleStartExam(exam.id, exam.isPro)}
-                                className={`flex items-center justify-center gap-1.5 rounded-xl border py-2.5 text-xs font-bold transition flex-1 active:scale-95 ${isDark ? 'bg-slate-800 border-slate-600 text-rose-400 hover:bg-slate-700' : 'bg-white border-rose-200 text-rose-500 hover:bg-rose-50/50'}`}
+                                className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2.5 text-xs font-bold transition active:scale-95 ${isDark ? 'border-slate-600 bg-slate-800 text-rose-400 hover:bg-slate-700' : 'border-rose-200 bg-white text-rose-500 hover:bg-rose-50/50'}`}
                               >
-                                <BookOpen size={12} className={isDark ? 'text-rose-400' : 'text-rose-500'} />
+                                <BookOpen
+                                  size={12}
+                                  className={isDark ? 'text-rose-400' : 'text-rose-500'}
+                                />
                                 Luyện tập
                               </button>
                             </div>
@@ -694,7 +724,7 @@ export const ExamsPage = () => {
                       <button
                         disabled={currentPage === 1}
                         onClick={() => setCurrentPage((c) => c - 1)}
-                        className={`rounded-lg border p-2 transition disabled:opacity-50 ${isDark ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                        className={`rounded-lg border p-2 transition disabled:opacity-50 ${isDark ? 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600' : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'}`}
                       >
                         <ChevronLeft size={16} />
                       </button>
@@ -704,7 +734,7 @@ export const ExamsPage = () => {
                       <button
                         disabled={currentPage === totalPages}
                         onClick={() => setCurrentPage((c) => c + 1)}
-                        className={`rounded-lg border p-2 transition disabled:opacity-50 ${isDark ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                        className={`rounded-lg border p-2 transition disabled:opacity-50 ${isDark ? 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600' : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'}`}
                       >
                         <ChevronRight size={16} />
                       </button>
@@ -712,7 +742,6 @@ export const ExamsPage = () => {
                   )}
                 </div>
               )}
-
 
               {/* List Tab 2: Practice History */}
               {listTab === 'HISTORY' && (
@@ -725,10 +754,13 @@ export const ExamsPage = () => {
                           setHistoryType(type.value);
                           setHistoryPage(1);
                         }}
-                        className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all ${historyType === type.value
-                          ? 'bg-pink-500 text-white'
-                          : (isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-slate-50 text-slate-600 hover:bg-slate-100')
-                          }`}
+                        className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
+                          historyType === type.value
+                            ? 'bg-pink-500 text-white'
+                            : isDark
+                              ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                              : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                        }`}
                       >
                         {type.emoji} {type.label}
                       </button>
@@ -745,9 +777,16 @@ export const ExamsPage = () => {
                       ))}
                     </div>
                   ) : historyList.length === 0 ? (
-                    <div className={`rounded-2xl border border-dashed py-16 text-center ${isDark ? 'border-slate-600 bg-slate-800/50' : 'border-slate-200'}`}>
-                      <History size={40} className={`mx-auto ${isDark ? 'text-slate-500' : 'text-slate-300'}`} />
-                      <h3 className={`mt-4 text-sm font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                    <div
+                      className={`rounded-2xl border border-dashed py-16 text-center ${isDark ? 'border-slate-600 bg-slate-800/50' : 'border-slate-200'}`}
+                    >
+                      <History
+                        size={40}
+                        className={`mx-auto ${isDark ? 'text-slate-500' : 'text-slate-300'}`}
+                      />
+                      <h3
+                        className={`mt-4 text-sm font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}
+                      >
                         Chưa có lịch sử làm bài
                       </h3>
                       <p className="mt-1 text-xs text-slate-400">
@@ -755,7 +794,9 @@ export const ExamsPage = () => {
                       </p>
                     </div>
                   ) : (
-                    <div className={`divide-y rounded-2xl border p-4 shadow-sm ${isDark ? 'divide-slate-700 border-slate-700 bg-slate-800' : 'divide-slate-100 border-slate-100 bg-white'}`}>
+                    <div
+                      className={`divide-y rounded-2xl border p-4 shadow-sm ${isDark ? 'divide-slate-700 border-slate-700 bg-slate-800' : 'divide-slate-100 border-slate-100 bg-white'}`}
+                    >
                       {historyList.map((record) => (
                         <div
                           key={record.id}
@@ -776,12 +817,16 @@ export const ExamsPage = () => {
                                 {new Date(record.createdAt).toLocaleDateString('vi-VN')}
                               </span>
                             </div>
-                            <h4 className={`mt-1 text-sm font-black ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                            <h4
+                              className={`mt-1 text-sm font-black ${isDark ? 'text-slate-200' : 'text-slate-700'}`}
+                            >
                               {record.testTitle}
                             </h4>
                             <div className="mt-1 text-xs text-slate-400">
                               Thời gian hoàn thành:{' '}
-                              <span className={`font-medium ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                              <span
+                                className={`font-medium ${isDark ? 'text-slate-300' : 'text-slate-600'}`}
+                              >
                                 {Math.round((record.completionTime || 0) / 60)} phút
                               </span>
                             </div>
@@ -790,7 +835,7 @@ export const ExamsPage = () => {
                           <div className="flex items-center gap-4">
                             {record.score !== null ? (
                               <div className="text-right">
-                                <span className="text-[10px] text-slate-400 block font-semibold">
+                                <span className="block text-[10px] font-semibold text-slate-400">
                                   Band
                                 </span>
                                 <span className="text-lg font-black text-pink-600">
@@ -798,14 +843,16 @@ export const ExamsPage = () => {
                                 </span>
                               </div>
                             ) : (
-                              <span className={`rounded px-2.5 py-1 text-xs font-semibold ${isDark ? 'bg-slate-700 text-slate-300' : 'bg-slate-50 text-slate-400'}`}>
+                              <span
+                                className={`rounded px-2.5 py-1 text-xs font-semibold ${isDark ? 'bg-slate-700 text-slate-300' : 'bg-slate-50 text-slate-400'}`}
+                              >
                                 Đã nộp
                               </span>
                             )}
 
                             <button
                               onClick={() => handleOpenReview(record.id)}
-                              className={`rounded-xl border px-3 py-1.5 text-xs font-bold transition active:scale-95 ${isDark ? 'bg-slate-700 border-slate-600 text-rose-400 hover:bg-slate-600' : 'bg-white border-pink-200 text-pink-500 hover:bg-pink-50'}`}
+                              className={`rounded-xl border px-3 py-1.5 text-xs font-bold transition active:scale-95 ${isDark ? 'border-slate-600 bg-slate-700 text-rose-400 hover:bg-slate-600' : 'border-pink-200 bg-white text-pink-500 hover:bg-pink-50'}`}
                             >
                               Xem chi tiết
                             </button>
@@ -821,7 +868,7 @@ export const ExamsPage = () => {
                       <button
                         disabled={historyPage === 1}
                         onClick={() => setHistoryPage((c) => c - 1)}
-                        className={`rounded-lg border p-2 transition disabled:opacity-50 ${isDark ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                        className={`rounded-lg border p-2 transition disabled:opacity-50 ${isDark ? 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600' : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'}`}
                       >
                         <ChevronLeft size={16} />
                       </button>
@@ -831,7 +878,7 @@ export const ExamsPage = () => {
                       <button
                         disabled={historyPage === historyTotalPages}
                         onClick={() => setHistoryPage((c) => c + 1)}
-                        className={`rounded-lg border p-2 transition disabled:opacity-50 ${isDark ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                        className={`rounded-lg border p-2 transition disabled:opacity-50 ${isDark ? 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600' : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'}`}
                       >
                         <ChevronRight size={16} />
                       </button>
@@ -848,10 +895,10 @@ export const ExamsPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex flex-col h-screen max-w-full fixed inset-0 z-[100] bg-[#faf6ee] p-4"
+              className="fixed inset-0 z-[100] flex h-screen max-w-full flex-col bg-[#faf6ee] p-4"
             >
               {/* Split screen Header */}
-              <div className="flex items-center justify-between border-b border-rose-100 bg-[#fffdfa] px-6 py-4 shadow-sm ">
+              <div className="flex items-center justify-between border-b border-rose-100 bg-[#fffdfa] px-6 py-4 shadow-sm">
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => {
@@ -864,7 +911,7 @@ export const ExamsPage = () => {
                         setTimerRunning(false);
                       }
                     }}
-                    className="rounded-xl border border-slate-200 p-2 text-slate-500 hover:bg-slate-50 transition"
+                    className="rounded-xl border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50"
                   >
                     <ArrowLeft size={18} />
                   </button>
@@ -872,7 +919,7 @@ export const ExamsPage = () => {
                     <span className="inline-block rounded bg-pink-100 px-2 py-0.5 text-[9px] font-extrabold text-pink-600 uppercase">
                       {examDetail.examType}
                     </span>
-                    <h2 className="text-base font-black text-slate-800 leading-tight">
+                    <h2 className="text-base leading-tight font-black text-slate-800">
                       {examDetail.title}
                     </h2>
                   </div>
@@ -881,10 +928,11 @@ export const ExamsPage = () => {
                 {/* Header Timer */}
                 <div className="flex items-center gap-6">
                   <div
-                    className={`flex items-center gap-2 rounded-2xl border px-5 py-2 font-black shadow-sm transition ${timeLeft <= 300
-                      ? 'border-red-200 bg-red-50 text-red-600 animate-pulse'
-                      : 'border-rose-200 bg-rose-50/50 text-rose-600'
-                      }`}
+                    className={`flex items-center gap-2 rounded-2xl border px-5 py-2 font-black shadow-sm transition ${
+                      timeLeft <= 300
+                        ? 'animate-pulse border-red-200 bg-red-50 text-red-600'
+                        : 'border-rose-200 bg-rose-50/50 text-rose-600'
+                    }`}
                   >
                     <Clock size={16} />
                     <span className="text-sm tracking-widest">{formatTime(timeLeft)}</span>
@@ -893,7 +941,7 @@ export const ExamsPage = () => {
                   <button
                     onClick={handleSubmitClick}
                     disabled={submitting}
-                    className="rounded-2xl bg-pink-500 px-6 py-2.5 text-xs font-black text-white hover:bg-pink-600 transition active:scale-95 shadow-md disabled:opacity-50"
+                    className="rounded-2xl bg-pink-500 px-6 py-2.5 text-xs font-black text-white shadow-md transition hover:bg-pink-600 active:scale-95 disabled:opacity-50"
                   >
                     {submitting ? 'Đang nộp...' : 'Nộp bài'}
                   </button>
@@ -901,17 +949,17 @@ export const ExamsPage = () => {
               </div>
 
               {/* Split Screen Dual-Pane Area */}
-              <div className="flex-1 flex overflow-hidden min-h-0 mt-4 gap-4">
+              <div className="mt-4 flex min-h-0 flex-1 gap-4 overflow-hidden">
                 {/* Left Pane: Audio/Passages/Prompts */}
-                <div className="flex-1 rounded-3xl border border-rose-100/50 bg-[#fffdfa] p-6 shadow-sm overflow-y-auto ">
+                <div className="flex-1 overflow-y-auto rounded-3xl border border-rose-100/50 bg-[#fffdfa] p-6 shadow-sm">
                   {/* For Listening Section: Custom Dynamic Audio Player */}
-                  {examDetail.examType === 'LISTENING' && (
+                  {examDetail.examType === 'LISTENING' &&
                     (() => {
                       const activeSec = examDetail.sections[activeSectionIdx];
                       const activeAudio = activeSec?.audioUrl || examDetail.audioUrl;
                       if (!activeAudio) return null;
                       return (
-                        <div className="mb-6 rounded-2xl bg-rose-50/40 p-4 border border-rose-100/30 flex items-center gap-4 animate-fadeIn">
+                        <div className="animate-fadeIn mb-6 flex items-center gap-4 rounded-2xl border border-rose-100/30 bg-rose-50/40 p-4">
                           <Volume2 size={24} className="text-pink-500" />
                           <audio
                             key={`listening-audio-${activeSectionIdx}-${activeAudio}`}
@@ -921,15 +969,14 @@ export const ExamsPage = () => {
                           />
                         </div>
                       );
-                    })()
-                  )}
+                    })()}
 
                   {/* For Speaking Section: User Recording Playback Preview */}
                   {examDetail.examType === 'SPEAKING' && speakingLocalUrls[activeSectionIdx] && (
-                    <div className="mb-6 rounded-2xl bg-rose-50/40 p-4 border border-rose-100/30 flex items-center gap-4 animate-fadeIn">
+                    <div className="animate-fadeIn mb-6 flex items-center gap-4 rounded-2xl border border-rose-100/30 bg-rose-50/40 p-4">
                       <Volume2 size={24} className="text-pink-500" />
                       <div className="flex-1">
-                        <span className="text-[10px] font-bold text-slate-400 block mb-1">
+                        <span className="mb-1 block text-[10px] font-bold text-slate-400">
                           NGHE LẠI PHẦN THI NÓI (PHẦN {activeSectionIdx + 1})
                         </span>
                         <audio
@@ -952,10 +999,11 @@ export const ExamsPage = () => {
                             <button
                               key={sec.id}
                               onClick={() => setActiveSectionIdx(idx)}
-                              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${activeSectionIdx === idx
-                                ? 'bg-pink-100 text-pink-600'
-                                : 'text-slate-400 hover:text-slate-600'
-                                }`}
+                              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                                activeSectionIdx === idx
+                                  ? 'bg-pink-100 text-pink-600'
+                                  : 'text-slate-400 hover:text-slate-600'
+                              }`}
                             >
                               Phần {sec.sectionNumber || idx + 1}
                             </button>
@@ -970,33 +1018,33 @@ export const ExamsPage = () => {
                         return (
                           <div className="space-y-4">
                             {activeSec.title && (
-                              <h3 className="text-lg font-black text-slate-800 ">
+                              <h3 className="text-lg font-black text-slate-800">
                                 {activeSec.title}
                               </h3>
                             )}
 
                             {activeSec.passage && (
-                              <div className="prose max-w-none text-sm text-slate-600 leading-relaxed">
+                              <div className="prose max-w-none text-sm leading-relaxed text-slate-600">
                                 {formatHtmlContent(activeSec.passage)}
                               </div>
                             )}
 
                             {examDetail.examType === 'WRITING' && activeSec.audioUrl && (
-                              <div className="mt-4 rounded-2xl overflow-hidden border border-slate-100 max-w-full flex justify-center bg-white p-2 shadow-sm">
+                              <div className="mt-4 flex max-w-full justify-center overflow-hidden rounded-2xl border border-slate-100 bg-white p-2 shadow-sm">
                                 <img
                                   src={activeSec.audioUrl}
                                   alt="Writing prompt illustration"
-                                  className="max-h-[400px] object-contain rounded-xl"
+                                  className="max-h-[400px] rounded-xl object-contain"
                                 />
                               </div>
                             )}
 
                             {activeSec.cueCard && (
-                              <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-6 ">
-                                <h4 className="text-sm font-extrabold text-amber-800 mb-3">
+                              <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-6">
+                                <h4 className="mb-3 text-sm font-extrabold text-amber-800">
                                   📌 Cue Card Topic:
                                 </h4>
-                                <pre className="whitespace-pre-wrap font-sans text-sm text-slate-700 ">
+                                <pre className="font-sans text-sm whitespace-pre-wrap text-slate-700">
                                   {activeSec.cueCard}
                                 </pre>
                               </div>
@@ -1004,8 +1052,8 @@ export const ExamsPage = () => {
 
                             {/* Render Questions under the passage/audio/cue card */}
                             {activeSec.questions && activeSec.questions.length > 0 && (
-                              <div className="mt-8 pt-6 border-t border-rose-100 space-y-6 animate-fadeIn">
-                                <h4 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                              <div className="animate-fadeIn mt-8 space-y-6 border-t border-rose-100 pt-6">
+                                <h4 className="flex items-center gap-2 text-sm font-black text-slate-800">
                                   <BookOpen size={16} className="text-pink-500" />
                                   DANH SÁCH CÂU HỎI
                                 </h4>
@@ -1013,41 +1061,44 @@ export const ExamsPage = () => {
                                   {activeSec.questions
                                     .filter((q) => q.questionText && q.questionText.trim())
                                     .map((q) => (
-                                    <div
-                                      key={q.id}
-                                      className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm space-y-3"
-                                    >
-                                      <div className="flex items-start gap-2.5">
-                                        <span className="rounded-lg bg-rose-50 px-2.5 py-1 text-xs font-black text-rose-500 border border-rose-100/50 shrink-0">
-                                          Câu {q.questionNumber}
-                                        </span>
-                                        <div className="text-xs font-bold text-slate-700 mt-1 leading-relaxed flex-1">
-                                          <div>{q.questionText}</div>
-                                          {q.imageUrl && (
-                                            <div className="mt-2 rounded-xl overflow-hidden border border-slate-100 max-w-full flex justify-center bg-slate-50 p-1">
-                                              <img
-                                                src={q.imageUrl}
-                                                alt={`Câu hỏi ${q.questionNumber}`}
-                                                className="max-h-[300px] object-contain rounded-lg"
-                                              />
-                                            </div>
-                                          )}
+                                      <div
+                                        key={q.id}
+                                        className="space-y-3 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm"
+                                      >
+                                        <div className="flex items-start gap-2.5">
+                                          <span className="shrink-0 rounded-lg border border-rose-100/50 bg-rose-50 px-2.5 py-1 text-xs font-black text-rose-500">
+                                            Câu {q.questionNumber}
+                                          </span>
+                                          <div className="mt-1 flex-1 text-xs leading-relaxed font-bold text-slate-700">
+                                            <div>{q.questionText}</div>
+                                            {q.imageUrl && (
+                                              <div className="mt-2 flex max-w-full justify-center overflow-hidden rounded-xl border border-slate-100 bg-slate-50 p-1">
+                                                <img
+                                                  src={q.imageUrl}
+                                                  alt={`Câu hỏi ${q.questionNumber}`}
+                                                  className="max-h-[300px] rounded-lg object-contain"
+                                                />
+                                              </div>
+                                            )}
+                                          </div>
                                         </div>
-                                      </div>
 
-                                      {/* Options for Multiple Choice */}
-                                      {q.questionType === 'MULTIPLE_CHOICE' && q.options && (
-                                        <div className="pl-9 grid grid-cols-1 gap-2 text-xs text-slate-500 font-medium">
-                                          {q.options.map((option) => (
-                                            <div key={option} className="flex items-start gap-1.5">
-                                              <span className="h-1.5 w-1.5 rounded-full bg-pink-400 mt-1.5 shrink-0" />
-                                              <span>{option}</span>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      )}
-                                    </div>
-                                  ))}
+                                        {/* Options for Multiple Choice */}
+                                        {q.questionType === 'MULTIPLE_CHOICE' && q.options && (
+                                          <div className="grid grid-cols-1 gap-2 pl-9 text-xs font-medium text-slate-500">
+                                            {q.options.map((option) => (
+                                              <div
+                                                key={option}
+                                                className="flex items-start gap-1.5"
+                                              >
+                                                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-pink-400" />
+                                                <span>{option}</span>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
                                 </div>
                               </div>
                             )}
@@ -1063,8 +1114,8 @@ export const ExamsPage = () => {
                 </div>
 
                 {/* Right Pane: Question Input Forms */}
-                <div className="w-[500px] flex flex-col rounded-3xl border border-rose-100/50 bg-[#fffdfa] shadow-sm overflow-hidden ">
-                  <div className="bg-slate-50 px-5 py-3 border-b border-rose-50/40 text-xs font-bold text-slate-600 ">
+                <div className="flex w-[500px] flex-col overflow-hidden rounded-3xl border border-rose-100/50 bg-[#fffdfa] shadow-sm">
+                  <div className="border-b border-rose-50/40 bg-slate-50 px-5 py-3 text-xs font-bold text-slate-600">
                     📒 CÂU HỎI & TRẢ LỜI
                   </div>
 
@@ -1114,7 +1165,7 @@ export const ExamsPage = () => {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setView('LIST')}
-                  className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-50 transition"
+                  className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-500 transition hover:bg-slate-50"
                 >
                   <ArrowLeft size={14} />
                   Quay lại danh sách
@@ -1122,45 +1173,45 @@ export const ExamsPage = () => {
               </div>
 
               {loadingReview ? (
-                <div className="text-center py-16">
-                  <RefreshCw className="mx-auto text-pink-500 animate-spin" size={32} />
+                <div className="py-16 text-center">
+                  <RefreshCw className="mx-auto animate-spin text-pink-500" size={32} />
                   <p className="mt-4 text-sm text-slate-500">Đang tải kết quả chi tiết...</p>
                 </div>
               ) : reviewDetail ? (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                   {/* Result Summary Sidebar */}
                   <div className="space-y-6">
                     {/* Score Card */}
-                    <div className="rounded-3xl border border-rose-100 bg-white p-6 shadow-sm text-center">
+                    <div className="rounded-3xl border border-rose-100 bg-white p-6 text-center shadow-sm">
                       <Award size={40} className="mx-auto text-pink-500" />
-                      <h3 className="mt-3 text-lg font-black text-slate-800 ">
+                      <h3 className="mt-3 text-lg font-black text-slate-800">
                         {reviewDetail.testTitle}
                       </h3>
-                      <p className="text-xs text-slate-400 mt-1">
+                      <p className="mt-1 text-xs text-slate-400">
                         Luyện tập ngày:{' '}
                         {new Date(reviewDetail.createdAt).toLocaleDateString('vi-VN')}
                       </p>
 
                       <div className="my-6">
-                        <div className="text-xs text-slate-400 font-semibold uppercase">
+                        <div className="text-xs font-semibold text-slate-400 uppercase">
                           Điểm số của bạn
                         </div>
-                        <div className="text-5xl font-black text-pink-600 mt-1">
+                        <div className="mt-1 text-5xl font-black text-pink-600">
                           {reviewDetail.score !== null ? reviewDetail.score.toFixed(1) : '-'}
                         </div>
-                        <div className="text-xs text-slate-400 mt-1">IELTS Band Score</div>
+                        <div className="mt-1 text-xs text-slate-400">IELTS Band Score</div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3 border-t border-rose-50 pt-4 text-left">
                         <div>
-                          <span className="text-[10px] text-slate-400 block">Kỹ năng</span>
-                          <span className="text-xs font-bold text-slate-700 ">
+                          <span className="block text-[10px] text-slate-400">Kỹ năng</span>
+                          <span className="text-xs font-bold text-slate-700">
                             {reviewDetail.skillType}
                           </span>
                         </div>
                         <div>
-                          <span className="text-[10px] text-slate-400 block">Thời gian làm</span>
-                          <span className="text-xs font-bold text-slate-700 ">
+                          <span className="block text-[10px] text-slate-400">Thời gian làm</span>
+                          <span className="text-xs font-bold text-slate-700">
                             {Math.round((reviewDetail.completionTime || 0) / 60)} phút
                           </span>
                         </div>
@@ -1169,13 +1220,29 @@ export const ExamsPage = () => {
 
                     {/* AI Feedback Card */}
                     {reviewDetail.aiAnalysis && (
-                      <div className={`rounded-3xl border p-6 transition-all duration-500 ${reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...'
-                        ? 'border-pink-200 bg-pink-50/10 shadow-[0_0_15px_rgba(244,63,94,0.05)] animate-pulse'
-                        : 'border-amber-200 bg-amber-50/20'
-                        }`}>
-                        <h4 className="flex items-center gap-2 text-sm font-black text-slate-800 mb-3">
-                          <Sparkles size={16} className={reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...' ? 'text-pink-500 animate-spin' : 'text-amber-500'} />
-                          <span className={reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...' ? 'text-pink-600 font-extrabold' : 'text-amber-800'}>
+                      <div
+                        className={`rounded-3xl border p-6 transition-all duration-500 ${
+                          reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...'
+                            ? 'animate-pulse border-pink-200 bg-pink-50/10 shadow-[0_0_15px_rgba(244,63,94,0.05)]'
+                            : 'border-amber-200 bg-amber-50/20'
+                        }`}
+                      >
+                        <h4 className="mb-3 flex items-center gap-2 text-sm font-black text-slate-800">
+                          <Sparkles
+                            size={16}
+                            className={
+                              reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...'
+                                ? 'animate-spin text-pink-500'
+                                : 'text-amber-500'
+                            }
+                          />
+                          <span
+                            className={
+                              reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...'
+                                ? 'font-extrabold text-pink-600'
+                                : 'text-amber-800'
+                            }
+                          >
                             ⚡ Phân tích & Gợi ý từ AI:
                           </span>
                         </h4>
@@ -1183,20 +1250,25 @@ export const ExamsPage = () => {
                         {reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...' ? (
                           <div className="space-y-4 py-2">
                             <div className="flex items-center gap-3">
-                              <RefreshCw size={14} className="text-pink-500 animate-spin" />
+                              <RefreshCw size={14} className="animate-spin text-pink-500" />
                               <span className="text-xs font-semibold text-pink-600">
                                 Hệ thống AI đang chấm điểm và tạo nhận xét...
                               </span>
                             </div>
-                            <p className="text-[11px] text-slate-400 font-medium leading-relaxed">
-                              Giám khảo AI đang đánh giá chi tiết bài làm của bạn dựa trên các tiêu chí chấm điểm IELTS chuẩn hóa. Quá trình phân tích chuyên sâu này thường mất từ 10 - 30 giây. Trang web sẽ tự cập nhật khi hoàn thành.
+                            <p className="text-[11px] leading-relaxed font-medium text-slate-400">
+                              Giám khảo AI đang đánh giá chi tiết bài làm của bạn dựa trên các tiêu
+                              chí chấm điểm IELTS chuẩn hóa. Quá trình phân tích chuyên sâu này
+                              thường mất từ 10 - 30 giây. Trang web sẽ tự cập nhật khi hoàn thành.
                             </p>
-                            <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                              <div className="h-full bg-pink-500 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+                            <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                              <div
+                                className="h-full animate-pulse rounded-full bg-pink-500"
+                                style={{ width: '60%' }}
+                              ></div>
                             </div>
                           </div>
                         ) : (
-                          <div className="prose text-xs text-slate-600 leading-relaxed whitespace-pre-line font-medium">
+                          <div className="prose text-xs leading-relaxed font-medium whitespace-pre-line text-slate-600">
                             {reviewDetail.aiAnalysis}
                           </div>
                         )}
@@ -1205,66 +1277,89 @@ export const ExamsPage = () => {
                   </div>
 
                   {/* Question Review List */}
-                  <div className="lg:col-span-2 space-y-6">
+                  <div className="space-y-6 lg:col-span-2">
                     {/* For Writing / Speaking: show essay or recording */}
                     {reviewDetail.skillType === 'WRITING' && (
                       <div className="space-y-6">
                         {!originalTest ? (
                           <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
-                            <h4 className="text-sm font-black text-slate-800 mb-3">Bài viết đã nộp:</h4>
-                            <div className="rounded-2xl bg-slate-50 p-4 text-xs text-slate-700 whitespace-pre-wrap leading-relaxed">
+                            <h4 className="mb-3 text-sm font-black text-slate-800">
+                              Bài viết đã nộp:
+                            </h4>
+                            <div className="rounded-2xl bg-slate-50 p-4 text-xs leading-relaxed whitespace-pre-wrap text-slate-700">
                               {reviewDetail.submissionContent}
                             </div>
                           </div>
                         ) : (
                           originalTest.sections.map((section, idx) => {
-                            const essays = reviewDetail.submissionContent ? reviewDetail.submissionContent.split('\n\n---SECTION_SEPARATOR---\n\n') : [];
+                            const essays = reviewDetail.submissionContent
+                              ? reviewDetail.submissionContent.split(
+                                  '\n\n---SECTION_SEPARATOR---\n\n',
+                                )
+                              : [];
                             const userEssay = essays[idx] || '';
-                            const wordCount = userEssay.trim() ? userEssay.trim().split(/\s+/).length : 0;
+                            const wordCount = userEssay.trim()
+                              ? userEssay.trim().split(/\s+/).length
+                              : 0;
                             return (
-                              <div key={section.id} className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm space-y-4">
+                              <div
+                                key={section.id}
+                                className="space-y-4 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm"
+                              >
                                 <div className="border-b border-rose-50 pb-3">
-                                  <span className="inline-block rounded bg-pink-100 px-2 py-0.5 text-[10px] font-extrabold text-pink-600 uppercase mb-1">
+                                  <span className="mb-1 inline-block rounded bg-pink-100 px-2 py-0.5 text-[10px] font-extrabold text-pink-600 uppercase">
                                     Phần {section.sectionNumber || idx + 1}
                                   </span>
-                                  <h4 className="text-sm font-black text-slate-800">{section.title || `Task ${idx + 1}`}</h4>
+                                  <h4 className="text-sm font-black text-slate-800">
+                                    {section.title || `Task ${idx + 1}`}
+                                  </h4>
                                 </div>
 
                                 {section.passage && (
-                                  <div className="rounded-2xl bg-amber-50/30 border border-amber-100 p-4">
-                                    <span className="text-[10px] font-extrabold text-amber-800 block mb-1">ĐỀ BÀI:</span>
-                                    <div className="prose max-w-none text-xs text-slate-600 leading-relaxed">
+                                  <div className="rounded-2xl border border-amber-100 bg-amber-50/30 p-4">
+                                    <span className="mb-1 block text-[10px] font-extrabold text-amber-800">
+                                      ĐỀ BÀI:
+                                    </span>
+                                    <div className="prose max-w-none text-xs leading-relaxed text-slate-600">
                                       {formatHtmlContent(section.passage)}
                                     </div>
                                   </div>
                                 )}
 
                                 {reviewDetail.skillType === 'WRITING' && section.audioUrl && (
-                                  <div className="mt-2 rounded-2xl overflow-hidden border border-slate-100 max-w-full flex justify-center bg-white p-2 shadow-sm">
+                                  <div className="mt-2 flex max-w-full justify-center overflow-hidden rounded-2xl border border-slate-100 bg-white p-2 shadow-sm">
                                     <img
                                       src={section.audioUrl}
                                       alt="Writing prompt illustration"
-                                      className="max-h-[300px] object-contain rounded-xl"
+                                      className="max-h-[300px] rounded-xl object-contain"
                                     />
                                   </div>
                                 )}
 
                                 {section.sampleAnswer && (
-                                  <div className="rounded-2xl bg-emerald-50/20 border border-emerald-100 p-4">
-                                    <span className="text-[10px] font-extrabold text-emerald-800 block mb-1">BÀI VĂN MẪU THAM KHẢO:</span>
+                                  <div className="rounded-2xl border border-emerald-100 bg-emerald-50/20 p-4">
+                                    <span className="mb-1 block text-[10px] font-extrabold text-emerald-800">
+                                      BÀI VĂN MẪU THAM KHẢO:
+                                    </span>
                                     <div
-                                      className="prose max-w-none text-xs text-slate-700 whitespace-pre-wrap leading-relaxed"
+                                      className="prose max-w-none text-xs leading-relaxed whitespace-pre-wrap text-slate-700"
                                       dangerouslySetInnerHTML={{ __html: section.sampleAnswer }}
                                     />
                                   </div>
                                 )}
 
                                 <div className="space-y-2">
-                                  <span className="text-[10px] font-extrabold text-slate-400 block uppercase">Bài viết của bạn:</span>
-                                  <div className="rounded-2xl bg-slate-50 p-4 text-xs text-slate-700 whitespace-pre-wrap leading-relaxed border border-slate-100">
-                                    {userEssay || <span className="text-slate-400 italic">Không có nội dung bài viết</span>}
+                                  <span className="block text-[10px] font-extrabold text-slate-400 uppercase">
+                                    Bài viết của bạn:
+                                  </span>
+                                  <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4 text-xs leading-relaxed whitespace-pre-wrap text-slate-700">
+                                    {userEssay || (
+                                      <span className="text-slate-400 italic">
+                                        Không có nội dung bài viết
+                                      </span>
+                                    )}
                                   </div>
-                                  <div className="text-[10px] text-slate-400 text-right font-semibold">
+                                  <div className="text-right text-[10px] font-semibold text-slate-400">
                                     Số từ: {wordCount} từ
                                   </div>
                                 </div>
@@ -1279,7 +1374,9 @@ export const ExamsPage = () => {
                       <div className="space-y-6">
                         {!originalTest ? (
                           <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
-                            <h4 className="text-sm font-black text-slate-800 mb-3">Bản thu âm đã nộp:</h4>
+                            <h4 className="mb-3 text-sm font-black text-slate-800">
+                              Bản thu âm đã nộp:
+                            </h4>
                             {reviewDetail.recordingUrl ? (
                               <audio src={reviewDetail.recordingUrl} controls className="w-full" />
                             ) : (
@@ -1303,18 +1400,25 @@ export const ExamsPage = () => {
                             return originalTest.sections.map((section, idx) => {
                               const sectionAudioUrl = urlsMap[idx.toString()] || urlsMap[idx];
                               return (
-                                <div key={section.id} className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm space-y-4">
+                                <div
+                                  key={section.id}
+                                  className="space-y-4 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm"
+                                >
                                   <div className="border-b border-rose-50 pb-3">
-                                    <span className="inline-block rounded bg-pink-100 px-2 py-0.5 text-[10px] font-extrabold text-pink-600 uppercase mb-1">
+                                    <span className="mb-1 inline-block rounded bg-pink-100 px-2 py-0.5 text-[10px] font-extrabold text-pink-600 uppercase">
                                       Phần {section.sectionNumber || idx + 1}
                                     </span>
-                                    <h4 className="text-sm font-black text-slate-800">{section.title || `Part ${idx + 1}`}</h4>
+                                    <h4 className="text-sm font-black text-slate-800">
+                                      {section.title || `Part ${idx + 1}`}
+                                    </h4>
                                   </div>
 
                                   {section.passage && (
-                                    <div className="rounded-2xl bg-amber-50/30 border border-amber-100 p-4">
-                                      <span className="text-[10px] font-extrabold text-amber-800 block mb-1">ĐỀ BÀI:</span>
-                                      <div className="prose max-w-none text-xs text-slate-600 leading-relaxed">
+                                    <div className="rounded-2xl border border-amber-100 bg-amber-50/30 p-4">
+                                      <span className="mb-1 block text-[10px] font-extrabold text-amber-800">
+                                        ĐỀ BÀI:
+                                      </span>
+                                      <div className="prose max-w-none text-xs leading-relaxed text-slate-600">
                                         {formatHtmlContent(section.passage)}
                                       </div>
                                     </div>
@@ -1322,29 +1426,41 @@ export const ExamsPage = () => {
 
                                   {section.cueCard && (
                                     <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-4">
-                                      <span className="text-[10px] font-extrabold text-amber-800 block mb-1">📌 Cue Card Topic:</span>
-                                      <pre className="whitespace-pre-wrap font-sans text-xs text-slate-700 leading-relaxed">
+                                      <span className="mb-1 block text-[10px] font-extrabold text-amber-800">
+                                        📌 Cue Card Topic:
+                                      </span>
+                                      <pre className="font-sans text-xs leading-relaxed whitespace-pre-wrap text-slate-700">
                                         {section.cueCard}
                                       </pre>
                                     </div>
                                   )}
 
                                   {section.sampleAnswer && (
-                                    <div className="rounded-2xl bg-emerald-50/20 border border-emerald-100 p-4">
-                                      <span className="text-[10px] font-extrabold text-emerald-800 block mb-1">BÀI NÓI MẪU THAM KHẢO (SAMPLE RESPONSE):</span>
+                                    <div className="rounded-2xl border border-emerald-100 bg-emerald-50/20 p-4">
+                                      <span className="mb-1 block text-[10px] font-extrabold text-emerald-800">
+                                        BÀI NÓI MẪU THAM KHẢO (SAMPLE RESPONSE):
+                                      </span>
                                       <div
-                                        className="prose max-w-none text-xs text-slate-700 whitespace-pre-wrap leading-relaxed"
+                                        className="prose max-w-none text-xs leading-relaxed whitespace-pre-wrap text-slate-700"
                                         dangerouslySetInnerHTML={{ __html: section.sampleAnswer }}
                                       />
                                     </div>
                                   )}
 
                                   <div className="space-y-2">
-                                    <span className="text-[10px] font-extrabold text-slate-400 block uppercase">Bản thu âm của bạn:</span>
+                                    <span className="block text-[10px] font-extrabold text-slate-400 uppercase">
+                                      Bản thu âm của bạn:
+                                    </span>
                                     {sectionAudioUrl ? (
-                                      <audio src={sectionAudioUrl} controls className="w-full mt-2" />
+                                      <audio
+                                        src={sectionAudioUrl}
+                                        controls
+                                        className="mt-2 w-full"
+                                      />
                                     ) : (
-                                      <p className="text-xs text-slate-400 italic">Không tìm thấy bản thu âm cho phần này.</p>
+                                      <p className="text-xs text-slate-400 italic">
+                                        Không tìm thấy bản thu âm cho phần này.
+                                      </p>
                                     )}
                                   </div>
                                 </div>
@@ -1358,12 +1474,12 @@ export const ExamsPage = () => {
                     {/* For Reading / Listening: list questions, answers, corrected labels, and explanations */}
                     {(reviewDetail.skillType === 'READING' ||
                       reviewDetail.skillType === 'LISTENING') && (
-                        <div className="space-y-4">
-                          <h4 className="text-base font-black text-slate-800 ">
-                            Chi tiết từng câu hỏi:
-                          </h4>
+                      <div className="space-y-4">
+                        <h4 className="text-base font-black text-slate-800">
+                          Chi tiết từng câu hỏi:
+                        </h4>
 
-                          {/* We mock detail questions if backend does not load them directly inside reviewDetail.
+                        {/* We mock detail questions if backend does not load them directly inside reviewDetail.
  Wait! The backend PracticeHistoryDTO exposes `answers` as a Map.
  Let's query the original test if we want to display the full question cards.
  Wait, let's look at if we can display the matched items cleanly.
@@ -1377,121 +1493,125 @@ export const ExamsPage = () => {
  to overlay the question texts, options, explanations, and correct answers!
  Let's implement this overlay loader! */}
 
-                          {!originalTest ? (
-                            <div className="text-xs text-slate-400">
-                              Đang tải dữ liệu câu hỏi gốc...
-                            </div>
-                          ) : (
-                            <div className="space-y-4">
-                              {originalTest.sections.map((section, sIdx) => (
-                                <div key={section.id} className="space-y-4">
-                                  <div className="text-xs font-bold text-pink-500">
-                                    PHẦN {section.sectionNumber || sIdx + 1}
-                                  </div>
+                        {!originalTest ? (
+                          <div className="text-xs text-slate-400">
+                            Đang tải dữ liệu câu hỏi gốc...
+                          </div>
+                        ) : (
+                          <div className="space-y-4">
+                            {originalTest.sections.map((section, sIdx) => (
+                              <div key={section.id} className="space-y-4">
+                                <div className="text-xs font-bold text-pink-500">
+                                  PHẦN {section.sectionNumber || sIdx + 1}
+                                </div>
 
-                                  {section.passage && (
-                                    <div className="rounded-2xl bg-amber-50/30 border border-amber-100 p-4">
-                                      <span className="text-[10px] font-extrabold text-amber-800 block mb-1">ĐỀ BÀI:</span>
-                                      <div className="prose max-w-none text-xs text-slate-600 leading-relaxed">
-                                        {formatHtmlContent(section.passage)}
-                                      </div>
+                                {section.passage && (
+                                  <div className="rounded-2xl border border-amber-100 bg-amber-50/30 p-4">
+                                    <span className="mb-1 block text-[10px] font-extrabold text-amber-800">
+                                      ĐỀ BÀI:
+                                    </span>
+                                    <div className="prose max-w-none text-xs leading-relaxed text-slate-600">
+                                      {formatHtmlContent(section.passage)}
                                     </div>
-                                  )}
+                                  </div>
+                                )}
 
-                                  {section.questions.map((q) => {
-                                    const userAnswer = reviewDetail.answers?.[q.id.toString()] || reviewDetail.answers?.[q.questionNumber.toString()];
-                                    const isCorrect =
-                                      userAnswer &&
-                                      q.correctAnswer &&
-                                      userAnswer.trim().toLowerCase() ===
+                                {section.questions.map((q) => {
+                                  const userAnswer =
+                                    reviewDetail.answers?.[q.id.toString()] ||
+                                    reviewDetail.answers?.[q.questionNumber.toString()];
+                                  const isCorrect =
+                                    userAnswer &&
+                                    q.correctAnswer &&
+                                    userAnswer.trim().toLowerCase() ===
                                       q.correctAnswer.trim().toLowerCase();
 
-                                    return (
-                                      <div
-                                        key={q.id}
-                                        className={`rounded-2xl border p-4 shadow-sm transition ${isCorrect
+                                  return (
+                                    <div
+                                      key={q.id}
+                                      className={`rounded-2xl border p-4 shadow-sm transition ${
+                                        isCorrect
                                           ? 'border-green-100 bg-green-50/20'
                                           : 'border-red-100 bg-red-50/20'
-                                          }`}
-                                      >
-                                        <div className="flex items-start gap-2">
-                                          <span
-                                            className={`rounded px-2 py-0.5 text-xs font-bold ${isCorrect
+                                      }`}
+                                    >
+                                      <div className="flex items-start gap-2">
+                                        <span
+                                          className={`rounded px-2 py-0.5 text-xs font-bold ${
+                                            isCorrect
                                               ? 'bg-green-100 text-green-600'
                                               : 'bg-red-100 text-red-600'
-                                              }`}
-                                          >
-                                            Câu {q.questionNumber}
-                                          </span>
-                                          <div className="text-xs font-bold text-slate-700 flex-1">
-                                            <div>{q.questionText}</div>
-                                            {q.imageUrl && (
-                                              <div className="mt-2 rounded-xl overflow-hidden border border-slate-100 max-w-full flex justify-center bg-slate-50 p-1">
-                                                <img
-                                                  src={q.imageUrl}
-                                                  alt={`Câu hỏi ${q.questionNumber}`}
-                                                  className="max-h-[250px] object-contain rounded-lg"
-                                                />
-                                              </div>
-                                            )}
-                                          </div>
+                                          }`}
+                                        >
+                                          Câu {q.questionNumber}
+                                        </span>
+                                        <div className="flex-1 text-xs font-bold text-slate-700">
+                                          <div>{q.questionText}</div>
+                                          {q.imageUrl && (
+                                            <div className="mt-2 flex max-w-full justify-center overflow-hidden rounded-xl border border-slate-100 bg-slate-50 p-1">
+                                              <img
+                                                src={q.imageUrl}
+                                                alt={`Câu hỏi ${q.questionNumber}`}
+                                                className="max-h-[250px] rounded-lg object-contain"
+                                              />
+                                            </div>
+                                          )}
                                         </div>
-
-                                        {/* Answer comparison details */}
-                                        <div className="mt-4 grid grid-cols-2 gap-4 text-xs">
-                                          <div className="rounded-xl bg-white p-3 border border-slate-100 ">
-                                            <span className="text-[10px] text-slate-400 block font-semibold">
-                                              Đáp án của bạn
-                                            </span>
-                                            <span
-                                              className={`font-bold mt-1 block ${isCorrect ? 'text-green-600' : 'text-red-500'
-                                                }`}
-                                            >
-                                              {userAnswer || '(Không trả lời)'}
-                                              {userAnswer &&
-                                                (isCorrect ? (
-                                                  <Check
-                                                    size={14}
-                                                    className="inline ml-1"
-                                                  />
-                                                ) : (
-                                                  <X size={14} className="inline ml-1" />
-                                                ))}
-                                            </span>
-                                          </div>
-
-                                          <div className="rounded-xl bg-white p-3 border border-slate-100 ">
-                                            <span className="text-[10px] text-slate-400 block font-semibold">
-                                              Đáp án đúng
-                                            </span>
-                                            <span className="font-bold text-green-600 mt-1 block">
-                                              {q.correctAnswer}
-                                            </span>
-                                          </div>
-                                        </div>
-
-                                        {/* Explanation */}
-                                        {q.explanation && (
-                                          <div className="mt-3 border-t border-dashed border-slate-200/60 pt-3 text-xs text-slate-500 leading-relaxed">
-                                            <span className="font-bold text-slate-600 ">
-                                              Giải thích:{' '}
-                                            </span>
-                                            {q.explanation}
-                                          </div>
-                                        )}
                                       </div>
-                                    );
-                                  })}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      )}
+
+                                      {/* Answer comparison details */}
+                                      <div className="mt-4 grid grid-cols-2 gap-4 text-xs">
+                                        <div className="rounded-xl border border-slate-100 bg-white p-3">
+                                          <span className="block text-[10px] font-semibold text-slate-400">
+                                            Đáp án của bạn
+                                          </span>
+                                          <span
+                                            className={`mt-1 block font-bold ${
+                                              isCorrect ? 'text-green-600' : 'text-red-500'
+                                            }`}
+                                          >
+                                            {userAnswer || '(Không trả lời)'}
+                                            {userAnswer &&
+                                              (isCorrect ? (
+                                                <Check size={14} className="ml-1 inline" />
+                                              ) : (
+                                                <X size={14} className="ml-1 inline" />
+                                              ))}
+                                          </span>
+                                        </div>
+
+                                        <div className="rounded-xl border border-slate-100 bg-white p-3">
+                                          <span className="block text-[10px] font-semibold text-slate-400">
+                                            Đáp án đúng
+                                          </span>
+                                          <span className="mt-1 block font-bold text-green-600">
+                                            {q.correctAnswer}
+                                          </span>
+                                        </div>
+                                      </div>
+
+                                      {/* Explanation */}
+                                      {q.explanation && (
+                                        <div className="mt-3 border-t border-dashed border-slate-200/60 pt-3 text-xs leading-relaxed text-slate-500">
+                                          <span className="font-bold text-slate-600">
+                                            Giải thích:{' '}
+                                          </span>
+                                          {q.explanation}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-16 text-slate-400">
+                <div className="py-16 text-center text-slate-400">
                   Không thể hiển thị kết quả. Vui lòng quay lại.
                 </div>
               )}

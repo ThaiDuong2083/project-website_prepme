@@ -2,7 +2,6 @@ package com.fpt.website_prepme.model.entity;
 
 import com.fpt.website_prepme.enums.AuthProvider;
 import com.fpt.website_prepme.enums.MembershipType;
-import com.fpt.website_prepme.enums.SkillType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -60,9 +59,8 @@ public class UserEntity extends BaseEntity {
     @Column(name = "current_level")
     private Double currentLevel;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "weakest_skill", length = 20)
-    private SkillType weakestSkill;
+    @Column(name = "weak_skills", columnDefinition = "TEXT")
+    private String weakSkills; // comma-separated: "LISTENING,WRITING"
 
     @Column(name = "readiness")
     private Double readiness;
@@ -80,6 +78,10 @@ public class UserEntity extends BaseEntity {
 
     @Column(name = "subscription_expires_at")
     private LocalDateTime subscriptionExpiresAt;
+
+    @Column(name = "survey_completed", nullable = false)
+    @Builder.Default
+    private boolean surveyCompleted = false;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

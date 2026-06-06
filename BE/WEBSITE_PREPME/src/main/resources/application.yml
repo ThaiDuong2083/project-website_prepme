@@ -4,7 +4,7 @@ spring:
 
   # ─── Database ────────────────────────────────────────────────────────────────
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/prepme_db}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/database_prepme}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -49,8 +49,8 @@ spring:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:your-email@gmail.com}
-    password: ${MAIL_PASSWORD:your-app-password}
+    username: ${MAIL_USERNAME:dinhxuantruong2003coi@gmail.com}
+    password: ${MAIL_PASSWORD:daln tzcb rdwf pumh}
     properties:
       mail:
         smtp:

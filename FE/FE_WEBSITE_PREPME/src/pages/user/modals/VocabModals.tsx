@@ -463,7 +463,7 @@ const TopicListModal = ({
             marginBottom: '12px',
           }}
         >
-          <span style={{ fontSize: '13px', color: '#64748b', fontStyle: 'italic' }}>
+          <span style={{ fontSize: '13px', color: '#64748b' }}>
             *Có thể chọn nhiều chủ đề cùng lúc
           </span>
           <button
@@ -637,7 +637,6 @@ const VocabCard = ({
               margin: '0 0 3px 0',
               fontSize: '13px',
               color: '#1e293b',
-              fontStyle: 'italic',
               fontWeight: 500,
             }}
           >
@@ -1026,7 +1025,6 @@ export const FlashcardModal = ({
                     fontWeight: 600,
                     color: '#334155',
                     margin: '0 0 16px 0',
-                    fontStyle: 'italic',
                   }}
                 >
                   {(() => {
@@ -1045,7 +1043,7 @@ export const FlashcardModal = ({
                     );
                   })()}
                 </p>
-                <p style={{ fontSize: '13px', color: '#94a3b8', fontStyle: 'italic', margin: 0 }}>
+                <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>
                   {current.exampleVi}
                 </p>
               </div>

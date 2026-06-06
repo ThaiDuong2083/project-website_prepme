@@ -1,5 +1,6 @@
 package com.fpt.website_prepme.model.dto.auth;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -24,4 +25,7 @@ public class RegisterRequest {
 
     @Size(max = 100, message = "Họ tên không được vượt quá 100 ký tự")
     private String fullName;
+
+    @Email(message = "Email không hợp lệ")
+    private String email; // Tùy chọn – dùng để gửi welcome email
 }
