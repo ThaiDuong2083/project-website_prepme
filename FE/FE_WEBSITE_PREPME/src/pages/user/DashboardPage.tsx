@@ -13,10 +13,10 @@ import { EditGoalsModal } from './EditGoalsModal';
 
 
 const BRAND = {
-  50: '#fff1f2',
-  100: '#ffe4e6',
-  400: '#fb7185',
-  500: '#f43f5e',
+  50: '#eff6ff',
+  100: '#dbeafe',
+  400: '#60a5fa',
+  500: '#3b82f6',
 };
 
 const announcements = [
@@ -152,7 +152,7 @@ export const DashboardPage = () => {
             padding: '6px 14px',
           }}
         >
-          <span style={{ fontWeight: 800, fontSize: '16px', color: '#f43f5e' }}>{streak}</span>
+          <span style={{ fontWeight: 800, fontSize: '16px', color: '#3b82f6' }}>{streak}</span>
           <Flame size={18} color="#f97316" fill="#f97316" />
         </div>
       </div>
@@ -189,7 +189,7 @@ export const DashboardPage = () => {
 
       {/* SEARCH INPUT */}
       <div className="relative w-full" style={{ marginBottom: '30px' }}>
-        <div className={`flex items-center overflow-hidden rounded-2xl border-2 shadow-md ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-pink-50 border-pink-200'}`}>
+        <div className={`flex items-center overflow-hidden rounded-2xl border-2 shadow-md ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-blue-50 border-blue-200'}`}>
           <input
             value={search}
             onChange={(e) => {
@@ -205,7 +205,7 @@ export const DashboardPage = () => {
           />
           <button
             onClick={handleSearch}
-            className="bg-pink-500 px-8 py-3 text-sm font-bold text-white transition hover:bg-pink-600"
+            className="bg-blue-500 px-8 py-3 text-sm font-bold text-white transition hover:bg-blue-600"
           >
             Tìm
           </button>
@@ -213,13 +213,13 @@ export const DashboardPage = () => {
 
         {/* SEARCH RESULTS */}
         {results.length > 0 && (
-          <div className={`absolute z-50 mt-3 max-h-[520px] w-full overflow-y-auto rounded-2xl border shadow-xl ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-pink-200'}`}>
-            <div className={`flex items-center justify-between border-b border-dashed px-5 py-4 text-sm font-semibold text-pink-500 ${isDark ? 'border-slate-600' : 'border-pink-200'}`}>
+          <div className={`absolute z-50 mt-3 max-h-[520px] w-full overflow-y-auto rounded-2xl border shadow-xl ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-blue-200'}`}>
+            <div className={`flex items-center justify-between border-b border-dashed px-5 py-4 text-sm font-semibold text-blue-500 ${isDark ? 'border-slate-600' : 'border-blue-200'}`}>
               <div>
                 Kết quả cho "<span className={`font-medium ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{search}</span>"
               </div>
               <span
-                className="cursor-pointer text-2xl leading-none hover:text-pink-600"
+                className="cursor-pointer text-2xl leading-none hover:text-blue-600"
                 onClick={() => {
                   setSearch('');
                   setResults([]);
@@ -228,23 +228,23 @@ export const DashboardPage = () => {
                 ×
               </span>
             </div>
-            <div className="flex items-center gap-2 px-5 py-3 text-xs font-bold tracking-wider text-pink-500">
+            <div className="flex items-center gap-2 px-5 py-3 text-xs font-bold tracking-wider text-blue-500">
               📚 TỪ VỰNG ({results.length})
             </div>
             <div className="space-y-3 px-3 pb-6">
               {results.map((item, index: number) => (
                 <div
                   key={index}
-                  className={`mx-2 cursor-pointer rounded-2xl border p-5 transition-all hover:border-pink-200 ${isDark ? 'bg-slate-700/50 border-slate-600' : 'bg-[#fff9f0] border-pink-100'}`}
+                  className={`mx-2 cursor-pointer rounded-2xl border p-5 transition-all hover:border-blue-200 ${isDark ? 'bg-slate-700/50 border-slate-600' : 'bg-[#f0f9ff] border-blue-100'}`}
                 >
                   <div className="flex flex-wrap items-baseline gap-2">
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-baseline gap-2">
                         <div className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}>{item.word}</div>
                         {item.pronunciation && (
-                          <div className="text-sm font-medium text-pink-600">{item.pronunciation}</div>
+                          <div className="text-sm font-medium text-blue-600">{item.pronunciation}</div>
                         )}
-                        <div className="text-sm font-normal text-pink-500">
+                        <div className="text-sm font-normal text-blue-500">
                           ({item.wordType || 'noun'})
                         </div>
                       </div>
@@ -252,16 +252,16 @@ export const DashboardPage = () => {
                         onClick={(e) => handleToggleSave(e, item.id)}
                         className={`flex h-8 w-8 items-center justify-center rounded-full border transition-all ${
                           savedIds.has(item.id)
-                            ? 'border-pink-500 bg-pink-50'
+                            ? 'border-blue-500 bg-blue-50'
                             : isDark
-                              ? 'border-slate-600 bg-slate-700 hover:border-pink-300 hover:bg-slate-600'
-                              : 'border-slate-200 bg-white hover:border-pink-300 hover:bg-pink-50'
+                              ? 'border-slate-600 bg-slate-700 hover:border-blue-300 hover:bg-slate-600'
+                              : 'border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50'
                         }`}
                       >
                         <Heart
                           size={16}
-                          color={savedIds.has(item.id) ? '#f43f5e' : isDark ? '#94a3b8' : '#cbd5e1'}
-                          fill={savedIds.has(item.id) ? '#f43f5e' : 'transparent'}
+                          color={savedIds.has(item.id) ? '#3b82f6' : isDark ? '#94a3b8' : '#cbd5e1'}
+                          fill={savedIds.has(item.id) ? '#3b82f6' : 'transparent'}
                         />
                       </button>
                     </div>
@@ -276,7 +276,7 @@ export const DashboardPage = () => {
           </div>
         )}
         {loading && (
-          <div className={`absolute z-50 mt-3 w-full rounded-2xl border p-12 text-center shadow-xl ${isDark ? 'bg-slate-800 border-slate-700 text-slate-400' : 'bg-white border-pink-200 text-slate-400'}`}>
+          <div className={`absolute z-50 mt-3 w-full rounded-2xl border p-12 text-center shadow-xl ${isDark ? 'bg-slate-800 border-slate-700 text-slate-400' : 'bg-white border-blue-200 text-slate-400'}`}>
             Đang tìm kiếm...
           </div>
         )}
@@ -362,7 +362,7 @@ export const DashboardPage = () => {
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)';
                 (e.currentTarget as HTMLElement).style.boxShadow =
-                  '0 10px 28px rgba(244,63,94,0.12)';
+                  '0 10px 28px rgba(59,130,246,0.12)';
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLElement).style.transform = 'none';
@@ -439,9 +439,9 @@ const ModuleCard = ({
       width: '100%',
       height: '100%',
       background: accent
-        ? 'linear-gradient(135deg, #fb7185 0%, #fda4af 100%)'
+        ? 'linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%)'
         : (isDark ? '#1e293b' : 'rgba(255,255,255,0.85)'),
-      border: accent ? 'none' : `1.5px solid ${isDark ? '#334155' : '#ffe4e6'}`,
+      border: accent ? 'none' : `1.5px solid ${isDark ? '#334155' : '#dbeafe'}`,
       borderRadius: '18px',
       padding: '26px 20px',
       cursor: 'pointer',
@@ -452,18 +452,18 @@ const ModuleCard = ({
       backdropFilter: 'blur(8px)',
       transition: 'all 0.15s ease',
       fontFamily: 'inherit',
-      boxShadow: accent ? '0 6px 20px rgba(251,113,133,0.30)' : 'none',
+      boxShadow: accent ? '0 6px 20px rgba(96,165,250,0.30)' : 'none',
     }}
     onMouseEnter={(e) => {
       (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)';
       (e.currentTarget as HTMLElement).style.boxShadow = accent
-        ? '0 14px 32px rgba(251,113,133,0.40)'
-        : '0 10px 28px rgba(244,63,94,0.12)';
+        ? '0 14px 32px rgba(96,165,250,0.40)'
+        : '0 10px 28px rgba(59,130,246,0.12)';
     }}
     onMouseLeave={(e) => {
       (e.currentTarget as HTMLElement).style.transform = 'none';
       (e.currentTarget as HTMLElement).style.boxShadow = accent
-        ? '0 6px 20px rgba(251,113,133,0.30)'
+        ? '0 6px 20px rgba(96,165,250,0.30)'
         : 'none';
     }}
   >
@@ -497,7 +497,7 @@ const GoalsFloatingWidget = ({
   const [hovered, setHovered] = useState(false);
 
   const panelBg     = isDark ? '#1e293b' : '#ffffff';
-  const panelBorder = isDark ? '#334155' : '#ffe4e6';
+  const panelBorder = isDark ? '#334155' : '#dbeafe';
   const textMain    = isDark ? '#f1f5f9' : '#1e293b';
   const textSub     = '#94a3b8';
 
@@ -519,12 +519,12 @@ const GoalsFloatingWidget = ({
         whileTap={{ scale: 0.95 }}
         style={{
           width: '64px', height: '64px', borderRadius: '50%',
-          background: 'linear-gradient(135deg,#fb7185,#f43f5e)',
+          background: 'linear-gradient(135deg,#60a5fa,#3b82f6)',
           cursor: 'pointer',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
           boxShadow: hovered
-            ? '0 8px 32px rgba(244,63,94,0.6), 0 0 0 5px rgba(244,63,94,0.15)'
-            : '0 8px 24px rgba(244,63,94,0.4)',
+            ? '0 8px 32px rgba(59,130,246,0.6), 0 0 0 5px rgba(59,130,246,0.15)'
+            : '0 8px 24px rgba(59,130,246,0.4)',
           transition: 'box-shadow 0.2s ease, transform 0.2s ease',
           gap: '1px',
           transform: hovered ? 'scale(1.08)' : 'scale(1)',
@@ -553,13 +553,13 @@ const GoalsFloatingWidget = ({
               borderRadius: '18px',
               padding: '16px 18px',
               minWidth: '220px',
-              boxShadow: '0 12px 40px rgba(244,63,94,0.18)',
+              boxShadow: '0 12px 40px rgba(59,130,246,0.18)',
             }}
           >
             <p style={{ margin: '0 0 4px', fontSize: '10px', fontWeight: 700, color: textSub, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               Mục tiêu của bạn
             </p>
-            <p style={{ margin: '0 0 4px', fontSize: '20px', fontWeight: 900, color: '#f43f5e' }}>
+            <p style={{ margin: '0 0 4px', fontSize: '20px', fontWeight: 900, color: '#3b82f6' }}>
               IELTS Band {ieltsTarget?.toFixed(1) ?? '–'}
             </p>
             {currentLevel !== undefined && currentLevel !== null && (
@@ -575,8 +575,8 @@ const GoalsFloatingWidget = ({
                 {weakSkills.map((sk) => (
                   <span key={sk} style={{
                     fontSize: '11px', fontWeight: 600, padding: '3px 8px',
-                    background: '#fff1f2', color: '#f43f5e',
-                    border: '1px solid #ffe4e6', borderRadius: '8px',
+                    background: '#eff6ff', color: '#3b82f6',
+                    border: '1px solid #dbeafe', borderRadius: '8px',
                   }}>
                     {SKILL_LABELS[sk] ?? sk}
                   </span>
@@ -587,10 +587,10 @@ const GoalsFloatingWidget = ({
               onClick={onEdit}
               style={{
                 width: '100%', height: '36px', borderRadius: '10px', border: 'none',
-                background: 'linear-gradient(135deg,#fb7185,#f43f5e)',
+                background: 'linear-gradient(135deg,#60a5fa,#3b82f6)',
                 color: '#fff', fontSize: '13px', fontWeight: 700, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                boxShadow: '0 4px 12px rgba(244,63,94,0.3)', fontFamily: 'inherit',
+                boxShadow: '0 4px 12px rgba(59,130,246,0.3)', fontFamily: 'inherit',
               }}
             >
               <Pencil size={13} /> Chỉnh sửa mục tiêu

@@ -36,14 +36,14 @@ import { SpeakingWorkspace } from '@components/exams/SpeakingWorkspace';
 import { ListeningReadingWorkspace } from '@components/exams/ListeningReadingWorkspace';
 
 const BRAND = {
-  50: '#fff1f2',
-  100: '#ffe4e6',
-  200: '#fecdd3',
-  300: '#fda4af',
-  400: '#fb7185',
-  500: '#f43f5e',
-  600: '#e11d48',
-  700: '#be123c',
+  50: '#eff6ff',
+  100: '#dbeafe',
+  200: '#bfdbfe',
+  300: '#93c5fd',
+  400: '#60a5fa',
+  500: '#3b82f6',
+  600: '#2563eb',
+  700: '#1d4ed8',
 };
 
 const EXAM_TYPES: { value: BEExamType | 'ALL'; label: string; emoji: string }[] = [
@@ -486,19 +486,19 @@ export const ExamsPage = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              className={`mx-auto w-full max-w-[950px] space-y-6 rounded-[32px] border p-8 shadow-xl ${isDark ? 'border-slate-700 bg-slate-800' : 'border-rose-100/70 bg-white'}`}
+              className={`mx-auto w-full max-w-[950px] space-y-6 rounded-[32px] border p-8 shadow-xl ${isDark ? 'border-slate-700 bg-slate-800' : 'border-blue-100/70 bg-white'}`}
             >
               {/* Header */}
               <div
-                className={`relative flex flex-col items-center border-b pb-4 ${isDark ? 'border-slate-700' : 'border-rose-50'}`}
+                className={`relative flex flex-col items-center border-b pb-4 ${isDark ? 'border-slate-700' : 'border-blue-50'}`}
               >
                 <button
                   onClick={() => window.history.back()}
-                  className={`absolute top-1/2 left-0 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full transition active:scale-95 ${isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-rose-50/50 text-rose-500 hover:bg-rose-100'}`}
+                  className={`absolute top-1/2 left-0 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full transition active:scale-95 ${isDark ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-blue-50/50 text-blue-500 hover:bg-blue-100'}`}
                 >
                   <ChevronLeft size={20} />
                 </button>
-                <h2 className="text-2xl font-black tracking-tight text-rose-500">
+                <h2 className="text-2xl font-black tracking-tight text-blue-500">
                   Chinh phục IELTS Full Test
                 </h2>
                 <p className="mt-1 text-xs font-semibold text-slate-400">
@@ -515,33 +515,33 @@ export const ExamsPage = () => {
               </div>
               {/* Tab Selector: Exams vs History */}
               <div
-                className={`flex justify-center gap-8 border-b pb-3 ${isDark ? 'border-slate-700' : 'border-rose-50'}`}
+                className={`flex justify-center gap-8 border-b pb-3 ${isDark ? 'border-slate-700' : 'border-blue-50'}`}
               >
                 <button
                   onClick={() => setListTab('EXAMS')}
                   className={`relative pb-1 text-sm font-black transition-all ${
-                    listTab === 'EXAMS' ? 'text-rose-500' : 'text-slate-400 hover:text-slate-600'
+                    listTab === 'EXAMS' ? 'text-blue-500' : 'text-slate-400 hover:text-slate-600'
                   }`}
                 >
                   Danh sách đề thi
                   {listTab === 'EXAMS' && (
                     <motion.div
                       layoutId="activeTabIndicator"
-                      className="absolute right-0 -bottom-[15px] left-0 h-0.5 rounded-full bg-rose-500"
+                      className="absolute right-0 -bottom-[15px] left-0 h-0.5 rounded-full bg-blue-500"
                     />
                   )}
                 </button>
                 <button
                   onClick={() => setListTab('HISTORY')}
                   className={`relative pb-1 text-sm font-black transition-all ${
-                    listTab === 'HISTORY' ? 'text-rose-500' : 'text-slate-400 hover:text-slate-600'
+                    listTab === 'HISTORY' ? 'text-blue-500' : 'text-slate-400 hover:text-slate-600'
                   }`}
                 >
                   Lịch sử luyện tập
                   {listTab === 'HISTORY' && (
                     <motion.div
                       layoutId="activeTabIndicator"
-                      className="absolute right-0 -bottom-[15px] left-0 h-0.5 rounded-full bg-rose-500"
+                      className="absolute right-0 -bottom-[15px] left-0 h-0.5 rounded-full bg-blue-500"
                     />
                   )}
                 </button>
@@ -555,7 +555,7 @@ export const ExamsPage = () => {
                     <div className="relative flex-1">
                       <Search
                         size={18}
-                        className="absolute top-1/2 left-4 -translate-y-1/2 text-rose-400"
+                        className="absolute top-1/2 left-4 -translate-y-1/2 text-blue-400"
                       />
                       <input
                         type="text"
@@ -568,7 +568,7 @@ export const ExamsPage = () => {
                             setCurrentPage(1);
                           }
                         }}
-                        className={`w-full rounded-full border py-3 pr-4 pl-11 text-sm shadow-inner outline-none ${isDark ? 'border-slate-600 bg-slate-700 text-slate-200 placeholder-slate-400 focus:border-rose-500' : 'border-rose-100 bg-[#fffdfb] text-slate-700 placeholder-rose-200 focus:border-rose-300'}`}
+                        className={`w-full rounded-full border py-3 pr-4 pl-11 text-sm shadow-inner outline-none ${isDark ? 'border-slate-600 bg-slate-700 text-slate-200 placeholder-slate-400 focus:border-blue-500' : 'border-blue-100 bg-[#fffdfb] text-slate-700 placeholder-blue-200 focus:border-blue-300'}`}
                       />
                     </div>
                     <button
@@ -576,7 +576,7 @@ export const ExamsPage = () => {
                         setSearch(localSearch);
                         setCurrentPage(1);
                       }}
-                      className={`rounded-full border px-8 text-sm font-extrabold shadow-sm transition active:scale-95 ${isDark ? 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600' : 'border-rose-200 bg-white text-rose-500 hover:bg-rose-50/50'}`}
+                      className={`rounded-full border px-8 text-sm font-extrabold shadow-sm transition active:scale-95 ${isDark ? 'border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600' : 'border-blue-200 bg-white text-blue-500 hover:bg-blue-50/50'}`}
                     >
                       Tìm
                     </button>
@@ -584,7 +584,7 @@ export const ExamsPage = () => {
 
                   {/* Skill Sub-tabs / Categories */}
                   <div
-                    className={`relative border-b pb-2 ${isDark ? 'border-slate-700' : 'border-rose-100'}`}
+                    className={`relative border-b pb-2 ${isDark ? 'border-slate-700' : 'border-blue-100'}`}
                   >
                     <div className="no-scrollbar flex gap-6 overflow-x-auto pb-1">
                       {EXAM_TYPES.map((type) => {
@@ -597,14 +597,14 @@ export const ExamsPage = () => {
                               setCurrentPage(1);
                             }}
                             className={`relative pb-3 text-xs font-black tracking-wider whitespace-nowrap uppercase transition-all ${
-                              isActive ? 'text-rose-500' : 'text-slate-400 hover:text-slate-600'
+                              isActive ? 'text-blue-500' : 'text-slate-400 hover:text-slate-600'
                             }`}
                           >
                             {type.label}
                             {isActive && (
                               <motion.div
                                 layoutId="activeSkillUnderline"
-                                className="absolute right-0 bottom-0 left-0 h-0.5 rounded-full bg-rose-500"
+                                className="absolute right-0 bottom-0 left-0 h-0.5 rounded-full bg-blue-500"
                               />
                             )}
                           </button>
@@ -619,30 +619,30 @@ export const ExamsPage = () => {
                       {Array.from({ length: 4 }).map((_, i) => (
                         <div
                           key={i}
-                          className={`h-44 animate-pulse rounded-[24px] border p-6 shadow-sm ${isDark ? 'border-slate-700 bg-slate-700/50' : 'border-rose-100/50 bg-white'}`}
+                          className={`h-44 animate-pulse rounded-[24px] border p-6 shadow-sm ${isDark ? 'border-slate-700 bg-slate-700/50' : 'border-blue-100/50 bg-white'}`}
                         >
                           <div
-                            className={`h-5 w-2/3 rounded-full ${isDark ? 'bg-slate-600' : 'bg-rose-50/50'}`}
+                            className={`h-5 w-2/3 rounded-full ${isDark ? 'bg-slate-600' : 'bg-blue-50/50'}`}
                           />
                           <div
-                            className={`mt-3 h-4 w-1/3 rounded-full ${isDark ? 'bg-slate-600/50' : 'bg-rose-50/30'}`}
+                            className={`mt-3 h-4 w-1/3 rounded-full ${isDark ? 'bg-slate-600/50' : 'bg-blue-50/30'}`}
                           />
                           <div
-                            className={`mt-6 h-9 w-full rounded-xl ${isDark ? 'bg-slate-600/30' : 'bg-rose-50/20'}`}
+                            className={`mt-6 h-9 w-full rounded-xl ${isDark ? 'bg-slate-600/30' : 'bg-blue-50/20'}`}
                           />
                         </div>
                       ))}
                     </div>
                   ) : exams.length === 0 ? (
                     <div
-                      className={`rounded-[24px] border border-dashed py-16 text-center ${isDark ? 'border-slate-600 bg-slate-800/50' : 'border-rose-200 bg-rose-50/10'}`}
+                      className={`rounded-[24px] border border-dashed py-16 text-center ${isDark ? 'border-slate-600 bg-slate-800/50' : 'border-blue-200 bg-blue-50/10'}`}
                     >
                       <FileText
                         size={40}
-                        className={`mx-auto ${isDark ? 'text-slate-500' : 'text-rose-300'}`}
+                        className={`mx-auto ${isDark ? 'text-slate-500' : 'text-blue-300'}`}
                       />
                       <h3
-                        className={`mt-4 text-sm font-bold ${isDark ? 'text-slate-300' : 'text-rose-600'}`}
+                        className={`mt-4 text-sm font-bold ${isDark ? 'text-slate-300' : 'text-blue-600'}`}
                       >
                         Không tìm thấy đề thi
                       </h3>
@@ -656,15 +656,15 @@ export const ExamsPage = () => {
                         const attempts = historyList.filter((h) => h.testId === exam.id);
                         const hasAttempted = attempts.length > 0;
                         const maxScore = hasAttempted
-                          ? Math.max(...attempts.map((a) => a.score ?? 0))
+                           ? Math.max(...attempts.map((a) => a.score ?? 0))
                           : 0;
                         const questionCount = exam.questionCount ?? 2;
 
                         return (
                           <motion.div
                             key={exam.id}
-                            whileHover={{ y: -2, boxShadow: '0 8px 30px rgba(244,63,94,0.06)' }}
-                            className={`relative flex flex-col justify-between rounded-[24px] border p-6 shadow-sm ${isDark ? 'border-slate-700 bg-slate-700/30' : 'border-rose-100/70 bg-white'}`}
+                            whileHover={{ y: -2, boxShadow: '0 8px 30px rgba(59,130,246,0.06)' }}
+                            className={`relative flex flex-col justify-between rounded-[24px] border p-6 shadow-sm ${isDark ? 'border-slate-700 bg-slate-700/30' : 'border-blue-100/70 bg-white'}`}
                           >
                             {exam.isPro && (
                               <div className="absolute top-4 right-4 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 px-2.5 py-0.5 text-[10px] font-black tracking-wider text-white uppercase shadow-md">
@@ -680,11 +680,11 @@ export const ExamsPage = () => {
 
                               <div className="mt-4 flex items-center gap-6 text-xs font-semibold text-slate-400">
                                 <div className="flex items-center gap-1.5">
-                                  <FileText size={14} className="text-rose-400" />
+                                  <FileText size={14} className="text-blue-400" />
                                   <span>{questionCount} câu</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
-                                  <Clock size={14} className="text-rose-400" />
+                                  <Clock size={14} className="text-blue-400" />
                                   <span>{Math.round(exam.duration / 60)} phút</span>
                                 </div>
                               </div>
@@ -693,21 +693,21 @@ export const ExamsPage = () => {
                             <div className="mt-6 flex gap-3">
                               <button
                                 onClick={() => handleStartExam(exam.id, exam.isPro)}
-                                className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2.5 text-xs font-bold transition active:scale-95 ${isDark ? 'border-slate-600 bg-slate-800 text-rose-400 hover:bg-slate-700' : 'border-rose-200 bg-white text-rose-500 hover:bg-rose-50/50'}`}
+                                className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2.5 text-xs font-bold transition active:scale-95 ${isDark ? 'border-slate-600 bg-slate-800 text-blue-400 hover:bg-slate-700' : 'border-blue-200 bg-white text-blue-500 hover:bg-blue-50/50'}`}
                               >
                                 <Play
                                   size={12}
-                                  className={isDark ? 'text-rose-400' : 'text-rose-500'}
+                                  className={isDark ? 'text-blue-400' : 'text-blue-500'}
                                 />
                                 Luyện thi
                               </button>
                               <button
                                 onClick={() => handleStartExam(exam.id, exam.isPro)}
-                                className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2.5 text-xs font-bold transition active:scale-95 ${isDark ? 'border-slate-600 bg-slate-800 text-rose-400 hover:bg-slate-700' : 'border-rose-200 bg-white text-rose-500 hover:bg-rose-50/50'}`}
+                                className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2.5 text-xs font-bold transition active:scale-95 ${isDark ? 'border-slate-600 bg-slate-800 text-blue-400 hover:bg-slate-700' : 'border-blue-200 bg-white text-blue-500 hover:bg-blue-50/50'}`}
                               >
                                 <BookOpen
                                   size={12}
-                                  className={isDark ? 'text-rose-400' : 'text-rose-500'}
+                                  className={isDark ? 'text-blue-400' : 'text-blue-500'}
                                 />
                                 Luyện tập
                               </button>
@@ -756,7 +756,7 @@ export const ExamsPage = () => {
                         }}
                         className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
                           historyType === type.value
-                            ? 'bg-pink-500 text-white'
+                            ? 'bg-blue-500 text-white'
                             : isDark
                               ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                               : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
@@ -807,8 +807,8 @@ export const ExamsPage = () => {
                               <span
                                 className="rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase"
                                 style={{
-                                  backgroundColor: isDark ? 'rgba(244, 63, 94, 0.15)' : '#fdf2f8',
-                                  color: isDark ? '#fb7185' : BRAND[500],
+                                  backgroundColor: isDark ? 'rgba(59, 130, 246, 0.15)' : '#eff6ff',
+                                  color: isDark ? '#60a5fa' : BRAND[500],
                                 }}
                               >
                                 {record.skillType}
@@ -838,7 +838,7 @@ export const ExamsPage = () => {
                                 <span className="block text-[10px] font-semibold text-slate-400">
                                   Band
                                 </span>
-                                <span className="text-lg font-black text-pink-600">
+                                <span className="text-lg font-black text-blue-600">
                                   {(record.score ?? 0).toFixed(1)}
                                 </span>
                               </div>
@@ -852,7 +852,7 @@ export const ExamsPage = () => {
 
                             <button
                               onClick={() => handleOpenReview(record.id)}
-                              className={`rounded-xl border px-3 py-1.5 text-xs font-bold transition active:scale-95 ${isDark ? 'border-slate-600 bg-slate-700 text-rose-400 hover:bg-slate-600' : 'border-pink-200 bg-white text-pink-500 hover:bg-pink-50'}`}
+                              className={`rounded-xl border px-3 py-1.5 text-xs font-bold transition active:scale-95 ${isDark ? 'border-slate-600 bg-slate-700 text-blue-400 hover:bg-slate-600' : 'border-blue-200 bg-white text-blue-500 hover:bg-blue-50'}`}
                             >
                               Xem chi tiết
                             </button>
@@ -898,7 +898,7 @@ export const ExamsPage = () => {
               className="fixed inset-0 z-[100] flex h-screen max-w-full flex-col bg-[#faf6ee] p-4"
             >
               {/* Split screen Header */}
-              <div className="flex items-center justify-between border-b border-rose-100 bg-[#fffdfa] px-6 py-4 shadow-sm">
+              <div className="flex items-center justify-between border-b border-blue-100 bg-[#fffdfa] px-6 py-4 shadow-sm">
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => {
@@ -916,7 +916,7 @@ export const ExamsPage = () => {
                     <ArrowLeft size={18} />
                   </button>
                   <div>
-                    <span className="inline-block rounded bg-pink-100 px-2 py-0.5 text-[9px] font-extrabold text-pink-600 uppercase">
+                    <span className="inline-block rounded bg-blue-100 px-2 py-0.5 text-[9px] font-extrabold text-blue-600 uppercase">
                       {examDetail.examType}
                     </span>
                     <h2 className="text-base leading-tight font-black text-slate-800">
@@ -931,7 +931,7 @@ export const ExamsPage = () => {
                     className={`flex items-center gap-2 rounded-2xl border px-5 py-2 font-black shadow-sm transition ${
                       timeLeft <= 300
                         ? 'animate-pulse border-red-200 bg-red-50 text-red-600'
-                        : 'border-rose-200 bg-rose-50/50 text-rose-600'
+                        : 'border-blue-200 bg-blue-50/50 text-blue-600'
                     }`}
                   >
                     <Clock size={16} />
@@ -941,7 +941,7 @@ export const ExamsPage = () => {
                   <button
                     onClick={handleSubmitClick}
                     disabled={submitting}
-                    className="rounded-2xl bg-pink-500 px-6 py-2.5 text-xs font-black text-white shadow-md transition hover:bg-pink-600 active:scale-95 disabled:opacity-50"
+                    className="rounded-2xl bg-blue-500 px-6 py-2.5 text-xs font-black text-white shadow-md transition hover:bg-blue-600 active:scale-95 disabled:opacity-50"
                   >
                     {submitting ? 'Đang nộp...' : 'Nộp bài'}
                   </button>
@@ -951,7 +951,7 @@ export const ExamsPage = () => {
               {/* Split Screen Dual-Pane Area */}
               <div className="mt-4 flex min-h-0 flex-1 gap-4 overflow-hidden">
                 {/* Left Pane: Audio/Passages/Prompts */}
-                <div className="flex-1 overflow-y-auto rounded-3xl border border-rose-100/50 bg-[#fffdfa] p-6 shadow-sm">
+                <div className="flex-1 overflow-y-auto rounded-3xl border border-blue-100/50 bg-[#fffdfa] p-6 shadow-sm">
                   {/* For Listening Section: Custom Dynamic Audio Player */}
                   {examDetail.examType === 'LISTENING' &&
                     (() => {
@@ -959,8 +959,8 @@ export const ExamsPage = () => {
                       const activeAudio = activeSec?.audioUrl || examDetail.audioUrl;
                       if (!activeAudio) return null;
                       return (
-                        <div className="animate-fadeIn mb-6 flex items-center gap-4 rounded-2xl border border-rose-100/30 bg-rose-50/40 p-4">
-                          <Volume2 size={24} className="text-pink-500" />
+                        <div className="animate-fadeIn mb-6 flex items-center gap-4 rounded-2xl border border-blue-100/30 bg-blue-50/40 p-4">
+                          <Volume2 size={24} className="text-blue-500" />
                           <audio
                             key={`listening-audio-${activeSectionIdx}-${activeAudio}`}
                             src={activeAudio}
@@ -973,11 +973,11 @@ export const ExamsPage = () => {
 
                   {/* For Speaking Section: User Recording Playback Preview */}
                   {examDetail.examType === 'SPEAKING' && speakingLocalUrls[activeSectionIdx] && (
-                    <div className="animate-fadeIn mb-6 flex items-center gap-4 rounded-2xl border border-rose-100/30 bg-rose-50/40 p-4">
-                      <Volume2 size={24} className="text-pink-500" />
+                    <div className="animate-fadeIn mb-6 flex items-center gap-4 rounded-2xl border border-blue-100/30 bg-blue-50/40 p-4">
+                      <Volume2 size={24} className="text-blue-500" />
                       <div className="flex-1">
                         <span className="mb-1 block text-[10px] font-bold text-slate-400">
-                          NGHE LẠI PHẦN THI NÓI (PHẦN {activeSectionIdx + 1})
+                           NGHE LẠI PHẦN THI NÓI (PHẦN {activeSectionIdx + 1})
                         </span>
                         <audio
                           key={`speaking-preview-${activeSectionIdx}-${speakingLocalUrls[activeSectionIdx]}`}
@@ -994,14 +994,14 @@ export const ExamsPage = () => {
                     <div>
                       {/* Section tab headers */}
                       {examDetail.sections.length > 1 && (
-                        <div className="mb-4 flex gap-2 border-b border-rose-50 pb-2">
+                        <div className="mb-4 flex gap-2 border-b border-blue-50 pb-2">
                           {examDetail.sections.map((sec, idx) => (
                             <button
                               key={sec.id}
                               onClick={() => setActiveSectionIdx(idx)}
                               className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
                                 activeSectionIdx === idx
-                                  ? 'bg-pink-100 text-pink-600'
+                                  ? 'bg-blue-100 text-blue-600'
                                   : 'text-slate-400 hover:text-slate-600'
                               }`}
                             >
@@ -1052,9 +1052,9 @@ export const ExamsPage = () => {
 
                             {/* Render Questions under the passage/audio/cue card */}
                             {activeSec.questions && activeSec.questions.length > 0 && (
-                              <div className="animate-fadeIn mt-8 space-y-6 border-t border-rose-100 pt-6">
+                              <div className="animate-fadeIn mt-8 space-y-6 border-t border-blue-100 pt-6">
                                 <h4 className="flex items-center gap-2 text-sm font-black text-slate-800">
-                                  <BookOpen size={16} className="text-pink-500" />
+                                  <BookOpen size={16} className="text-blue-500" />
                                   DANH SÁCH CÂU HỎI
                                 </h4>
                                 <div className="space-y-4">
@@ -1066,7 +1066,7 @@ export const ExamsPage = () => {
                                         className="space-y-3 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm"
                                       >
                                         <div className="flex items-start gap-2.5">
-                                          <span className="shrink-0 rounded-lg border border-rose-100/50 bg-rose-50 px-2.5 py-1 text-xs font-black text-rose-500">
+                                          <span className="shrink-0 rounded-lg border border-blue-100/50 bg-blue-50 px-2.5 py-1 text-xs font-black text-blue-500">
                                             Câu {q.questionNumber}
                                           </span>
                                           <div className="mt-1 flex-1 text-xs leading-relaxed font-bold text-slate-700">
@@ -1091,7 +1091,7 @@ export const ExamsPage = () => {
                                                 key={option}
                                                 className="flex items-start gap-1.5"
                                               >
-                                                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-pink-400" />
+                                                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
                                                 <span>{option}</span>
                                               </div>
                                             ))}
@@ -1114,8 +1114,8 @@ export const ExamsPage = () => {
                 </div>
 
                 {/* Right Pane: Question Input Forms */}
-                <div className="flex w-[500px] flex-col overflow-hidden rounded-3xl border border-rose-100/50 bg-[#fffdfa] shadow-sm">
-                  <div className="border-b border-rose-50/40 bg-slate-50 px-5 py-3 text-xs font-bold text-slate-600">
+                <div className="flex w-[500px] flex-col overflow-hidden rounded-3xl border border-blue-100/50 bg-[#fffdfa] shadow-sm">
+                  <div className="border-b border-blue-50/40 bg-slate-50 px-5 py-3 text-xs font-bold text-slate-600">
                     📒 CÂU HỎI & TRẢ LỜI
                   </div>
 
@@ -1174,7 +1174,7 @@ export const ExamsPage = () => {
 
               {loadingReview ? (
                 <div className="py-16 text-center">
-                  <RefreshCw className="mx-auto animate-spin text-pink-500" size={32} />
+                  <RefreshCw className="mx-auto animate-spin text-blue-500" size={32} />
                   <p className="mt-4 text-sm text-slate-500">Đang tải kết quả chi tiết...</p>
                 </div>
               ) : reviewDetail ? (
@@ -1182,8 +1182,8 @@ export const ExamsPage = () => {
                   {/* Result Summary Sidebar */}
                   <div className="space-y-6">
                     {/* Score Card */}
-                    <div className="rounded-3xl border border-rose-100 bg-white p-6 text-center shadow-sm">
-                      <Award size={40} className="mx-auto text-pink-500" />
+                    <div className="rounded-3xl border border-blue-100 bg-white p-6 text-center shadow-sm">
+                      <Award size={40} className="mx-auto text-blue-500" />
                       <h3 className="mt-3 text-lg font-black text-slate-800">
                         {reviewDetail.testTitle}
                       </h3>
@@ -1196,13 +1196,13 @@ export const ExamsPage = () => {
                         <div className="text-xs font-semibold text-slate-400 uppercase">
                           Điểm số của bạn
                         </div>
-                        <div className="mt-1 text-5xl font-black text-pink-600">
+                        <div className="mt-1 text-5xl font-black text-blue-600">
                           {reviewDetail.score !== null ? reviewDetail.score.toFixed(1) : '-'}
                         </div>
                         <div className="mt-1 text-xs text-slate-400">IELTS Band Score</div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3 border-t border-rose-50 pt-4 text-left">
+                      <div className="grid grid-cols-2 gap-3 border-t border-blue-50 pt-4 text-left">
                         <div>
                           <span className="block text-[10px] text-slate-400">Kỹ năng</span>
                           <span className="text-xs font-bold text-slate-700">
@@ -1223,7 +1223,7 @@ export const ExamsPage = () => {
                       <div
                         className={`rounded-3xl border p-6 transition-all duration-500 ${
                           reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...'
-                            ? 'animate-pulse border-pink-200 bg-pink-50/10 shadow-[0_0_15px_rgba(244,63,94,0.05)]'
+                            ? 'animate-pulse border-blue-200 bg-blue-50/10 shadow-[0_0_15px_rgba(59,130,246,0.05)]'
                             : 'border-amber-200 bg-amber-50/20'
                         }`}
                       >
@@ -1232,14 +1232,14 @@ export const ExamsPage = () => {
                             size={16}
                             className={
                               reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...'
-                                ? 'animate-spin text-pink-500'
+                                ? 'animate-spin text-blue-500'
                                 : 'text-amber-500'
                             }
                           />
                           <span
                             className={
                               reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...'
-                                ? 'font-extrabold text-pink-600'
+                                ? 'font-extrabold text-blue-600'
                                 : 'text-amber-800'
                             }
                           >
@@ -1250,8 +1250,8 @@ export const ExamsPage = () => {
                         {reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...' ? (
                           <div className="space-y-4 py-2">
                             <div className="flex items-center gap-3">
-                              <RefreshCw size={14} className="animate-spin text-pink-500" />
-                              <span className="text-xs font-semibold text-pink-600">
+                              <RefreshCw size={14} className="animate-spin text-blue-500" />
+                              <span className="text-xs font-semibold text-blue-600">
                                 Hệ thống AI đang chấm điểm và tạo nhận xét...
                               </span>
                             </div>
@@ -1262,7 +1262,7 @@ export const ExamsPage = () => {
                             </p>
                             <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
                               <div
-                                className="h-full animate-pulse rounded-full bg-pink-500"
+                                className="h-full animate-pulse rounded-full bg-blue-500"
                                 style={{ width: '60%' }}
                               ></div>
                             </div>
@@ -1306,8 +1306,8 @@ export const ExamsPage = () => {
                                 key={section.id}
                                 className="space-y-4 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm"
                               >
-                                <div className="border-b border-rose-50 pb-3">
-                                  <span className="mb-1 inline-block rounded bg-pink-100 px-2 py-0.5 text-[10px] font-extrabold text-pink-600 uppercase">
+                                <div className="border-b border-blue-50 pb-3">
+                                  <span className="mb-1 inline-block rounded bg-blue-100 px-2 py-0.5 text-[10px] font-extrabold text-blue-600 uppercase">
                                     Phần {section.sectionNumber || idx + 1}
                                   </span>
                                   <h4 className="text-sm font-black text-slate-800">
@@ -1404,8 +1404,8 @@ export const ExamsPage = () => {
                                   key={section.id}
                                   className="space-y-4 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm"
                                 >
-                                  <div className="border-b border-rose-50 pb-3">
-                                    <span className="mb-1 inline-block rounded bg-pink-100 px-2 py-0.5 text-[10px] font-extrabold text-pink-600 uppercase">
+                                  <div className="border-b border-blue-50 pb-3">
+                                    <span className="mb-1 inline-block rounded bg-blue-100 px-2 py-0.5 text-[10px] font-extrabold text-blue-600 uppercase">
                                       Phần {section.sectionNumber || idx + 1}
                                     </span>
                                     <h4 className="text-sm font-black text-slate-800">
@@ -1501,7 +1501,7 @@ export const ExamsPage = () => {
                           <div className="space-y-4">
                             {originalTest.sections.map((section, sIdx) => (
                               <div key={section.id} className="space-y-4">
-                                <div className="text-xs font-bold text-pink-500">
+                                <div className="text-xs font-bold text-blue-500">
                                   PHẦN {section.sectionNumber || sIdx + 1}
                                 </div>
 

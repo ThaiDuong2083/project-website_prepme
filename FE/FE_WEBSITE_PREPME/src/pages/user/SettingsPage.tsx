@@ -8,12 +8,12 @@ import { useAppStore } from '@store/app.store';
 import toast from 'react-hot-toast';
 
 const BRAND = {
-  50: '#fff1f2',
-  100: '#ffe4e6',
-  200: '#fecdd3',
-  300: '#fda4af',
-  400: '#fb7185',
-  500: '#f43f5e',
+  50: '#eff6ff',
+  100: '#dbeafe',
+  200: '#bfdbfe',
+  300: '#93c5fd',
+  400: '#60a5fa',
+  500: '#3b82f6',
 };
 
 export const SettingsPage = () => {
@@ -66,7 +66,7 @@ export const SettingsPage = () => {
           background: cardBg,
           borderRadius: '24px',
           border: `1.5px solid ${headerBorder}`,
-          boxShadow: isDark ? '0 20px 40px rgba(0,0,0,0.6)' : '0 20px 40px rgba(251,113,133,0.08)',
+          boxShadow: isDark ? '0 20px 40px rgba(0,0,0,0.6)' : '0 20px 40px rgba(96,165,250,0.08)',
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
@@ -148,12 +148,12 @@ export const SettingsPage = () => {
 
             {user?.membershipType !== 'PREMIUM' && (
               <motion.button
-                whileHover={{ scale: 1.02, boxShadow: '0 8px 24px rgba(244, 63, 94, 0.3)' }}
+                whileHover={{ scale: 1.02, boxShadow: '0 8px 24px rgba(59, 130, 246, 0.3)' }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setShowPaymentModal(true)}
                 style={{
                   marginTop: '12px',
-                  background: 'linear-gradient(135deg, #fb7185 0%, #f43f5e 100%)',
+                  background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
                   color: '#fff',
                   border: 'none',
                   borderRadius: '12px',
@@ -165,7 +165,7 @@ export const SettingsPage = () => {
                   justifyContent: 'center',
                   gap: '8px',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(244, 63, 94, 0.2)',
+                  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)',
                   transition: 'all 0.2s',
                 }}
               >
@@ -177,9 +177,9 @@ export const SettingsPage = () => {
               onClick={handleLogout}
               style={{
                 marginTop: '12px',
-                background: isDark ? 'rgba(244, 63, 94, 0.1)' : '#fff1f2',
-                color: isDark ? '#fb7185' : BRAND[400],
-                border: isDark ? '1px solid rgba(244, 63, 94, 0.2)' : 'none',
+                background: isDark ? 'rgba(59, 130, 246, 0.1)' : '#eff6ff',
+                color: isDark ? '#60a5fa' : BRAND[400],
+                border: isDark ? '1px solid rgba(59, 130, 246, 0.2)' : 'none',
                 borderRadius: '12px',
                 padding: '12px',
                 fontWeight: 800,
@@ -192,10 +192,10 @@ export const SettingsPage = () => {
                 transition: 'all 0.2s',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = isDark ? 'rgba(244, 63, 94, 0.15)' : '#ffe4e6';
+                e.currentTarget.style.background = isDark ? 'rgba(59, 130, 246, 0.15)' : '#dbeafe';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = isDark ? 'rgba(244, 63, 94, 0.1)' : '#fff1f2';
+                e.currentTarget.style.background = isDark ? 'rgba(59, 130, 246, 0.1)' : '#eff6ff';
               }}
             >
               <LogOut size={16} strokeWidth={3} /> Đăng xuất khỏi thiết bị
@@ -340,8 +340,8 @@ export const SettingsPage = () => {
 
               {/* Title */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
-                <div style={{ background: 'rgba(251, 113, 133, 0.1)', padding: '10px', borderRadius: '12px' }}>
-                  <Sparkles className="text-rose-500" size={24} />
+                <div style={{ background: 'rgba(96, 165, 250, 0.1)', padding: '10px', borderRadius: '12px' }}>
+                  <Sparkles className="text-blue-500" size={24} />
                 </div>
                 <div>
                   <h3 style={{ fontSize: '20px', fontWeight: 900, letterSpacing: '-0.02em' }}>
@@ -402,7 +402,7 @@ export const SettingsPage = () => {
                       </div>
                       <button
                         onClick={() => copyToClipboard('3385777969', 'Đã sao chép số tài khoản!')}
-                        style={{ padding: '4px 8px', fontSize: '11px', background: 'rgba(244, 63, 94, 0.1)', color: '#f43f5e', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 700 }}
+                        style={{ padding: '4px 8px', fontSize: '11px', background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 700 }}
                       >
                         Sao chép
                       </button>
@@ -410,7 +410,7 @@ export const SettingsPage = () => {
 
                     <div style={{ marginBottom: '6px' }}>
                       <span style={{ color: '#94a3b8', fontSize: '11px', display: 'block' }}>Số tiền:</span>
-                      <strong style={{ color: '#f43f5e', fontSize: '15px', fontWeight: 900 }}>79.000đ</strong>
+                      <strong style={{ color: '#3b82f6', fontSize: '15px', fontWeight: 900 }}>79.000đ</strong>
                       <span style={{ textDecoration: 'line-through', color: '#94a3b8', marginLeft: '8px', fontSize: '11px' }}>99.000đ</span>
                     </div>
 
@@ -419,7 +419,7 @@ export const SettingsPage = () => {
                         <span style={{ color: '#94a3b8', fontSize: '11px' }}>Nội dung chuyển khoản:</span>
                         <button
                           onClick={() => copyToClipboard(`${user?.phone || ''} nang cap goi pro`.trim(), 'Đã sao chép nội dung!')}
-                          style={{ padding: '4px 8px', fontSize: '11px', background: 'rgba(244, 63, 94, 0.1)', color: '#f43f5e', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 700 }}
+                          style={{ padding: '4px 8px', fontSize: '11px', background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 700 }}
                         >
                           Sao chép
                         </button>
@@ -427,7 +427,7 @@ export const SettingsPage = () => {
                       <strong style={{ color: textTitle, fontSize: '12px', wordBreak: 'break-all', display: 'block', lineHeight: '1.4' }}>
                         {user?.phone ? `${user.phone} nang cap goi pro` : '[Số điện thoại] nang cap goi pro'}
                       </strong>
-                      <span style={{ fontSize: '10.5px', color: '#f43f5e', display: 'block', marginTop: '2px', fontStyle: 'italic' }}>
+                      <span style={{ fontSize: '10.5px', color: '#3b82f6', display: 'block', marginTop: '2px', fontStyle: 'italic' }}>
                         * SĐT đăng ký của bạn
                       </span>
                     </div>
@@ -437,13 +437,13 @@ export const SettingsPage = () => {
 
               {/* Note banner */}
               <div style={{
-                background: isDark ? 'rgba(251, 113, 133, 0.05)' : 'rgba(251, 113, 133, 0.08)',
-                border: '1px solid rgba(251, 113, 133, 0.2)',
+                background: isDark ? 'rgba(96, 165, 250, 0.05)' : 'rgba(96, 165, 250, 0.08)',
+                border: '1px solid rgba(96, 165, 250, 0.2)',
                 borderRadius: '12px',
                 padding: '12px',
                 marginBottom: '24px',
                 fontSize: '12px',
-                color: isDark ? '#fb7185' : '#e11d48',
+                color: isDark ? '#60a5fa' : '#2563eb',
                 lineHeight: '1.5',
               }}>
                 <strong>📌 Lưu ý:</strong> Vui lòng reload (F5 lại trang) sau 5 phút để cập nhật trạng thái PRO. Nếu vẫn chưa được nâng cấp, vui lòng nhắn admin hỗ trợ qua Facebook.

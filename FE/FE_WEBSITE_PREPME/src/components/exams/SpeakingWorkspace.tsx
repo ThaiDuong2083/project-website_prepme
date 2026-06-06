@@ -23,7 +23,7 @@ export const SpeakingWorkspace: React.FC<SpeakingWorkspaceProps> = ({
 }) => {
   return (
     <div className="flex flex-col items-center justify-center h-full space-y-6 text-center">
-      <div className="rounded-full bg-rose-50 p-6 border border-rose-100">
+      <div className="rounded-full bg-blue-50 p-6 border border-blue-100">
         {isRecording ? (
           <motion.div
             animate={{ scale: [1, 1.15, 1] }}
@@ -36,7 +36,7 @@ export const SpeakingWorkspace: React.FC<SpeakingWorkspaceProps> = ({
         ) : (
           <button
             onClick={startRecording}
-            className="rounded-full bg-pink-500 p-6 text-white hover:bg-pink-600 transition active:scale-95 cursor-pointer"
+            className="rounded-full bg-blue-500 p-6 text-white hover:bg-blue-600 transition active:scale-95 cursor-pointer"
           >
             <Mic size={32} fill="white" />
           </button>
@@ -70,7 +70,7 @@ export const SpeakingWorkspace: React.FC<SpeakingWorkspaceProps> = ({
 
       {/* Playback preview */}
       {speakingLocalUrls[activeSectionIdx] && !isRecording && (
-        <div className="w-full border border-rose-100 bg-rose-50/20 p-4 rounded-2xl">
+        <div className="w-full border border-blue-100 bg-blue-50/20 p-4 rounded-2xl">
           <span className="text-[10px] font-bold text-slate-400 block mb-2">
             PREVIEW BẢN THU ÂM (PHẦN {activeSectionIdx + 1})
           </span>

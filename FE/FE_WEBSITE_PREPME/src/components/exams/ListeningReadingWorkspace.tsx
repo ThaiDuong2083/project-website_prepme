@@ -20,7 +20,7 @@ export const ListeningReadingWorkspace: React.FC<ListeningReadingWorkspaceProps>
   return (
     <div className="space-y-6">
       <div key={section.id} className="space-y-4">
-        <div className="text-xs font-bold text-pink-500 tracking-wider uppercase">
+        <div className="text-xs font-bold text-blue-500 tracking-wider uppercase">
           PHẦN {section.sectionNumber || activeSectionIdx + 1}
         </div>
 
@@ -30,7 +30,7 @@ export const ListeningReadingWorkspace: React.FC<ListeningReadingWorkspaceProps>
             className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm flex flex-col gap-2.5"
           >
             <div className="flex items-center justify-between">
-              <span className="rounded bg-rose-50 px-2 py-0.5 text-xs font-bold text-pink-600 border border-rose-100/50">
+              <span className="rounded bg-blue-50 px-2 py-0.5 text-xs font-bold text-blue-600 border border-blue-100/50">
                 Câu {q.questionNumber}
               </span>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
@@ -72,7 +72,7 @@ export const ListeningReadingWorkspace: React.FC<ListeningReadingWorkspaceProps>
                       }
                       className={`h-9 w-9 rounded-full border text-xs font-black transition-all flex items-center justify-center ${
                         answers[q.id] === optionVal
-                          ? 'border-pink-500 bg-pink-50 text-pink-600 shadow-sm'
+                          ? 'border-blue-500 bg-blue-50 text-blue-600 shadow-sm'
                           : 'border-slate-200 hover:bg-slate-50 text-slate-600'
                       }`}
                     >
@@ -94,7 +94,7 @@ export const ListeningReadingWorkspace: React.FC<ListeningReadingWorkspaceProps>
                     }
                     className={`rounded-xl border py-2 text-center text-[10px] font-black uppercase tracking-wider transition ${
                       answers[q.id] === val
-                        ? 'border-pink-500 bg-pink-50 text-pink-600 shadow-sm'
+                        ? 'border-blue-500 bg-blue-50 text-blue-600 shadow-sm'
                         : 'border-slate-200 hover:bg-slate-50 text-slate-500'
                     }`}
                   >
@@ -115,7 +115,7 @@ export const ListeningReadingWorkspace: React.FC<ListeningReadingWorkspaceProps>
                     }
                     className={`rounded-xl border py-2 text-center text-[10px] font-black uppercase tracking-wider transition ${
                       answers[q.id] === val
-                        ? 'border-pink-500 bg-pink-50 text-pink-600 shadow-sm'
+                        ? 'border-blue-500 bg-blue-50 text-blue-600 shadow-sm'
                         : 'border-slate-200 hover:bg-slate-50 text-slate-500'
                     }`}
                   >
@@ -138,7 +138,7 @@ export const ListeningReadingWorkspace: React.FC<ListeningReadingWorkspaceProps>
                       [q.id]: e.target.value,
                     }))
                   }
-                  className="w-full rounded-xl border border-slate-200 bg-[#fffdfa] px-3.5 py-2 text-xs font-bold text-slate-700 outline-none transition focus:border-pink-300 focus:bg-white focus:shadow-inner"
+                  className="w-full rounded-xl border border-slate-200 bg-[#fffdfa] px-3.5 py-2 text-xs font-bold text-slate-700 outline-none transition focus:border-blue-300 focus:bg-white focus:shadow-inner"
                 />
               )}
           </div>

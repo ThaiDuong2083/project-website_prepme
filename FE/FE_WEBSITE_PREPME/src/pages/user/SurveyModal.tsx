@@ -6,10 +6,10 @@ import toast from 'react-hot-toast';
 
 // ── Brand ────────────────────────────────────────────────────────────────────
 const BRAND = {
-  50: '#fff1f2',
-  100: '#ffe4e6',
-  400: '#fb7185',
-  500: '#f43f5e',
+  50: '#eff6ff',
+  100: '#dbeafe',
+  400: '#60a5fa',
+  500: '#3b82f6',
 };
 
 const SKILL_META: Record<WeakSkill, { label: string; emoji: string }> = {
@@ -79,7 +79,7 @@ export const SurveyModal = ({ onComplete }: SurveyModalProps) => {
       >
         {/* Header – compact */}
         <div style={{
-          background: 'linear-gradient(135deg,#fb7185,#f43f5e)',
+          background: 'linear-gradient(135deg,#60a5fa,#3b82f6)',
           padding: '18px 24px 16px', flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginBottom: '3px' }}>
@@ -104,10 +104,10 @@ export const SurveyModal = ({ onComplete }: SurveyModalProps) => {
               </label>
               {/* Inline badge thay circle lớn */}
               <span style={{
-                background: 'linear-gradient(135deg,#fb7185,#f43f5e)',
+                background: 'linear-gradient(135deg,#60a5fa,#3b82f6)',
                 color: '#fff', fontSize: '14px', fontWeight: 900,
                 padding: '3px 12px', borderRadius: '20px',
-                boxShadow: '0 3px 10px rgba(244,63,94,0.3)',
+                boxShadow: '0 3px 10px rgba(59,130,246,0.3)',
               }}>{ieltsTarget.toFixed(1)}</span>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -158,7 +158,7 @@ export const SurveyModal = ({ onComplete }: SurveyModalProps) => {
                     background: sel ? BRAND[50] : '#fff',
                     cursor: 'pointer', fontFamily: 'inherit',
                     transition: 'all 0.12s', textAlign: 'left',
-                    boxShadow: sel ? '0 2px 10px rgba(244,63,94,0.12)' : 'none',
+                    boxShadow: sel ? '0 2px 10px rgba(59,130,246,0.12)' : 'none',
                   }}>
                     <span style={{ fontSize: '20px', flexShrink: 0 }}>{m.emoji}</span>
                     <span style={{ fontSize: '13px', fontWeight: 700,
@@ -173,11 +173,11 @@ export const SurveyModal = ({ onComplete }: SurveyModalProps) => {
           {/* ── Submit ── */}
           <button onClick={handleSubmit} disabled={!canSubmit} style={{
             width: '100%', height: '46px', borderRadius: '14px', border: 'none',
-            background: canSubmit ? 'linear-gradient(135deg,#fb7185,#f43f5e)' : '#e2e8f0',
+            background: canSubmit ? 'linear-gradient(135deg,#60a5fa,#3b82f6)' : '#e2e8f0',
             color: canSubmit ? '#fff' : '#94a3b8',
             fontSize: '14px', fontWeight: 700,
             cursor: canSubmit ? 'pointer' : 'not-allowed',
-            boxShadow: canSubmit ? '0 5px 16px rgba(244,63,94,0.3)' : 'none',
+            boxShadow: canSubmit ? '0 5px 16px rgba(59,130,246,0.3)' : 'none',
             fontFamily: 'inherit', transition: 'all 0.15s',
           }}>
             {submitting ? 'Đang lưu...' : weakSkills.length > 0

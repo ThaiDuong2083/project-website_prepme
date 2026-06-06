@@ -7,12 +7,12 @@ import { ROUTES } from '@constants/routes.constants';
 import toast from 'react-hot-toast';
 
 const BRAND = {
-  50: '#fff1f2',
-  100: '#ffe4e6',
-  200: '#fecdd3',
-  300: '#fda4af',
-  400: '#fb7185',
-  500: '#f43f5e',
+  50: '#eff6ff',
+  100: '#dbeafe',
+  200: '#bfdbfe',
+  300: '#93c5fd',
+  400: '#60a5fa',
+  500: '#3b82f6',
 };
 
 const navItems = [
@@ -34,10 +34,10 @@ export const UserLayout = () => {
   };
 
   const isDark = theme === 'dark';
-  const mainBg = isDark ? '#0f172a' : '#fff5f5';
+  const mainBg = isDark ? '#0f172a' : '#f0f9ff';
   const sidebarBg = isDark ? 'rgba(30, 41, 59, 0.85)' : 'rgba(255,255,255,0.85)';
   const sidebarBorder = isDark ? '#334155' : BRAND[100];
-  const bgPatternStroke = isDark ? '%23334155' : '%23fecdd3';
+  const bgPatternStroke = isDark ? '%23334155' : '%23dbeafe';
 
   return (
     <div
@@ -148,14 +148,14 @@ export const UserLayout = () => {
             transition: 'all 0.15s ease',
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.background = '#fef2f2';
+            (e.currentTarget as HTMLElement).style.background = isDark ? 'rgba(59, 130, 246, 0.15)' : '#eff6ff';
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLElement).style.background = 'transparent';
           }}
         >
-          <LogOut size={20} color="#f87171" strokeWidth={1.8} />
-          <span style={{ fontSize: '10px', fontWeight: 500, color: '#f87171' }}>Đăng xuất</span>
+          <LogOut size={20} color={BRAND[400]} strokeWidth={1.8} />
+          <span style={{ fontSize: '10px', fontWeight: 500, color: BRAND[400] }}>Đăng xuất</span>
         </button>
       </aside>
 

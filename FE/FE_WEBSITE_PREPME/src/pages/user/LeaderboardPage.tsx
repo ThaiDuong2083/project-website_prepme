@@ -4,12 +4,12 @@ import { ChevronDown, Crown } from 'lucide-react';
 import { useAppStore } from '@store/app.store';
 
 const BRAND = {
-  50: '#fff1f2',
-  100: '#ffe4e6',
-  200: '#fecdd3',
-  300: '#fda4af',
-  400: '#fb7185',
-  500: '#f43f5e',
+  50: '#eff6ff',
+  100: '#dbeafe',
+  200: '#bfdbfe',
+  300: '#93c5fd',
+  400: '#60a5fa',
+  500: '#3b82f6',
 };
 
 const GOLD = '#f59e0b';
@@ -44,16 +44,16 @@ const getRankColor = (rank: number) => {
 
 const getRankBg = (rank: number, isMe: boolean, isDark: boolean) => {
   if (isDark) {
-    if (isMe) return 'rgba(244, 63, 94, 0.15)';
+    if (isMe) return 'rgba(59, 130, 246, 0.15)';
     if (rank === 1) return '#292415';
     if (rank === 2) return '#1e2532';
-    if (rank === 3) return '#2e1c21';
+    if (rank === 3) return '#1e253c';
     return 'transparent';
   }
   if (isMe) return BRAND[50];
   if (rank === 1) return '#fffbeb';
   if (rank === 2) return '#f8fafc';
-  if (rank === 3) return '#fff1f2';
+  if (rank === 3) return '#eff6ff';
   return '#fff';
 };
 
@@ -84,7 +84,7 @@ export const LeaderboardPage = () => {
           borderRadius: '24px',
           border: `1.5px solid ${borderCol}`,
           backdropFilter: 'blur(12px)',
-          boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(244,63,94,0.10)',
+          boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(59,130,246,0.10)',
           overflow: 'hidden',
         }}
       >
@@ -185,7 +185,7 @@ export const LeaderboardPage = () => {
                       : entry.rank === 2
                         ? 'linear-gradient(135deg, #94a3b8, #64748b)'
                         : entry.rank === 3
-                          ? 'linear-gradient(135deg, #fb7185, #f43f5e)'
+                          ? 'linear-gradient(135deg, #60a5fa, #3b82f6)'
                           : 'linear-gradient(135deg, #818cf8, #6366f1)',
                   display: 'flex',
                   alignItems: 'center',

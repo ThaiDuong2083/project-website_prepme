@@ -4,7 +4,7 @@ import { X, Target, Save } from 'lucide-react';
 import { surveyApi, type WeakSkill } from '@api/survey.api';
 import toast from 'react-hot-toast';
 
-const BRAND = { 50: '#fff1f2', 100: '#ffe4e6', 400: '#fb7185', 500: '#f43f5e' };
+const BRAND = { 50: '#eff6ff', 100: '#dbeafe', 400: '#60a5fa', 500: '#3b82f6' };
 
 const BAND_OPTIONS    = [4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0];
 const CURRENT_OPTIONS = [0, 1.0, 2.0, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0];
@@ -78,7 +78,7 @@ export const EditGoalsModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div style={{ background: 'linear-gradient(135deg,#fb7185,#f43f5e)', padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ background: 'linear-gradient(135deg,#60a5fa,#3b82f6)', padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Target size={18} color="rgba(255,255,255,0.9)" />
             <span style={{ color: '#fff', fontWeight: 800, fontSize: '16px' }}>Chỉnh sửa mục tiêu</span>
@@ -98,9 +98,9 @@ export const EditGoalsModal = ({
             </label>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
               <div style={{
-                background: 'linear-gradient(135deg,#fb7185,#f43f5e)', borderRadius: '50%', width: '60px', height: '60px',
+                background: 'linear-gradient(135deg,#60a5fa,#3b82f6)', borderRadius: '50%', width: '60px', height: '60px',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 6px 20px rgba(244,63,94,0.32)',
+                boxShadow: '0 6px 20px rgba(59,130,246,0.32)',
               }}>
                 <span style={{ color: '#fff', fontSize: '20px', fontWeight: 900, lineHeight: 1 }}>{target.toFixed(1)}</span>
                 <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '10px' }}>Band</span>
@@ -157,7 +157,7 @@ export const EditGoalsModal = ({
                     color: sel ? BRAND[500] : subtext,
                     cursor: 'pointer', transition: 'all 0.14s', fontFamily: 'inherit',
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-                    boxShadow: sel ? '0 2px 8px rgba(244,63,94,0.15)' : 'none',
+                    boxShadow: sel ? '0 2px 8px rgba(59,130,246,0.15)' : 'none',
                   }}>
                     <span style={{ fontSize: '20px' }}>{SKILL_META[s].emoji}</span>
                     <span>{SKILL_META[s].label}</span>
@@ -171,11 +171,11 @@ export const EditGoalsModal = ({
           {/* Save */}
           <button onClick={handleSave} disabled={saving} style={{
             width: '100%', height: '48px', borderRadius: '14px', border: 'none',
-            background: saving ? '#e2e8f0' : 'linear-gradient(135deg,#fb7185,#f43f5e)',
+            background: saving ? '#e2e8f0' : 'linear-gradient(135deg,#60a5fa,#3b82f6)',
             color: saving ? '#94a3b8' : '#fff', fontSize: '14px', fontWeight: 700,
             cursor: saving ? 'not-allowed' : 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
-            boxShadow: saving ? 'none' : '0 6px 18px rgba(244,63,94,0.28)', fontFamily: 'inherit',
+            boxShadow: saving ? 'none' : '0 6px 18px rgba(59,130,246,0.28)', fontFamily: 'inherit',
           }}>
             {saving ? 'Đang lưu...' : <><Save size={15} /> Lưu mục tiêu</>}
           </button>

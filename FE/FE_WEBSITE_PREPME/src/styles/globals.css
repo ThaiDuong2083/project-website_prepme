@@ -4,20 +4,20 @@
 /* ─── CSS Custom Properties ──────────────────────────────────────────────── */
 @layer base {
   :root {
-    --color-brand-50: #fff1f2;
-    --color-brand-100: #ffe4e6;
-    --color-brand-200: #fecdd3;
-    --color-brand-300: #fda4af;
-    --color-brand-400: #fb7185;
-    --color-brand-500: #f43f5e;
-    --color-brand-600: #e11d48;
-    --color-brand-700: #be123c;
-    --color-brand-800: #9f1239;
-    --color-brand-900: #881337;
+    --color-brand-50: #eff6ff;
+    --color-brand-100: #dbeafe;
+    --color-brand-200: #bfdbfe;
+    --color-brand-300: #93c5fd;
+    --color-brand-400: #60a5fa;
+    --color-brand-500: #3b82f6;
+    --color-brand-600: #2563eb;
+    --color-brand-700: #1d4ed8;
+    --color-brand-800: #1e40af;
+    --color-brand-900: #1e3a8a;
 
     --color-surface: #ffffff;
-    --color-surface-2: #fffafb;
-    --color-surface-3: #fff1f2;
+    --color-surface-2: #f8fafc;
+    --color-surface-3: #eff6ff;
     --color-border: #e2e8f0;
     --color-text-primary: #0f172a;
     --color-text-secondary: #475569;
@@ -107,7 +107,7 @@
     text-wrap: balance;
   }
   .text-gradient {
-    background: linear-gradient(135deg, #fb7185, #f43f5e, #fda4af);
+    background: linear-gradient(135deg, #60a5fa, #3b82f6, #93c5fd);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

@@ -13,13 +13,13 @@ import { ROUTES } from '@constants/routes.constants';
 
 // Brand colors
 const BRAND = {
-  50: '#fff1f2',
-  100: '#ffe4e6',
-  200: '#fecdd3',
-  300: '#fda4af',
-  400: '#fb7185',
-  500: '#f43f5e',
-  600: '#e11d48',
+  50: '#eff6ff',
+  100: '#dbeafe',
+  200: '#bfdbfe',
+  300: '#93c5fd',
+  400: '#60a5fa',
+  500: '#3b82f6',
+  600: '#2563eb',
 };
 
 // ── Brand‐styled input ───────────────────────────────────────────────────────
@@ -193,7 +193,7 @@ export const LoginPage = () => {
         borderRadius: '28px',
         background: '#ffffff',
         padding: '36px 32px',
-        boxShadow: '0 16px 56px -8px rgba(244,63,94,0.18), 0 2px 8px rgba(0,0,0,0.04)',
+        boxShadow: '0 16px 56px -8px rgba(59,130,246,0.18), 0 2px 8px rgba(0,0,0,0.04)',
         border: `1.5px solid ${BRAND[100]}`,
       }}
     >
@@ -346,18 +346,18 @@ export const LoginPage = () => {
             gap: '8px',
             boxShadow: isLoading
               ? 'none'
-              : '0 6px 24px -4px rgba(244,63,94,0.45)',
+              : '0 6px 24px -4px rgba(59,130,246,0.45)',
             transition: 'all 0.2s ease',
             fontFamily: 'inherit',
           }}
           onMouseEnter={(e) => {
             if (!isLoading) {
-              e.currentTarget.style.boxShadow = '0 8px 28px -4px rgba(244,63,94,0.55)';
+              e.currentTarget.style.boxShadow = '0 8px 28px -4px rgba(59,130,246,0.55)';
               e.currentTarget.style.opacity = '0.93';
             }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = '0 6px 24px -4px rgba(244,63,94,0.45)';
+            e.currentTarget.style.boxShadow = '0 6px 24px -4px rgba(59,130,246,0.45)';
             e.currentTarget.style.opacity = '1';
           }}
         >

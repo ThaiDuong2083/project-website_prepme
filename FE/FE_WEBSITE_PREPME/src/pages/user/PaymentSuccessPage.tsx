@@ -100,7 +100,7 @@ export const PaymentSuccessPage = () => {
       >
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-            <Loader2 className="animate-spin text-rose-500" size={48} />
+            <Loader2 className="animate-spin text-blue-500" size={48} />
             <h2 style={{ fontSize: '20px', fontWeight: 800 }}>Đang xác thực thanh toán</h2>
             <p style={{ color: textSubColor, fontSize: '14px' }}>
               Vui lòng không tắt trình duyệt hoặc tải lại trang trong khi hệ thống đồng bộ giao dịch với MoMo...
@@ -145,7 +145,7 @@ export const PaymentSuccessPage = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '8px',
-                  background: 'linear-gradient(135deg, #fb7185 0%, #f43f5e 100%)',
+                   background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
                   color: '#fff',
                   border: 'none',
                   borderRadius: '14px',
@@ -153,7 +153,7 @@ export const PaymentSuccessPage = () => {
                   fontWeight: 800,
                   fontSize: '15px',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(244, 63, 94, 0.3)',
+                  boxShadow: '0 4px 14px rgba(59, 130, 246, 0.3)',
                 }}
               >
                 Bắt đầu làm bài thi ngay <ArrowRight size={16} />
