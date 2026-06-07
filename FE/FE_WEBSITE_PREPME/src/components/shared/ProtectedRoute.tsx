@@ -13,7 +13,7 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
   const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
 
-  if (isLoading) return <PageLoading />;
+  if (isLoading || (isAuthenticated && !user)) return <PageLoading />;
 
   if (!isAuthenticated) {
     return <Navigate to={ROUTES.LOGIN} state={{ from: location }} replace />;
@@ -29,7 +29,8 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
 export const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, user } = useAuth();
 
-  if (isAuthenticated && user) {
+  if (isAuthenticated) {
+    if (!user) return <PageLoading />;
     const redirect = user.role === 'ADMIN' ? ROUTES.ADMIN.DASHBOARD : ROUTES.USER.DASHBOARD;
     return <Navigate to={redirect} replace />;
   }

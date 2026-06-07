@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { useAuth } from '@hooks/useAuth';
 import { loginWithPhoneSchema, type LoginWithPhoneFormData } from '@lib/validations/auth.schema';
 import { ROUTES } from '@constants/routes.constants';
+import { useAuthStore } from '@store/auth.store';
 
 // Brand colors
 const BRAND = {
@@ -150,22 +151,14 @@ export const LoginPage = () => {
     resolver: zodResolver(loginWithPhoneSchema),
   });
 
-  const handleNavigate = () => {
-    setTimeout(() => {
-      const storedUser = JSON.parse(localStorage.getItem('prepme_user') ?? 'null') as {
-        role?: string;
-      } | null;
-      const redirectTo =
-        from ?? (storedUser?.role === 'ADMIN' ? ROUTES.ADMIN.DASHBOARD : ROUTES.USER.DASHBOARD);
-      navigate(redirectTo, { replace: true });
-    }, 100);
-  };
-
   const onSubmit = async (data: LoginWithPhoneFormData) => {
     try {
       await loginWithPhone(data);
       toast.success('Đăng nhập thành công! 👋');
-      handleNavigate();
+      const user = useAuthStore.getState().user;
+      const redirectTo =
+        from ?? (user?.role === 'ADMIN' ? ROUTES.ADMIN.DASHBOARD : ROUTES.USER.DASHBOARD);
+      navigate(redirectTo, { replace: true });
     } catch {
       // Error handled by global interceptor
     }
@@ -176,7 +169,10 @@ export const LoginPage = () => {
       if (credentialResponse.credential) {
         await loginWithGoogle(credentialResponse.credential);
         toast.success('Đăng nhập bằng Google thành công! 👋');
-        handleNavigate();
+        const user = useAuthStore.getState().user;
+        const redirectTo =
+          from ?? (user?.role === 'ADMIN' ? ROUTES.ADMIN.DASHBOARD : ROUTES.USER.DASHBOARD);
+        navigate(redirectTo, { replace: true });
       }
     } catch {
       // Error handled by global interceptor

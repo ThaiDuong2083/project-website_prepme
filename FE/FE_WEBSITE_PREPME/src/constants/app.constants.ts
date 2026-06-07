@@ -1,5 +1,4 @@
 export const TOKEN_KEY = 'prepme_access_token';
-export const USER_KEY = 'prepme_user';
 export const THEME_KEY = 'prepme_theme';
 
 export const API_TIMEOUT = 15000; // 15s

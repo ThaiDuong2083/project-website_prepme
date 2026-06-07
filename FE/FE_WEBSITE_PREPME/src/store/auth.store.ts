@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import { storage } from '@utils/storage.utils';
 import { authApi } from '@api/auth.api';
 import toast from 'react-hot-toast';
@@ -22,100 +21,86 @@ interface AuthStore {
   setLoading: (loading: boolean) => void;
 }
 
-export const useAuthStore = create<AuthStore>()(
-  persist(
-    (set, get) => ({
-      user: storage.getUser(),
-      accessToken: storage.getToken(),
-      isAuthenticated: !!storage.getToken(),
-      isLoading: false,
+export const useAuthStore = create<AuthStore>()((set, get) => ({
+  user: null,
+  accessToken: storage.getToken(),
+  isAuthenticated: !!storage.getToken(),
+  isLoading: false,
 
-      setLoading: (loading) => set({ isLoading: loading }),
+  setLoading: (loading) => set({ isLoading: loading }),
 
-      register: async (payload) => {
-        set({ isLoading: true });
-        try {
-          const response = await authApi.register(payload);
-          await get().setTokenAndProfile(response.data);
-        } catch (error: any) {
-          toast.error(error.response?.data?.message || 'Đăng ký thất bại');
-          throw error;
-        } finally {
-          set({ isLoading: false });
-        }
-      },
+  register: async (payload) => {
+    set({ isLoading: true });
+    try {
+      const response = await authApi.register(payload);
+      await get().setTokenAndProfile(response.data);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Đăng ký thất bại');
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
-      setTokenAndProfile: async (tokens: AuthTokens) => {
-        storage.setToken(tokens.accessToken);
-        set({ accessToken: tokens.accessToken, isAuthenticated: true });
-        await get().fetchProfile();
-      },
+  setTokenAndProfile: async (tokens: AuthTokens) => {
+    storage.setToken(tokens.accessToken);
+    set({ accessToken: tokens.accessToken, isAuthenticated: true });
+    await get().fetchProfile();
+  },
 
-      loginWithPhone: async (payload) => {
-        set({ isLoading: true });
-        try {
-          const response = await authApi.loginWithPhone(payload);
-          await get().setTokenAndProfile(response.data);
-        } catch (error: any) {
-          toast.error(error.response?.data?.message || 'Số điện thoại hoặc mật khẩu không chính xác');
-          throw error;
-        } finally {
-          set({ isLoading: false });
-        }
-      },
+  loginWithPhone: async (payload) => {
+    set({ isLoading: true });
+    try {
+      const response = await authApi.loginWithPhone(payload);
+      await get().setTokenAndProfile(response.data);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Số điện thoại hoặc mật khẩu không chính xác');
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
-      loginWithGoogle: async (idToken) => {
-        set({ isLoading: true });
-        try {
-          const response = await authApi.loginWithGoogle({ idToken });
-          await get().setTokenAndProfile(response.data);
-        } catch (error: any) {
-          toast.error(error.response?.data?.message || 'Đăng nhập Google thất bại');
-          throw error;
-        } finally {
-          set({ isLoading: false });
-        }
-      },
+  loginWithGoogle: async (idToken) => {
+    set({ isLoading: true });
+    try {
+      const response = await authApi.loginWithGoogle({ idToken });
+      await get().setTokenAndProfile(response.data);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Đăng nhập Google thất bại');
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
-      fetchProfile: async () => {
-        try {
-          const response = await authApi.getProfile();
-          const user = response.data;
-          storage.setUser(user);
-          set({ user });
-        } catch {
-          get().logout();
-        }
-      },
+  fetchProfile: async () => {
+    try {
+      const response = await authApi.getProfile();
+      const user = response.data;
+      set({ user });
+    } catch {
+      get().logout();
+    }
+  },
 
-      upgrade: async () => {
-        set({ isLoading: true });
-        try {
-          const response = await authApi.upgrade();
-          const user = response.data;
-          storage.setUser(user);
-          set({ user });
-          toast.success('Nâng cấp tài khoản PRO thành công! 👑');
-        } catch (error: any) {
-          toast.error(error.response?.data?.message || 'Nâng cấp tài khoản thất bại');
-          throw error;
-        } finally {
-          set({ isLoading: false });
-        }
-      },
+  upgrade: async () => {
+    set({ isLoading: true });
+    try {
+      const response = await authApi.upgrade();
+      const user = response.data;
+      set({ user });
+      toast.success('Nâng cấp tài khoản PRO thành công! 👑');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Nâng cấp tài khoản thất bại');
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
-      logout: () => {
-        storage.clear();
-        set({ user: null, accessToken: null, isAuthenticated: false });
-      },
-    }),
-    {
-      name: 'prepme-auth',
-      partialize: (state) => ({
-        user: state.user,
-        accessToken: state.accessToken,
-        isAuthenticated: state.isAuthenticated,
-      }),
-    },
-  ),
-);
+  logout: () => {
+    storage.clear();
+    set({ user: null, accessToken: null, isAuthenticated: false });
+  },
+}));
