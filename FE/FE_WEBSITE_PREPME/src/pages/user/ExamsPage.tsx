@@ -409,13 +409,13 @@ export const ExamsPage = () => {
         submissionContent:
           examDetail.examType === 'WRITING'
             ? (() => {
-                const parts: string[] = [];
-                const totalSections = examDetail.sections.length || 1;
-                for (let i = 0; i < totalSections; i++) {
-                  parts.push(writingAnswers[i] || '');
-                }
-                return parts.join('\n\n---SECTION_SEPARATOR---\n\n');
-              })()
+              const parts: string[] = [];
+              const totalSections = examDetail.sections.length || 1;
+              for (let i = 0; i < totalSections; i++) {
+                parts.push(writingAnswers[i] || '');
+              }
+              return parts.join('\n\n---SECTION_SEPARATOR---\n\n');
+            })()
             : undefined,
         recordingUrl: examDetail.examType === 'SPEAKING' ? finalRecordingUrl : undefined,
         completionTime: timeSpent,
@@ -476,7 +476,7 @@ export const ExamsPage = () => {
 
   return (
     <div
-      className={`min-h-screen px-4 py-12 ${isDark ? '' : 'bg-gradient-to-br from-[#fff5f6] via-white to-[#fff9fa]'}`}
+      className={`min-h-screen px-4 py-12 ${isDark ? '' : 'bg-gradient-to-br from-[#eff6ff] via-white to-[#e0f2fe]'}`}
     >
       <div className="mx-auto max-w-[1200px]">
         <AnimatePresence mode="wait">
@@ -519,9 +519,8 @@ export const ExamsPage = () => {
               >
                 <button
                   onClick={() => setListTab('EXAMS')}
-                  className={`relative pb-1 text-sm font-black transition-all ${
-                    listTab === 'EXAMS' ? 'text-blue-500' : 'text-slate-400 hover:text-slate-600'
-                  }`}
+                  className={`relative pb-1 text-sm font-black transition-all ${listTab === 'EXAMS' ? 'text-blue-500' : 'text-slate-400 hover:text-slate-600'
+                    }`}
                 >
                   Danh sách đề thi
                   {listTab === 'EXAMS' && (
@@ -533,9 +532,8 @@ export const ExamsPage = () => {
                 </button>
                 <button
                   onClick={() => setListTab('HISTORY')}
-                  className={`relative pb-1 text-sm font-black transition-all ${
-                    listTab === 'HISTORY' ? 'text-blue-500' : 'text-slate-400 hover:text-slate-600'
-                  }`}
+                  className={`relative pb-1 text-sm font-black transition-all ${listTab === 'HISTORY' ? 'text-blue-500' : 'text-slate-400 hover:text-slate-600'
+                    }`}
                 >
                   Lịch sử luyện tập
                   {listTab === 'HISTORY' && (
@@ -596,9 +594,8 @@ export const ExamsPage = () => {
                               setActiveType(type.value);
                               setCurrentPage(1);
                             }}
-                            className={`relative pb-3 text-xs font-black tracking-wider whitespace-nowrap uppercase transition-all ${
-                              isActive ? 'text-blue-500' : 'text-slate-400 hover:text-slate-600'
-                            }`}
+                            className={`relative pb-3 text-xs font-black tracking-wider whitespace-nowrap uppercase transition-all ${isActive ? 'text-blue-500' : 'text-slate-400 hover:text-slate-600'
+                              }`}
                           >
                             {type.label}
                             {isActive && (
@@ -656,7 +653,7 @@ export const ExamsPage = () => {
                         const attempts = historyList.filter((h) => h.testId === exam.id);
                         const hasAttempted = attempts.length > 0;
                         const maxScore = hasAttempted
-                           ? Math.max(...attempts.map((a) => a.score ?? 0))
+                          ? Math.max(...attempts.map((a) => a.score ?? 0))
                           : 0;
                         const questionCount = exam.questionCount ?? 2;
 
@@ -754,13 +751,12 @@ export const ExamsPage = () => {
                           setHistoryType(type.value);
                           setHistoryPage(1);
                         }}
-                        className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
-                          historyType === type.value
+                        className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all ${historyType === type.value
                             ? 'bg-blue-500 text-white'
                             : isDark
                               ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                               : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
-                        }`}
+                          }`}
                       >
                         {type.emoji} {type.label}
                       </button>
@@ -928,11 +924,10 @@ export const ExamsPage = () => {
                 {/* Header Timer */}
                 <div className="flex items-center gap-6">
                   <div
-                    className={`flex items-center gap-2 rounded-2xl border px-5 py-2 font-black shadow-sm transition ${
-                      timeLeft <= 300
-                        ? 'animate-pulse border-red-200 bg-red-50 text-red-600'
+                    className={`flex items-center gap-2 rounded-2xl border px-5 py-2 font-black shadow-sm transition ${timeLeft <= 300
+                        ? 'animate-pulse border-blue-300 bg-blue-100 text-blue-700'
                         : 'border-blue-200 bg-blue-50/50 text-blue-600'
-                    }`}
+                      }`}
                   >
                     <Clock size={16} />
                     <span className="text-sm tracking-widest">{formatTime(timeLeft)}</span>
@@ -977,7 +972,7 @@ export const ExamsPage = () => {
                       <Volume2 size={24} className="text-blue-500" />
                       <div className="flex-1">
                         <span className="mb-1 block text-[10px] font-bold text-slate-400">
-                           NGHE LẠI PHẦN THI NÓI (PHẦN {activeSectionIdx + 1})
+                          NGHE LẠI PHẦN THI NÓI (PHẦN {activeSectionIdx + 1})
                         </span>
                         <audio
                           key={`speaking-preview-${activeSectionIdx}-${speakingLocalUrls[activeSectionIdx]}`}
@@ -999,11 +994,10 @@ export const ExamsPage = () => {
                             <button
                               key={sec.id}
                               onClick={() => setActiveSectionIdx(idx)}
-                              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-                                activeSectionIdx === idx
+                              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${activeSectionIdx === idx
                                   ? 'bg-blue-100 text-blue-600'
                                   : 'text-slate-400 hover:text-slate-600'
-                              }`}
+                                }`}
                             >
                               Phần {sec.sectionNumber || idx + 1}
                             </button>
@@ -1182,9 +1176,9 @@ export const ExamsPage = () => {
                   {/* Result Summary Sidebar */}
                   <div className="space-y-6">
                     {/* Score Card */}
-                    <div className="rounded-3xl border border-blue-100 bg-white p-6 text-center shadow-sm">
+                    <div className={`rounded-3xl border p-6 text-center shadow-sm ${isDark ? 'border-blue-900/50 bg-slate-900/60' : 'border-blue-100 bg-white'}`}>
                       <Award size={40} className="mx-auto text-blue-500" />
-                      <h3 className="mt-3 text-lg font-black text-slate-800">
+                      <h3 className={`mt-3 text-lg font-black ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
                         {reviewDetail.testTitle}
                       </h3>
                       <p className="mt-1 text-xs text-slate-400">
@@ -1202,16 +1196,16 @@ export const ExamsPage = () => {
                         <div className="mt-1 text-xs text-slate-400">IELTS Band Score</div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3 border-t border-blue-50 pt-4 text-left">
+                      <div className={`grid grid-cols-2 gap-3 border-t pt-4 text-left ${isDark ? 'border-blue-900/40' : 'border-blue-50'}`}>
                         <div>
                           <span className="block text-[10px] text-slate-400">Kỹ năng</span>
-                          <span className="text-xs font-bold text-slate-700">
+                          <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
                             {reviewDetail.skillType}
                           </span>
                         </div>
                         <div>
                           <span className="block text-[10px] text-slate-400">Thời gian làm</span>
-                          <span className="text-xs font-bold text-slate-700">
+                          <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
                             {Math.round((reviewDetail.completionTime || 0) / 60)} phút
                           </span>
                         </div>
@@ -1221,26 +1215,31 @@ export const ExamsPage = () => {
                     {/* AI Feedback Card */}
                     {reviewDetail.aiAnalysis && (
                       <div
-                        className={`rounded-3xl border p-6 transition-all duration-500 ${
-                          reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...'
-                            ? 'animate-pulse border-blue-200 bg-blue-50/10 shadow-[0_0_15px_rgba(59,130,246,0.05)]'
-                            : 'border-amber-200 bg-amber-50/20'
-                        }`}
+                        className={`rounded-3xl border p-6 transition-all duration-500 ${reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...'
+                            ? isDark
+                              ? 'animate-pulse border-blue-800/40 bg-blue-950/20 shadow-[0_0_15px_rgba(59,130,246,0.15)]'
+                              : 'animate-pulse border-blue-200 bg-blue-50/10 shadow-[0_0_15px_rgba(59,130,246,0.05)]'
+                            : isDark
+                              ? 'border-blue-900/40 bg-blue-950/10'
+                              : 'border-blue-200 bg-blue-50/20'
+                          }`}
                       >
-                        <h4 className="mb-3 flex items-center gap-2 text-sm font-black text-slate-800">
+                        <h4 className={`mb-3 flex items-center gap-2 text-sm font-black ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
                           <Sparkles
                             size={16}
                             className={
                               reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...'
                                 ? 'animate-spin text-blue-500'
-                                : 'text-amber-500'
+                                : 'text-blue-500'
                             }
                           />
                           <span
                             className={
                               reviewDetail.aiAnalysis === 'Đang chờ nhận xét từ AI...'
                                 ? 'font-extrabold text-blue-600'
-                                : 'text-amber-800'
+                                : isDark
+                                  ? 'text-blue-400 font-extrabold'
+                                  : 'text-blue-800'
                             }
                           >
                             ⚡ Phân tích & Gợi ý từ AI:
@@ -1268,7 +1267,7 @@ export const ExamsPage = () => {
                             </div>
                           </div>
                         ) : (
-                          <div className="prose text-xs leading-relaxed font-medium whitespace-pre-line text-slate-600">
+                          <div className={`prose text-xs leading-relaxed font-medium whitespace-pre-line ${isDark ? 'text-slate-200' : 'text-slate-600'}`}>
                             {reviewDetail.aiAnalysis}
                           </div>
                         )}
@@ -1282,11 +1281,11 @@ export const ExamsPage = () => {
                     {reviewDetail.skillType === 'WRITING' && (
                       <div className="space-y-6">
                         {!originalTest ? (
-                          <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
-                            <h4 className="mb-3 text-sm font-black text-slate-800">
+                          <div className={`rounded-3xl border p-6 shadow-sm ${isDark ? 'border-slate-800 bg-slate-900/60' : 'border-slate-100 bg-white'}`}>
+                            <h4 className={`mb-3 text-sm font-black ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                               Bài viết đã nộp:
                             </h4>
-                            <div className="rounded-2xl bg-slate-50 p-4 text-xs leading-relaxed whitespace-pre-wrap text-slate-700">
+                            <div className={`rounded-2xl p-4 text-xs leading-relaxed whitespace-pre-wrap ${isDark ? 'bg-slate-950/60 text-slate-200' : 'bg-slate-50 text-slate-700'}`}>
                               {reviewDetail.submissionContent}
                             </div>
                           </div>
@@ -1294,8 +1293,8 @@ export const ExamsPage = () => {
                           originalTest.sections.map((section, idx) => {
                             const essays = reviewDetail.submissionContent
                               ? reviewDetail.submissionContent.split(
-                                  '\n\n---SECTION_SEPARATOR---\n\n',
-                                )
+                                '\n\n---SECTION_SEPARATOR---\n\n',
+                              )
                               : [];
                             const userEssay = essays[idx] || '';
                             const wordCount = userEssay.trim()
@@ -1304,30 +1303,30 @@ export const ExamsPage = () => {
                             return (
                               <div
                                 key={section.id}
-                                className="space-y-4 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm"
+                                className={`space-y-4 rounded-3xl border p-6 shadow-sm ${isDark ? 'border-slate-800 bg-slate-900/60' : 'border-slate-100 bg-white'}`}
                               >
-                                <div className="border-b border-blue-50 pb-3">
+                                <div className={`border-b pb-3 ${isDark ? 'border-blue-900/50' : 'border-blue-50'}`}>
                                   <span className="mb-1 inline-block rounded bg-blue-100 px-2 py-0.5 text-[10px] font-extrabold text-blue-600 uppercase">
                                     Phần {section.sectionNumber || idx + 1}
                                   </span>
-                                  <h4 className="text-sm font-black text-slate-800">
+                                  <h4 className={`text-sm font-black ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                                     {section.title || `Task ${idx + 1}`}
                                   </h4>
                                 </div>
 
                                 {section.passage && (
-                                  <div className="rounded-2xl border border-amber-100 bg-amber-50/30 p-4">
-                                    <span className="mb-1 block text-[10px] font-extrabold text-amber-800">
+                                  <div className={`rounded-2xl border p-4 ${isDark ? 'border-blue-950 bg-blue-950/10' : 'border-blue-100 bg-blue-50/30'}`}>
+                                    <span className={`mb-1 block text-[10px] font-extrabold ${isDark ? 'text-blue-400' : 'text-blue-800'}`}>
                                       ĐỀ BÀI:
                                     </span>
-                                    <div className="prose max-w-none text-xs leading-relaxed text-slate-600">
+                                    <div className={`prose max-w-none text-xs leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                                       {formatHtmlContent(section.passage)}
                                     </div>
                                   </div>
                                 )}
 
                                 {reviewDetail.skillType === 'WRITING' && section.audioUrl && (
-                                  <div className="mt-2 flex max-w-full justify-center overflow-hidden rounded-2xl border border-slate-100 bg-white p-2 shadow-sm">
+                                  <div className={`mt-2 flex max-w-full justify-center overflow-hidden rounded-2xl border p-2 shadow-sm ${isDark ? 'border-slate-800 bg-slate-950/40' : 'border-slate-100 bg-white'}`}>
                                     <img
                                       src={section.audioUrl}
                                       alt="Writing prompt illustration"
@@ -1337,12 +1336,12 @@ export const ExamsPage = () => {
                                 )}
 
                                 {section.sampleAnswer && (
-                                  <div className="rounded-2xl border border-emerald-100 bg-emerald-50/20 p-4">
+                                  <div className={`rounded-2xl border p-4 ${isDark ? 'border-emerald-950 bg-emerald-950/10' : 'border-emerald-100 bg-emerald-50/20'}`}>
                                     <span className="mb-1 block text-[10px] font-extrabold text-emerald-800">
                                       BÀI VĂN MẪU THAM KHẢO:
                                     </span>
                                     <div
-                                      className="prose max-w-none text-xs leading-relaxed whitespace-pre-wrap text-slate-700"
+                                      className={`prose max-w-none text-xs leading-relaxed whitespace-pre-wrap ${isDark ? 'text-slate-300' : 'text-slate-700'}`}
                                       dangerouslySetInnerHTML={{ __html: section.sampleAnswer }}
                                     />
                                   </div>
@@ -1352,7 +1351,7 @@ export const ExamsPage = () => {
                                   <span className="block text-[10px] font-extrabold text-slate-400 uppercase">
                                     Bài viết của bạn:
                                   </span>
-                                  <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4 text-xs leading-relaxed whitespace-pre-wrap text-slate-700">
+                                  <div className={`rounded-2xl border p-4 text-xs leading-relaxed whitespace-pre-wrap ${isDark ? 'border-slate-800 bg-slate-950/60 text-slate-200' : 'border-slate-100 bg-slate-50 text-slate-700'}`}>
                                     {userEssay || (
                                       <span className="text-slate-400 italic">
                                         Không có nội dung bài viết
@@ -1373,8 +1372,8 @@ export const ExamsPage = () => {
                     {reviewDetail.skillType === 'SPEAKING' && (
                       <div className="space-y-6">
                         {!originalTest ? (
-                          <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
-                            <h4 className="mb-3 text-sm font-black text-slate-800">
+                          <div className={`rounded-3xl border p-6 shadow-sm ${isDark ? 'border-slate-800 bg-slate-900/60' : 'border-slate-100 bg-white'}`}>
+                            <h4 className={`mb-3 text-sm font-black ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                               Bản thu âm đã nộp:
                             </h4>
                             {reviewDetail.recordingUrl ? (
@@ -1402,46 +1401,46 @@ export const ExamsPage = () => {
                               return (
                                 <div
                                   key={section.id}
-                                  className="space-y-4 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm"
+                                  className={`space-y-4 rounded-3xl border p-6 shadow-sm ${isDark ? 'border-slate-800 bg-slate-900/60' : 'border-slate-100 bg-white'}`}
                                 >
-                                  <div className="border-b border-blue-50 pb-3">
+                                  <div className={`border-b pb-3 ${isDark ? 'border-blue-900/50' : 'border-blue-50'}`}>
                                     <span className="mb-1 inline-block rounded bg-blue-100 px-2 py-0.5 text-[10px] font-extrabold text-blue-600 uppercase">
                                       Phần {section.sectionNumber || idx + 1}
                                     </span>
-                                    <h4 className="text-sm font-black text-slate-800">
+                                    <h4 className={`text-sm font-black ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                                       {section.title || `Part ${idx + 1}`}
                                     </h4>
                                   </div>
 
                                   {section.passage && (
-                                    <div className="rounded-2xl border border-amber-100 bg-amber-50/30 p-4">
-                                      <span className="mb-1 block text-[10px] font-extrabold text-amber-800">
+                                    <div className={`rounded-2xl border p-4 ${isDark ? 'border-blue-950 bg-blue-950/10' : 'border-blue-100 bg-blue-50/30'}`}>
+                                      <span className={`mb-1 block text-[10px] font-extrabold ${isDark ? 'text-blue-400' : 'text-blue-800'}`}>
                                         ĐỀ BÀI:
                                       </span>
-                                      <div className="prose max-w-none text-xs leading-relaxed text-slate-600">
+                                      <div className={`prose max-w-none text-xs leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                                         {formatHtmlContent(section.passage)}
                                       </div>
                                     </div>
                                   )}
 
                                   {section.cueCard && (
-                                    <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-4">
-                                      <span className="mb-1 block text-[10px] font-extrabold text-amber-800">
+                                    <div className={`rounded-2xl border p-4 ${isDark ? 'border-blue-950 bg-blue-950/10' : 'border-blue-200 bg-blue-50/50'}`}>
+                                      <span className={`mb-1 block text-[10px] font-extrabold ${isDark ? 'text-blue-400' : 'text-blue-800'}`}>
                                         📌 Cue Card Topic:
                                       </span>
-                                      <pre className="font-sans text-xs leading-relaxed whitespace-pre-wrap text-slate-700">
+                                      <pre className={`font-sans text-xs leading-relaxed whitespace-pre-wrap ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                                         {section.cueCard}
                                       </pre>
                                     </div>
                                   )}
 
                                   {section.sampleAnswer && (
-                                    <div className="rounded-2xl border border-emerald-100 bg-emerald-50/20 p-4">
+                                    <div className={`rounded-2xl border p-4 ${isDark ? 'border-emerald-950 bg-emerald-950/10' : 'border-emerald-100 bg-emerald-50/20'}`}>
                                       <span className="mb-1 block text-[10px] font-extrabold text-emerald-800">
                                         BÀI NÓI MẪU THAM KHẢO (SAMPLE RESPONSE):
                                       </span>
                                       <div
-                                        className="prose max-w-none text-xs leading-relaxed whitespace-pre-wrap text-slate-700"
+                                        className={`prose max-w-none text-xs leading-relaxed whitespace-pre-wrap ${isDark ? 'text-slate-300' : 'text-slate-700'}`}
                                         dangerouslySetInnerHTML={{ __html: section.sampleAnswer }}
                                       />
                                     </div>
@@ -1474,12 +1473,12 @@ export const ExamsPage = () => {
                     {/* For Reading / Listening: list questions, answers, corrected labels, and explanations */}
                     {(reviewDetail.skillType === 'READING' ||
                       reviewDetail.skillType === 'LISTENING') && (
-                      <div className="space-y-4">
-                        <h4 className="text-base font-black text-slate-800">
-                          Chi tiết từng câu hỏi:
-                        </h4>
+                        <div className="space-y-4">
+                          <h4 className={`text-base font-black ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
+                            Chi tiết từng câu hỏi:
+                          </h4>
 
-                        {/* We mock detail questions if backend does not load them directly inside reviewDetail.
+                          {/* We mock detail questions if backend does not load them directly inside reviewDetail.
  Wait! The backend PracticeHistoryDTO exposes `answers` as a Map.
  Let's query the original test if we want to display the full question cards.
  Wait, let's look at if we can display the matched items cleanly.
@@ -1493,121 +1492,122 @@ export const ExamsPage = () => {
  to overlay the question texts, options, explanations, and correct answers!
  Let's implement this overlay loader! */}
 
-                        {!originalTest ? (
-                          <div className="text-xs text-slate-400">
-                            Đang tải dữ liệu câu hỏi gốc...
-                          </div>
-                        ) : (
-                          <div className="space-y-4">
-                            {originalTest.sections.map((section, sIdx) => (
-                              <div key={section.id} className="space-y-4">
-                                <div className="text-xs font-bold text-blue-500">
-                                  PHẦN {section.sectionNumber || sIdx + 1}
-                                </div>
-
-                                {section.passage && (
-                                  <div className="rounded-2xl border border-amber-100 bg-amber-50/30 p-4">
-                                    <span className="mb-1 block text-[10px] font-extrabold text-amber-800">
-                                      ĐỀ BÀI:
-                                    </span>
-                                    <div className="prose max-w-none text-xs leading-relaxed text-slate-600">
-                                      {formatHtmlContent(section.passage)}
-                                    </div>
+                          {!originalTest ? (
+                            <div className="text-xs text-slate-400">
+                              Đang tải dữ liệu câu hỏi gốc...
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              {originalTest.sections.map((section, sIdx) => (
+                                <div key={section.id} className="space-y-4">
+                                  <div className="text-xs font-bold text-blue-500">
+                                    PHẦN {section.sectionNumber || sIdx + 1}
                                   </div>
-                                )}
 
-                                {section.questions.map((q) => {
-                                  const userAnswer =
-                                    reviewDetail.answers?.[q.id.toString()] ||
-                                    reviewDetail.answers?.[q.questionNumber.toString()];
-                                  const isCorrect =
-                                    userAnswer &&
-                                    q.correctAnswer &&
-                                    userAnswer.trim().toLowerCase() ===
+                                  {section.passage && (
+                                    <div className={`rounded-2xl border p-4 ${isDark ? 'border-blue-950 bg-blue-950/10' : 'border-blue-100 bg-blue-50/30'}`}>
+                                      <span className={`mb-1 block text-[10px] font-extrabold ${isDark ? 'text-blue-400' : 'text-blue-800'}`}>
+                                        ĐỀ BÀI:
+                                      </span>
+                                      <div className={`prose max-w-none text-xs leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                                        {formatHtmlContent(section.passage)}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {section.questions.map((q) => {
+                                    const userAnswer =
+                                      reviewDetail.answers?.[q.id.toString()] ||
+                                      reviewDetail.answers?.[q.questionNumber.toString()];
+                                    const isCorrect =
+                                      userAnswer &&
+                                      q.correctAnswer &&
+                                      userAnswer.trim().toLowerCase() ===
                                       q.correctAnswer.trim().toLowerCase();
 
-                                  return (
-                                    <div
-                                      key={q.id}
-                                      className={`rounded-2xl border p-4 shadow-sm transition ${
-                                        isCorrect
-                                          ? 'border-green-100 bg-green-50/20'
-                                          : 'border-red-100 bg-red-50/20'
-                                      }`}
-                                    >
-                                      <div className="flex items-start gap-2">
-                                        <span
-                                          className={`rounded px-2 py-0.5 text-xs font-bold ${
-                                            isCorrect
-                                              ? 'bg-green-100 text-green-600'
-                                              : 'bg-red-100 text-red-600'
+                                    return (
+                                      <div
+                                        key={q.id}
+                                        className={`rounded-2xl border p-4 shadow-sm transition ${isCorrect
+                                            ? isDark
+                                              ? 'border-green-900/50 bg-green-950/20'
+                                              : 'border-green-100 bg-green-50/20'
+                                            : isDark
+                                              ? 'border-blue-900/50 bg-blue-950/20'
+                                              : 'border-blue-100 bg-blue-50/20'
                                           }`}
-                                        >
-                                          Câu {q.questionNumber}
-                                        </span>
-                                        <div className="flex-1 text-xs font-bold text-slate-700">
-                                          <div>{q.questionText}</div>
-                                          {q.imageUrl && (
-                                            <div className="mt-2 flex max-w-full justify-center overflow-hidden rounded-xl border border-slate-100 bg-slate-50 p-1">
-                                              <img
-                                                src={q.imageUrl}
-                                                alt={`Câu hỏi ${q.questionNumber}`}
-                                                className="max-h-[250px] rounded-lg object-contain"
-                                              />
-                                            </div>
-                                          )}
-                                        </div>
-                                      </div>
-
-                                      {/* Answer comparison details */}
-                                      <div className="mt-4 grid grid-cols-2 gap-4 text-xs">
-                                        <div className="rounded-xl border border-slate-100 bg-white p-3">
-                                          <span className="block text-[10px] font-semibold text-slate-400">
-                                            Đáp án của bạn
-                                          </span>
+                                      >
+                                        <div className="flex items-start gap-2">
                                           <span
-                                            className={`mt-1 block font-bold ${
-                                              isCorrect ? 'text-green-600' : 'text-red-500'
-                                            }`}
+                                            className={`rounded px-2 py-0.5 text-xs font-bold ${isCorrect
+                                                ? 'bg-green-100 text-green-600'
+                                                : 'bg-blue-100 text-blue-600'
+                                              }`}
                                           >
-                                            {userAnswer || '(Không trả lời)'}
-                                            {userAnswer &&
-                                              (isCorrect ? (
-                                                <Check size={14} className="ml-1 inline" />
-                                              ) : (
-                                                <X size={14} className="ml-1 inline" />
-                                              ))}
+                                            Câu {q.questionNumber}
                                           </span>
+                                          <div className={`flex-1 text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                                            <div>{q.questionText}</div>
+                                            {q.imageUrl && (
+                                              <div className="mt-2 flex max-w-full justify-center overflow-hidden rounded-xl border border-slate-100 bg-slate-50 p-1">
+                                                <img
+                                                  src={q.imageUrl}
+                                                  alt={`Câu hỏi ${q.questionNumber}`}
+                                                  className="max-h-[250px] rounded-lg object-contain"
+                                                />
+                                              </div>
+                                            )}
+                                          </div>
                                         </div>
 
-                                        <div className="rounded-xl border border-slate-100 bg-white p-3">
-                                          <span className="block text-[10px] font-semibold text-slate-400">
-                                            Đáp án đúng
-                                          </span>
-                                          <span className="mt-1 block font-bold text-green-600">
-                                            {q.correctAnswer}
-                                          </span>
+                                        {/* Answer comparison details */}
+                                        <div className="mt-4 grid grid-cols-2 gap-4 text-xs">
+                                          <div className={`rounded-xl border p-3 ${isDark ? 'border-slate-800 bg-slate-900/60' : 'border-slate-100 bg-white'}`}>
+                                            <span className="block text-[10px] font-semibold text-slate-400">
+                                              Đáp án của bạn
+                                            </span>
+                                            <span
+                                              className={`mt-1 block font-bold ${isCorrect ? 'text-green-600' : 'text-blue-500'
+                                                }`}
+                                            >
+                                              {userAnswer || '(Không trả lời)'}
+                                              {userAnswer &&
+                                                (isCorrect ? (
+                                                  <Check size={14} className="ml-1 inline" />
+                                                ) : (
+                                                  <X size={14} className="ml-1 inline" />
+                                                ))}
+                                            </span>
+                                          </div>
+
+                                          <div className={`rounded-xl border p-3 ${isDark ? 'border-slate-800 bg-slate-900/60' : 'border-slate-100 bg-white'}`}>
+                                            <span className="block text-[10px] font-semibold text-slate-400">
+                                              Đáp án đúng
+                                            </span>
+                                            <span className="mt-1 block font-bold text-green-600">
+                                              {q.correctAnswer}
+                                            </span>
+                                          </div>
                                         </div>
+
+                                        {/* Explanation */}
+                                        {q.explanation && (
+                                          <div className={`mt-3 border-t border-dashed border-slate-200/60 pt-3 text-xs leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                                            <span className={`font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                                              Giải thích:{' '}
+                                            </span>
+                                            {q.explanation}
+                                          </div>
+                                        )}
                                       </div>
-
-                                      {/* Explanation */}
-                                      {q.explanation && (
-                                        <div className="mt-3 border-t border-dashed border-slate-200/60 pt-3 text-xs leading-relaxed text-slate-500">
-                                          <span className="font-bold text-slate-600">
-                                            Giải thích:{' '}
-                                          </span>
-                                          {q.explanation}
-                                        </div>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
+                                    );
+                                  })}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
                   </div>
                 </div>
               ) : (

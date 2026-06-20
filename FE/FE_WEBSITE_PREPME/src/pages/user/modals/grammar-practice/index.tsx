@@ -43,7 +43,7 @@ export const GrammarPracticeModal = ({ onClose }: { onClose: () => void }) => {
 
   if (practice) {
     return (
-      <motion.div style={{ position: 'fixed', inset: 0, zIndex: 300, overflowY: 'auto', background: isDark ? '#0f172a' : '#fdf6f0' }}>
+      <motion.div style={{ position: 'fixed', inset: 0, zIndex: 300, overflowY: 'auto', background: isDark ? '#0f172a' : '#f0f9ff' }}>
         <PracticeScreen
           topicId={practice.topicId}
           topicName={practice.topicName}

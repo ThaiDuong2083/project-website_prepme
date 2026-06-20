@@ -86,7 +86,7 @@ export const PracticeScreen = ({
 
   if (loading) {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ width: '100%', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? '#0f172a' : '#fdf6f0' }}>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ width: '100%', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? '#0f172a' : '#f0f9ff' }}>
         <div style={{ color: B[400], fontWeight: 800 }}>Đang tải câu hỏi...</div>
       </motion.div>
     );
@@ -184,7 +184,7 @@ export const PracticeScreen = ({
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
-      style={{ width: '100%', maxWidth: '900px', margin: '0 auto', minHeight: '100vh', background: isDark ? '#0f172a' : '#fdf6f0', padding: '24px 20px', fontFamily: 'inherit', boxSizing: 'border-box' }}
+      style={{ width: '100%', maxWidth: '900px', margin: '0 auto', minHeight: '100vh', background: isDark ? '#0f172a' : '#f0f9ff', padding: '24px 20px', fontFamily: 'inherit', boxSizing: 'border-box' }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
         <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: B[400], padding: '4px' }}>
@@ -261,7 +261,7 @@ export const PracticeScreen = ({
                 let bord = isDark ? '#334155' : '#e2e8f0';
                 if (showResult) {
                   if (isAns) { bg = '#d1fae5'; col = '#065f46'; bord = '#6ee7b7'; }
-                  else if (isSel && !isAns) { bg = '#fee2e2'; col = '#991b1b'; bord = '#fca5a5'; }
+                  else if (isSel && !isAns) { bg = isDark ? 'rgba(59,130,246,0.15)' : B[50]; col = '#2563eb'; bord = B[300]; }
                 } else if (isSel) { bg = '#d1fae5'; col = '#065f46'; bord = '#6ee7b7'; }
 
                 return (
@@ -283,7 +283,7 @@ export const PracticeScreen = ({
           {showResult && (
             <motion.div
               initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }}
-              style={{ border: `1.5px solid ${isCorrect ? '#6ee7b7' : '#fca5a5'}`, borderRadius: '16px', padding: '18px', background: isCorrect ? (isDark ? 'rgba(34,197,94,0.08)' : '#f0fdf4') : (isDark ? 'rgba(244,63,94,0.08)' : '#fff5f5'), overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}
+              style={{ border: `1.5px solid ${isCorrect ? '#6ee7b7' : B[300]}`, borderRadius: '16px', padding: '18px', background: isCorrect ? (isDark ? 'rgba(34,197,94,0.08)' : '#f0fdf4') : (isDark ? 'rgba(59,130,246,0.08)' : B[50]), overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}
             >
               <div style={{ fontWeight: 800, fontSize: '16px', color: isCorrect ? '#16a34a' : B[400], display: 'flex', alignItems: 'center', gap: '6px' }}>
                 {isCorrect ? '✔ CHÍNH XÁC!' : '✖ SAI RỒI!'}

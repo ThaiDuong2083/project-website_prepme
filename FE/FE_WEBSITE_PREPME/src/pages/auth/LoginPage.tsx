@@ -84,7 +84,7 @@ const BrandInput = ({
             height: '44px',
             width: '100%',
             borderRadius: '14px',
-            border: `2px solid ${error ? '#fca5a5' : BRAND[100]}`,
+            border: `2px solid ${error ? BRAND[300] : BRAND[100]}`,
             background: BRAND[50],
             padding: leftIcon ? '0 44px 0 40px' : isPassword ? '0 44px 0 16px' : '0 16px',
             fontSize: '14px',
@@ -99,7 +99,7 @@ const BrandInput = ({
             e.currentTarget.style.boxShadow = `0 0 0 4px ${BRAND[100]}80`;
           }}
           onBlur={(e) => {
-            e.currentTarget.style.borderColor = error ? '#fca5a5' : BRAND[100];
+            e.currentTarget.style.borderColor = error ? BRAND[300] : BRAND[100];
             e.currentTarget.style.background = BRAND[50];
             e.currentTarget.style.boxShadow = 'none';
           }}

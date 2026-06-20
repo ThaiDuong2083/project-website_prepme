@@ -470,7 +470,7 @@ const TopicListModal = ({
             onClick={handleVaoHocNgay}
             disabled={startingLearn}
             style={{
-              background: startingLearn ? '#fda4af' : B[300],
+              background: startingLearn ? B[100] : B[300],
               color: '#fff',
               border: 'none',
               padding: '8px 18px',
@@ -626,9 +626,10 @@ const VocabCard = ({
         </p>
         <div
           style={{
-            background: 'rgba(251,113,133,0.08)',
+            background: '#ffffff',
             borderRadius: '8px',
             padding: '8px 10px',
+            border: `1px solid ${B[200]}`,
             borderLeft: `3px solid ${B[300]}`,
           }}
         >
@@ -856,7 +857,7 @@ export const FlashcardModal = ({
             animate={{ width: `${pct}%` }}
             style={{
               height: '100%',
-              background: 'linear-gradient(90deg, #fde68a, #fb7185)',
+              background: `linear-gradient(90deg, ${B[300]}, ${B[400]})`,
               borderRadius: '6px',
             }}
           />
@@ -1068,7 +1069,7 @@ export const FlashcardModal = ({
                 alignItems: 'center',
                 gap: '8px',
                 fontFamily: 'inherit',
-                boxShadow: '0 6px 20px rgba(251,113,133,0.4)',
+                boxShadow: '0 6px 20px rgba(59,130,246,0.3)',
               }}
             >
               👁 Hiện Đáp Án
