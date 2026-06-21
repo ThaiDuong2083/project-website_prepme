@@ -1,5 +1,8 @@
 package com.fpt.website_prepme.service;
 
-public interface UserService {
+import com.fpt.website_prepme.model.dto.UserDTO;
 
+public interface UserService {
+    boolean checkPhone();
+    UserDTO updatePhone(String phone);
 }

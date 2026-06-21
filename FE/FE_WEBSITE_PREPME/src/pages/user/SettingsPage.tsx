@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, X, User as UserIcon, LogOut, Wrench, CheckCircle, Sparkles } from 'lucide-react';
+import { Settings, X, User as UserIcon, LogOut, Wrench, CheckCircle, Sparkles, Phone } from 'lucide-react';
 import { ROUTES } from '@constants/routes.constants';
 import { useAuthStore } from '@store/auth.store';
 import { useAppStore } from '@store/app.store';
+import { userApi } from '@api/user.api';
 import toast from 'react-hot-toast';
 
 const BRAND = {
@@ -18,9 +19,53 @@ const BRAND = {
 
 export const SettingsPage = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user, logout, fetchProfile } = useAuthStore();
   const { theme, toggleTheme } = useAppStore();
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+  const [phoneInput, setPhoneInput] = useState('');
+  const [isUpdatingPhone, setIsUpdatingPhone] = useState(false);
+
+  const handleUpgradeClick = async () => {
+    try {
+      const response = await userApi.checkPhone();
+      if (response.data.hasPhone) {
+        setShowPaymentModal(true);
+      } else {
+        setPhoneInput('');
+        setShowPhoneModal(true);
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi kiểm tra thông tin');
+    }
+  };
+
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!phoneInput.trim()) {
+      toast.error('Số điện thoại không được để trống');
+      return;
+    }
+
+    const phoneRegex = /^(\+84|0)(3|5|7|8|9)\d{8}$/;
+    if (!phoneRegex.test(phoneInput.trim())) {
+      toast.error('Số điện thoại không hợp lệ (VD: 0912345678)');
+      return;
+    }
+
+    setIsUpdatingPhone(true);
+    try {
+      await userApi.updatePhone(phoneInput.trim());
+      await fetchProfile();
+      toast.success('Cập nhật số điện thoại thành công!');
+      setShowPhoneModal(false);
+      setShowPaymentModal(true);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Cập nhật số điện thoại thất bại');
+    } finally {
+      setIsUpdatingPhone(false);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -150,7 +195,7 @@ export const SettingsPage = () => {
               <motion.button
                 whileHover={{ scale: 1.02, boxShadow: '0 8px 24px rgba(59, 130, 246, 0.3)' }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => setShowPaymentModal(true)}
+                onClick={handleUpgradeClick}
                 style={{
                   marginTop: '12px',
                   background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
@@ -489,6 +534,168 @@ export const SettingsPage = () => {
                   Đóng
                 </button>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Update Phone Modal */}
+      <AnimatePresence>
+        {showPhoneModal && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+            }}
+          >
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowPhoneModal(false)}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(15, 23, 42, 0.75)',
+                backdropFilter: 'blur(8px)',
+              }}
+            />
+
+            {/* Modal Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              style={{
+                position: 'relative',
+                background: isDark ? '#1e293b' : '#ffffff',
+                width: '100%',
+                maxWidth: '460px',
+                borderRadius: '24px',
+                padding: '32px',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                border: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`,
+                color: isDark ? '#f1f5f9' : '#0f172a',
+                zIndex: 1000,
+              }}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowPhoneModal(false)}
+                style={{
+                  position: 'absolute',
+                  top: '24px',
+                  right: '24px',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: isDark ? '#94a3b8' : '#64748b',
+                  padding: '4px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                }}
+              >
+                <X size={20} />
+              </button>
+
+              {/* Title */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+                <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '10px', borderRadius: '12px' }}>
+                  <Phone className="text-blue-500" size={24} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: 900, letterSpacing: '-0.02em' }}>
+                    Cập Nhật Số Điện Thoại
+                  </h3>
+                  <p style={{ fontSize: '13px', color: isDark ? '#94a3b8' : '#64748b' }}>
+                    Vui lòng cung cấp số điện thoại để thực hiện thanh toán
+                  </p>
+                </div>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handlePhoneSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: 700, color: textTitle }}>
+                    Số điện thoại
+                  </label>
+                  <input
+                    type="tel"
+                    placeholder="VD: 0912345678"
+                    value={phoneInput}
+                    onChange={(e) => setPhoneInput(e.target.value)}
+                    disabled={isUpdatingPhone}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      borderRadius: '12px',
+                      border: `1.5px solid ${isDark ? '#334155' : '#cbd5e1'}`,
+                      background: isDark ? '#0f172a' : '#ffffff',
+                      color: isDark ? '#f1f5f9' : '#0f172a',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      outline: 'none',
+                      transition: 'border-color 0.2s',
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                  <button
+                    type="submit"
+                    disabled={isUpdatingPhone}
+                    style={{
+                      flex: 1,
+                      background: 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '12px',
+                      padding: '12px',
+                      fontWeight: 800,
+                      fontSize: '13.5px',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)',
+                      opacity: isUpdatingPhone ? 0.7 : 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                    }}
+                  >
+                    {isUpdatingPhone ? 'Đang cập nhật...' : 'Xác nhận & Tiếp tục'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowPhoneModal(false)}
+                    disabled={isUpdatingPhone}
+                    style={{
+                      flex: 1,
+                      background: isDark ? '#334155' : '#f1f5f9',
+                      border: 'none',
+                      color: isDark ? '#cbd5e1' : '#475569',
+                      borderRadius: '12px',
+                      padding: '12px',
+                      fontWeight: 800,
+                      fontSize: '13.5px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Hủy
+                  </button>
+                </div>
+              </form>
             </motion.div>
           </div>
         )}
