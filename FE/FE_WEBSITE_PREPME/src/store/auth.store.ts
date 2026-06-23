@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { storage } from '@utils/storage.utils';
 import { authApi } from '@api/auth.api';
+import { userApi } from '@api/user.api';
 import toast from 'react-hot-toast';
 import type { User, LoginWithPhonePayload, AuthTokens, RegisterPayload } from '@types';
 
@@ -15,6 +16,7 @@ interface AuthStore {
   loginWithPhone: (payload: LoginWithPhonePayload) => Promise<void>;
   loginWithGoogle: (idToken: string) => Promise<void>;
   fetchProfile: () => Promise<void>;
+  incrementVisit: () => Promise<void>;
   setTokenAndProfile: (tokens: AuthTokens) => Promise<void>;
   upgrade: () => Promise<void>;
   logout: () => void;
@@ -81,6 +83,16 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       set({ user });
     } catch {
       get().logout();
+    }
+  },
+
+  incrementVisit: async () => {
+    try {
+      const response = await userApi.incrementVisit();
+      const user = response.data;
+      set({ user });
+    } catch (error) {
+      console.error('Failed to increment visit count:', error);
     }
   },
 

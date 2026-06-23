@@ -37,4 +37,11 @@ public class UserController {
         UserDTO updatedUser = userService.updatePhone(request.getPhone());
         return ResponseEntity.ok(ApiResponse.success("Cập nhật số điện thoại thành công", updatedUser));
     }
+
+    @PostMapping("/visit")
+    @Operation(summary = "Increment visit count for the currently logged-in user")
+    public ResponseEntity<ApiResponse<UserDTO>> incrementVisit() {
+        UserDTO updatedUser = userService.incrementVisit();
+        return ResponseEntity.ok(ApiResponse.success("Ghi nhận lượt truy cập thành công", updatedUser));
+    }
 }

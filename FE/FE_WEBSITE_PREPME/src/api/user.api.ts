@@ -11,4 +11,9 @@ export const userApi = {
     const response = await axiosInstance.put<ApiResponse<User>>('/users/phone', { phone });
     return response.data;
   },
+
+  incrementVisit: async (): Promise<ApiResponse<User>> => {
+    const response = await axiosInstance.post<ApiResponse<User>>('/users/visit');
+    return response.data;
+  },
 };

@@ -34,6 +34,7 @@ public class UserDTO {
     private Double ieltsTarget;
     private Double currentLevel;
     private List<SkillType> weakSkills;
+    private int visitCount;
 
     public static UserDTO toEntity(UserEntity user) {
         String role = user.getRoles().stream().findFirst().map(r -> r.getName()).orElse("USER");
@@ -63,6 +64,7 @@ public class UserDTO {
                 .ieltsTarget(user.getIeltsTarget())
                 .currentLevel(user.getCurrentLevel())
                 .weakSkills(weakSkills)
+                .visitCount(user.getVisitCount())
                 .build();
     }
 }

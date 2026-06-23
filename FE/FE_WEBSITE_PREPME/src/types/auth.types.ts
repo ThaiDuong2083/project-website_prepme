@@ -16,6 +16,7 @@ export interface User {
   ieltsTarget?: number;
   currentLevel?: number;
   weakSkills?: WeakSkill[];
+  visitCount?: number;
 }
 
 export interface AuthTokens {

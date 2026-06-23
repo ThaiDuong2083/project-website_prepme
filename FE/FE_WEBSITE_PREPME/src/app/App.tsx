@@ -14,12 +14,24 @@ export const App = () => {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const user = useAuthStore((s) => s.user);
   const fetchProfile = useAuthStore((s) => s.fetchProfile);
+  const incrementVisit = useAuthStore((s) => s.incrementVisit);
 
   useEffect(() => {
     if (isAuthenticated && !user) {
       fetchProfile().catch(() => {});
     }
   }, [isAuthenticated, user, fetchProfile]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const visited = sessionStorage.getItem('visited_session');
+      if (!visited) {
+        incrementVisit().then(() => {
+          sessionStorage.setItem('visited_session', 'true');
+        });
+      }
+    }
+  }, [isAuthenticated, incrementVisit]);
 
   return (
     <ErrorBoundary>

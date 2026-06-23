@@ -83,6 +83,11 @@ public class UserEntity extends BaseEntity {
     @Builder.Default
     private boolean surveyCompleted = false;
 
+    @Column(name = "visit_count")
+    @Builder.Default
+    private int visitCount = 0;
+
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",

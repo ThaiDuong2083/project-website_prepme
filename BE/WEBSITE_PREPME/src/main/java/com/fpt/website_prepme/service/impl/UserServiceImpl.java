@@ -60,5 +60,15 @@ public class UserServiceImpl implements UserService {
         UserEntity savedUser = userRepository.save(currentUser);
         log.info("[UserService] Updated phone number for userId={} to {}", savedUser.getId(), phone);
         return UserDTO.toEntity(savedUser);
+     }
+
+    @Override
+    @Transactional
+    public UserDTO incrementVisit() {
+        UserEntity currentUser = getCurrentUser();
+        currentUser.setVisitCount(currentUser.getVisitCount() + 1);
+        UserEntity savedUser = userRepository.save(currentUser);
+        log.info("[UserService] Incremented visit count for userId={} to {}", savedUser.getId(), savedUser.getVisitCount());
+        return UserDTO.toEntity(savedUser);
     }
 }
