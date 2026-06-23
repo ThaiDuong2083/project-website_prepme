@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Mic, Square } from 'lucide-react';
+import { useAppStore } from '@store/app.store';
 
 interface SpeakingWorkspaceProps {
   isRecording: boolean;
@@ -21,9 +22,14 @@ export const SpeakingWorkspace: React.FC<SpeakingWorkspaceProps> = ({
   stopRecording,
   formatTime,
 }) => {
+  const { theme } = useAppStore();
+  const isDark = theme === 'dark';
+
   return (
     <div className="flex flex-col items-center justify-center h-full space-y-6 text-center">
-      <div className="rounded-full bg-blue-50 p-6 border border-blue-100">
+      <div className={`rounded-full p-6 border ${
+        isDark ? 'bg-blue-950/40 border-blue-900/50' : 'bg-blue-50 border-blue-100'
+      }`}>
         {isRecording ? (
           <motion.div
             animate={{ scale: [1, 1.15, 1] }}
@@ -44,7 +50,7 @@ export const SpeakingWorkspace: React.FC<SpeakingWorkspaceProps> = ({
       </div>
 
       <div>
-        <h4 className="text-sm font-bold text-slate-800 ">
+        <h4 className={`text-sm font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
           {isRecording ? 'Đang ghi âm...' : 'Sẵn sàng ghi âm'}
         </h4>
         <p className="text-xs text-slate-400 mt-1">
@@ -70,7 +76,9 @@ export const SpeakingWorkspace: React.FC<SpeakingWorkspaceProps> = ({
 
       {/* Playback preview */}
       {speakingLocalUrls[activeSectionIdx] && !isRecording && (
-        <div className="w-full border border-blue-100 bg-blue-50/20 p-4 rounded-2xl">
+        <div className={`w-full border p-4 rounded-2xl ${
+          isDark ? 'border-blue-900/50 bg-blue-950/20' : 'border-blue-100 bg-blue-50/20'
+        }`}>
           <span className="text-[10px] font-bold text-slate-400 block mb-2">
             PREVIEW BẢN THU ÂM (PHẦN {activeSectionIdx + 1})
           </span>

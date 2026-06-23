@@ -98,14 +98,15 @@ app:
   # ─── Google OAuth2 ──────────────────────────────────────────────────────────
   google:
     # Google OAuth2 Client ID (Web Application type) from Google Cloud Console
-    client-id: ${GOOGLE_CLIENT_ID:your-google-client-id.apps.googleusercontent.com}
+    client-id: ${GOOGLE_CLIENT_ID:1007612157259-vvqh58i2t6s3nqignos3bt42q80qfhgj.apps.googleusercontent.com}
 
   # ─── OpenAI ────────────────────────────────────────────────────────────
   openai:
-    api-key: ${OPENAI_API_KEY:sk-6QNo9E1A4oL06XwLXgA5e-CYHVgKt5_p7M5CXeaGO28}
-    model: ${OPENAI_MODEL:codex/gpt5.5}
+    api-key: ${OPENAI_API_KEY:sk-5nQrmL9DG5eXo8EV8lFmhz7LWWh3Ii0dhcLiSheqZMP3ysHz}
+    api-key-backup: ${OPENAI_API_KEY_BACKUP:sk-glH4OqfpqX9yCHdILAEuFPMqCFDC9vvMWJYNtcX0w45jfPI}
+    model: ${OPENAI_MODEL:MiniMax-M3}
     transcribe-model: ${OPENAI_TRANSCRIBE_MODEL:whisper-1}
-    base-url: ${OPENAI_BASE_URL:https://api.shineshop.dev/v1}
+    base-url: ${OPENAI_BASE_URL:https://api.tokenrouter.com/v1}
     max-tokens: ${OPENAI_MAX_TOKENS:20}
 
 # ─── Logging ─────────────────────────────────────────────────────────────────

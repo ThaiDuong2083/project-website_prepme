@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAppStore } from '@store/app.store';
 
 interface WritingWorkspaceProps {
   activeSectionIdx: number;
@@ -13,6 +14,8 @@ export const WritingWorkspace: React.FC<WritingWorkspaceProps> = ({
 }) => {
   const currentAnswer = writingAnswers[activeSectionIdx] || '';
   const wordCount = currentAnswer.trim() ? currentAnswer.trim().split(/\s+/).length : 0;
+  const { theme } = useAppStore();
+  const isDark = theme === 'dark';
 
   return (
     <div className="flex flex-col h-full space-y-4">
@@ -33,7 +36,11 @@ export const WritingWorkspace: React.FC<WritingWorkspaceProps> = ({
           }))
         }
         placeholder={`Hãy nhập bài luận của bạn cho Phần ${activeSectionIdx + 1} tại đây (Essay Content)...`}
-        className="flex-1 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700 outline-none focus:border-blue-300 resize-none "
+        className={`flex-1 rounded-2xl border p-4 text-sm outline-none resize-none ${
+          isDark
+            ? 'border-slate-800 bg-slate-900 text-slate-200 focus:border-blue-700'
+            : 'border-slate-200 bg-white text-slate-700 focus:border-blue-300'
+        }`}
       />
       <div className="flex justify-between items-center text-xs font-semibold text-slate-400">
         <span>Số từ: {wordCount} từ</span>

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Map;
 
-@FeignClient(name = "openaiFeignClient", url = "${app.openai.base-url:https://api.shineshop.dev/v1}")
+@FeignClient(name = "openaiFeignClient", url = "${app.openai.base-url:https://api.tokenrouter.com/v1}")
 public interface OpenAiFeignClient {
 
     @PostMapping(value = "/chat/completions", consumes = MediaType.APPLICATION_JSON_VALUE)

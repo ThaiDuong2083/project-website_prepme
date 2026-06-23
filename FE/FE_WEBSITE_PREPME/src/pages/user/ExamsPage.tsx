@@ -891,10 +891,16 @@ export const ExamsPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[100] flex h-screen max-w-full flex-col bg-[#faf6ee] p-4"
+              className={`fixed inset-0 z-[100] flex h-screen max-w-full flex-col p-4 ${
+                isDark ? 'bg-slate-950 text-slate-100' : 'bg-[#faf6ee]'
+              }`}
             >
               {/* Split screen Header */}
-              <div className="flex items-center justify-between border-b border-blue-100 bg-[#fffdfa] px-6 py-4 shadow-sm">
+              <div
+                className={`flex items-center justify-between border-b px-6 py-4 shadow-sm ${
+                  isDark ? 'border-slate-800 bg-slate-900' : 'border-blue-100 bg-[#fffdfa]'
+                }`}
+              >
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => {
@@ -907,7 +913,9 @@ export const ExamsPage = () => {
                         setTimerRunning(false);
                       }
                     }}
-                    className="rounded-xl border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50"
+                    className={`rounded-xl border p-2 text-slate-500 transition ${
+                      isDark ? 'border-slate-700 hover:bg-slate-800' : 'border-slate-200 hover:bg-slate-50'
+                    }`}
                   >
                     <ArrowLeft size={18} />
                   </button>
@@ -915,7 +923,7 @@ export const ExamsPage = () => {
                     <span className="inline-block rounded bg-blue-100 px-2 py-0.5 text-[9px] font-extrabold text-blue-600 uppercase">
                       {examDetail.examType}
                     </span>
-                    <h2 className="text-base leading-tight font-black text-slate-800">
+                    <h2 className={`text-base leading-tight font-black ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
                       {examDetail.title}
                     </h2>
                   </div>
@@ -946,7 +954,9 @@ export const ExamsPage = () => {
               {/* Split Screen Dual-Pane Area */}
               <div className="mt-4 flex min-h-0 flex-1 gap-4 overflow-hidden">
                 {/* Left Pane: Audio/Passages/Prompts */}
-                <div className="flex-1 overflow-y-auto rounded-3xl border border-blue-100/50 bg-[#fffdfa] p-6 shadow-sm">
+                <div className={`flex-1 overflow-y-auto rounded-3xl border p-6 shadow-sm ${
+                  isDark ? 'border-slate-800/80 bg-slate-900' : 'border-blue-100/50 bg-[#fffdfa]'
+                }`}>
                   {/* For Listening Section: Custom Dynamic Audio Player */}
                   {examDetail.examType === 'LISTENING' &&
                     (() => {
@@ -954,7 +964,9 @@ export const ExamsPage = () => {
                       const activeAudio = activeSec?.audioUrl || examDetail.audioUrl;
                       if (!activeAudio) return null;
                       return (
-                        <div className="animate-fadeIn mb-6 flex items-center gap-4 rounded-2xl border border-blue-100/30 bg-blue-50/40 p-4">
+                        <div className={`animate-fadeIn mb-6 flex items-center gap-4 rounded-2xl border p-4 ${
+                          isDark ? 'border-blue-900/30 bg-blue-950/20' : 'border-blue-100/30 bg-blue-50/40'
+                        }`}>
                           <Volume2 size={24} className="text-blue-500" />
                           <audio
                             key={`listening-audio-${activeSectionIdx}-${activeAudio}`}
@@ -968,7 +980,9 @@ export const ExamsPage = () => {
 
                   {/* For Speaking Section: User Recording Playback Preview */}
                   {examDetail.examType === 'SPEAKING' && speakingLocalUrls[activeSectionIdx] && (
-                    <div className="animate-fadeIn mb-6 flex items-center gap-4 rounded-2xl border border-blue-100/30 bg-blue-50/40 p-4">
+                    <div className={`animate-fadeIn mb-6 flex items-center gap-4 rounded-2xl border p-4 ${
+                      isDark ? 'border-blue-900/30 bg-blue-950/20' : 'border-blue-100/30 bg-blue-50/40'
+                    }`}>
                       <Volume2 size={24} className="text-blue-500" />
                       <div className="flex-1">
                         <span className="mb-1 block text-[10px] font-bold text-slate-400">
@@ -989,14 +1003,14 @@ export const ExamsPage = () => {
                     <div>
                       {/* Section tab headers */}
                       {examDetail.sections.length > 1 && (
-                        <div className="mb-4 flex gap-2 border-b border-blue-50 pb-2">
+                        <div className={`mb-4 flex gap-2 border-b pb-2 overflow-x-auto scrollbar-thin flex-nowrap ${isDark ? 'border-slate-800' : 'border-blue-50'}`}>
                           {examDetail.sections.map((sec, idx) => (
                             <button
                               key={sec.id}
                               onClick={() => setActiveSectionIdx(idx)}
-                              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${activeSectionIdx === idx
-                                  ? 'bg-blue-100 text-blue-600'
-                                  : 'text-slate-400 hover:text-slate-600'
+                              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition shrink-0 whitespace-nowrap ${activeSectionIdx === idx
+                                  ? (isDark ? 'bg-blue-950 text-blue-400' : 'bg-blue-100 text-blue-600')
+                                  : (isDark ? 'text-slate-500 hover:text-slate-400' : 'text-slate-400 hover:text-slate-600')
                                 }`}
                             >
                               Phần {sec.sectionNumber || idx + 1}
@@ -1012,19 +1026,21 @@ export const ExamsPage = () => {
                         return (
                           <div className="space-y-4">
                             {activeSec.title && (
-                              <h3 className="text-lg font-black text-slate-800">
+                              <h3 className={`text-lg font-black ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
                                 {activeSec.title}
                               </h3>
                             )}
 
                             {activeSec.passage && (
-                              <div className="prose max-w-none text-sm leading-relaxed text-slate-600">
+                              <div className={`prose max-w-none text-sm leading-relaxed ${isDark ? 'text-slate-300 dark:prose-invert' : 'text-slate-600'}`}>
                                 {formatHtmlContent(activeSec.passage)}
                               </div>
                             )}
 
                             {examDetail.examType === 'WRITING' && activeSec.audioUrl && (
-                              <div className="mt-4 flex max-w-full justify-center overflow-hidden rounded-2xl border border-slate-100 bg-white p-2 shadow-sm">
+                              <div className={`mt-4 flex max-w-full justify-center overflow-hidden rounded-2xl border p-2 shadow-sm ${
+                                isDark ? 'border-slate-800 bg-slate-900' : 'border-slate-100 bg-white'
+                              }`}>
                                 <img
                                   src={activeSec.audioUrl}
                                   alt="Writing prompt illustration"
@@ -1034,11 +1050,11 @@ export const ExamsPage = () => {
                             )}
 
                             {activeSec.cueCard && (
-                              <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-6">
-                                <h4 className="mb-3 text-sm font-extrabold text-amber-800">
+                              <div className={`rounded-2xl border p-6 ${isDark ? 'border-amber-900/50 bg-amber-950/20' : 'border-amber-200 bg-amber-50/50'}`}>
+                                <h4 className={`mb-3 text-sm font-extrabold ${isDark ? 'text-amber-500' : 'text-amber-800'}`}>
                                   📌 Cue Card Topic:
                                 </h4>
-                                <pre className="font-sans text-sm whitespace-pre-wrap text-slate-700">
+                                <pre className={`font-sans text-sm whitespace-pre-wrap ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                                   {activeSec.cueCard}
                                 </pre>
                               </div>
@@ -1046,8 +1062,8 @@ export const ExamsPage = () => {
 
                             {/* Render Questions under the passage/audio/cue card */}
                             {activeSec.questions && activeSec.questions.length > 0 && (
-                              <div className="animate-fadeIn mt-8 space-y-6 border-t border-blue-100 pt-6">
-                                <h4 className="flex items-center gap-2 text-sm font-black text-slate-800">
+                              <div className={`animate-fadeIn mt-8 space-y-6 border-t pt-6 ${isDark ? 'border-slate-800' : 'border-blue-100'}`}>
+                                <h4 className={`flex items-center gap-2 text-sm font-black ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
                                   <BookOpen size={16} className="text-blue-500" />
                                   DANH SÁCH CÂU HỎI
                                 </h4>
@@ -1057,16 +1073,22 @@ export const ExamsPage = () => {
                                     .map((q) => (
                                       <div
                                         key={q.id}
-                                        className="space-y-3 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm"
+                                        className={`space-y-3 rounded-2xl border p-5 shadow-sm ${
+                                          isDark ? 'border-slate-800 bg-slate-900' : 'border-slate-100 bg-white'
+                                        }`}
                                       >
                                         <div className="flex items-start gap-2.5">
-                                          <span className="shrink-0 rounded-lg border border-blue-100/50 bg-blue-50 px-2.5 py-1 text-xs font-black text-blue-500">
+                                          <span className={`shrink-0 rounded-lg border px-2.5 py-1 text-xs font-black ${
+                                            isDark ? 'border-blue-900/50 bg-blue-950/40 text-blue-400' : 'border-blue-100/50 bg-blue-50 text-blue-500'
+                                          }`}>
                                             Câu {q.questionNumber}
                                           </span>
-                                          <div className="mt-1 flex-1 text-xs leading-relaxed font-bold text-slate-700">
+                                          <div className={`mt-1 flex-1 text-xs leading-relaxed font-bold html-question ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                                             <div>{q.questionText}</div>
                                             {q.imageUrl && (
-                                              <div className="mt-2 flex max-w-full justify-center overflow-hidden rounded-xl border border-slate-100 bg-slate-50 p-1">
+                                              <div className={`mt-2 flex max-w-full justify-center overflow-hidden rounded-xl border p-1 ${
+                                                isDark ? 'border-slate-800 bg-slate-950' : 'border-slate-100 bg-slate-50'
+                                              }`}>
                                                 <img
                                                   src={q.imageUrl}
                                                   alt={`Câu hỏi ${q.questionNumber}`}
@@ -1079,7 +1101,7 @@ export const ExamsPage = () => {
 
                                         {/* Options for Multiple Choice */}
                                         {q.questionType === 'MULTIPLE_CHOICE' && q.options && (
-                                          <div className="grid grid-cols-1 gap-2 pl-9 text-xs font-medium text-slate-500">
+                                          <div className={`grid grid-cols-1 gap-2 pl-9 text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                                             {q.options.map((option) => (
                                               <div
                                                 key={option}
@@ -1108,8 +1130,12 @@ export const ExamsPage = () => {
                 </div>
 
                 {/* Right Pane: Question Input Forms */}
-                <div className="flex w-[500px] flex-col overflow-hidden rounded-3xl border border-blue-100/50 bg-[#fffdfa] shadow-sm">
-                  <div className="border-b border-blue-50/40 bg-slate-50 px-5 py-3 text-xs font-bold text-slate-600">
+                <div className={`flex w-[500px] flex-col overflow-hidden rounded-3xl border shadow-sm ${
+                  isDark ? 'border-slate-800/80 bg-slate-900' : 'border-blue-100/50 bg-[#fffdfa]'
+                }`}>
+                  <div className={`border-b px-5 py-3 text-xs font-bold ${
+                    isDark ? 'border-slate-800 bg-slate-800/80 text-slate-300' : 'border-blue-50/40 bg-slate-50 text-slate-600'
+                  }`}>
                     📒 CÂU HỎI & TRẢ LỜI
                   </div>
 
@@ -1546,7 +1572,7 @@ export const ExamsPage = () => {
                                           >
                                             Câu {q.questionNumber}
                                           </span>
-                                          <div className={`flex-1 text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                                          <div className={`flex-1 text-xs font-bold html-question ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
                                             <div>{q.questionText}</div>
                                             {q.imageUrl && (
                                               <div className="mt-2 flex max-w-full justify-center overflow-hidden rounded-xl border border-slate-100 bg-slate-50 p-1">
