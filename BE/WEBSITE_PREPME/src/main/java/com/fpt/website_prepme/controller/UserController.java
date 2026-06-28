@@ -11,6 +11,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import com.fpt.website_prepme.model.dto.UserVisitResponseDTO;
 
 import java.util.Map;
 
@@ -43,5 +47,37 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserDTO>> incrementVisit() {
         UserDTO updatedUser = userService.incrementVisit();
         return ResponseEntity.ok(ApiResponse.success("Ghi nhận lượt truy cập thành công", updatedUser));
+    }
+
+    @GetMapping("/visits/total")
+    @Operation(summary = "Get total visit counts in a period filtered by createdAt range")
+    public ResponseEntity<ApiResponse<Long>> getTotalVisits(
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate startDate,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate endDate) {
+        long total = userService.getTotalVisits(startDate, endDate);
+        return ResponseEntity.ok(ApiResponse.success(total));
+    }
+
+    @GetMapping("/visits/list")
+    @Operation(summary = "Get paginated visit details in a period filtered by createdAt range")
+    public ResponseEntity<ApiResponse<Page<UserVisitResponseDTO>>> getAllVisits(
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate startDate,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate endDate,
+            @PageableDefault(size = 10) Pageable pageable) {
+        Page<UserVisitResponseDTO> visits = userService.getAllVisits(startDate, endDate, pageable);
+        return ResponseEntity.ok(ApiResponse.success(visits));
+    }
+
+    @GetMapping("/visits/search")
+    @Operation(summary = "Search visits of a specific user with pagination filtered by createdAt range")
+    public ResponseEntity<ApiResponse<Page<UserVisitResponseDTO>>> searchVisitsByUser(
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate startDate,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate endDate,
+            @PageableDefault(size = 10) Pageable pageable) {
+        Page<UserVisitResponseDTO> visits = userService.searchVisitsByUser(phone, email, username, startDate, endDate, pageable);
+        return ResponseEntity.ok(ApiResponse.success(visits));
     }
 }
